@@ -7,11 +7,9 @@
 		"module": "es6",
 		"typeRoots": []
 	},
-	
+
 	"include": [
-    "src/**/*.ts", // or your source directories
-  ],
-	"exclude": [
-    "node_modules"
-  ]
+		"./src/**/*.ts" // or your source directories
+	],
+	"exclude": ["node_modules"]
 }

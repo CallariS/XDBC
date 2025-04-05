@@ -24,4 +24,4 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", Number)
 ], Calculator.prototype, "divide", null);
-alert(new Calculator().divide(2, 1));
+console.log("test", new Calculator().divide(2, 1));

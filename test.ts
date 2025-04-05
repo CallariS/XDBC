@@ -8,4 +8,4 @@ export class Calculator {
 	}
 }
 
-console.log("test", new Calculator().divide(2, 1));
+alert(new Calculator().divide(2, 1));

@@ -5,17 +5,59 @@ export class DBC {
     constructor() {
         this.g = 0;
     }
+    static requestParamValue(target, methodName, index, receptor) {
+        if (DBC.paramValueRequests.has(target)) {
+            if (DBC.paramValueRequests.get(target).has(methodName)) {
+                if (DBC.paramValueRequests.get(target).get(methodName).has(index)) {
+                    DBC.paramValueRequests
+                        .get(target)
+                        .get(methodName)
+                        .get(index)
+                        .push(receptor);
+                }
+                else {
+                    DBC.paramValueRequests
+                        .get(target)
+                        .get(methodName)
+                        .set(index, new Array(receptor));
+                }
+            }
+            else {
+                DBC.paramValueRequests
+                    .get(target)
+                    .set(methodName, new Map([
+                    [index, new Array(receptor)],
+                ]));
+            }
+        }
+        else {
+            DBC.paramValueRequests.set(target, new Map([
+                [
+                    methodName,
+                    new Map([
+                        [index, new Array(receptor)],
+                    ]),
+                ],
+            ]));
+        }
+        return undefined;
+    }
     /** A decorator that checks
      *
      * @param target
      * @param methodName
      * @param parameterIndex
      */
-    static decPrecondition(init) {
-        const b = init;
+    static decPrecondition(
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    check) {
         return (target, methodName, parameterIndex) => {
+            DBC.requestParamValue(target, methodName, parameterIndex, (value) => {
+                console.log("y", value);
+                check(value);
+            });
             //console.log(`X:${DBC.parameterValues.get(target).get(methodName as string)}`,);
-            console.log(target);
+            console.log("x333", target);
         };
     }
     static log(
@@ -25,6 +67,27 @@ export class DBC {
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         descriptor.value = function (...args) {
             console.log(`Calling ${target.constructor.name}.${propertyKey} with arguments: ${JSON.stringify(args)}`);
+            console.log("A", target);
+            console.log("B	", propertyKey);
+            if (DBC.paramValueRequests.has(target) &&
+                DBC.paramValueRequests.get(target).has(propertyKey)) {
+                console.log("K", DBC.paramValueRequests.get(target).get(propertyKey));
+                for (const index of DBC.paramValueRequests
+                    .get(target)
+                    .get(propertyKey)
+                    .keys()) {
+                    console.log("R", index);
+                    if (index < args.length) {
+                        for (const receptor of DBC.paramValueRequests
+                            .get(target)
+                            .get(propertyKey)
+                            .get(index)) {
+                            receptor(args[index]);
+                        }
+                    }
+                }
+            }
+            console.log(DBC.paramValueRequests);
             /*if (DBC.parameterValues.has(target)) {
                 if (DBC.parameterValues.get(target).has(propertyKey)) {
                     DBC.parameterValues.get(target).set(propertyKey, args);
@@ -46,6 +109,7 @@ export class DBC {
         return descriptor;
     }
 }
+DBC.paramValueRequests = new Map();
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 DBC.parameterValues = 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>

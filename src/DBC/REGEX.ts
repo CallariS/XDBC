@@ -8,9 +8,8 @@ export class REGEX extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.decPrecondition({
-			arguments: [a],
-			check: () => {},
+		return DBC.decPrecondition((value: unknown) => {
+			console.log("xxxxxxxxxxJJJJ", value);
 		});
 	}
 }
