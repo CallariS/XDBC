@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "format": "biome format ./src --write",
+    "lint": "biome check ./",
+    "ci": "biome ci ./"
+  }
+}
