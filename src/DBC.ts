@@ -28,9 +28,7 @@ export class DBC {
 			methodName: string | symbol,
 			parameterIndex: number,
 		): void => {
-			console.log(
-				`X:${DBC.parameterValues.get(target).get(methodName as string)}`,
-			);
+			//console.log(`X:${DBC.parameterValues.get(target).get(methodName as string)}`,);
 			console.log(target);
 		};
 	}
@@ -42,6 +40,7 @@ export class DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) {
+		
 		const originalMethod = descriptor.value;
 
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -49,7 +48,7 @@ export class DBC {
 			console.log(
 				`Calling ${target.constructor.name}.${propertyKey} with arguments: ${JSON.stringify(args)}`,
 			);
-			if (DBC.parameterValues.has(target)) {
+			/*if (DBC.parameterValues.has(target)) {
 				if (DBC.parameterValues.get(target).has(propertyKey)) {
 					DBC.parameterValues.get(target).set(propertyKey, args);
 				} else {
@@ -62,7 +61,7 @@ export class DBC {
 					// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 					new Map<string, Array<any>>([[propertyKey, args]]),
 				);
-			}
+			}*/
 			const result = originalMethod.apply(this, args);
 			console.log(`Result: ${result}`);
 			return result;

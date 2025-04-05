@@ -2,10 +2,9 @@
  * Provides a [D]esign [B]y [C]ontract Framework using decorators.
  */
 export class DBC {
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    static parameterValues = 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    new Map();
+    constructor() {
+        this.g = 0;
+    }
     /** A decorator that checks
      *
      * @param target
@@ -15,11 +14,10 @@ export class DBC {
     static decPrecondition(init) {
         const b = init;
         return (target, methodName, parameterIndex) => {
-            console.log(`X:${DBC.parameterValues.get(target).get(methodName)}`);
+            //console.log(`X:${DBC.parameterValues.get(target).get(methodName as string)}`,);
             console.log(target);
         };
     }
-    g = 0;
     static log(
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     target, propertyKey, descriptor) {
@@ -27,20 +25,20 @@ export class DBC {
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         descriptor.value = function (...args) {
             console.log(`Calling ${target.constructor.name}.${propertyKey} with arguments: ${JSON.stringify(args)}`);
-            if (DBC.parameterValues.has(target)) {
+            /*if (DBC.parameterValues.has(target)) {
                 if (DBC.parameterValues.get(target).has(propertyKey)) {
                     DBC.parameterValues.get(target).set(propertyKey, args);
-                }
-                else {
+                } else {
                     DBC.parameterValues.get(target).set(propertyKey, args);
                 }
-            }
-            else {
+            } else {
                 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-                DBC.parameterValues.set(target, 
-                // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-                new Map([[propertyKey, args]]));
-            }
+                DBC.parameterValues.set(
+                    target,
+                    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+                    new Map<string, Array<any>>([[propertyKey, args]]),
+                );
+            }*/
             const result = originalMethod.apply(this, args);
             console.log(`Result: ${result}`);
             return result;
@@ -48,3 +46,7 @@ export class DBC {
         return descriptor;
     }
 }
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+DBC.parameterValues = 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+new Map();

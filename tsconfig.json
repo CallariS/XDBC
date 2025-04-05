@@ -1,20 +1,17 @@
 {
 	"compilerOptions": {
-		"target": "ES2024",
+		"target": "ES6",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"module": "ES6"
+		"outDir": "./dist",
+		"module": "es6",
+		"typeRoots": []
 	},
-	"tasks": [
-		{
-			"label": "tsc: build - tsconfig.json",
-			"type": "typescript",
-			"tsconfig": "tsconfig.json",
-			"problemMatcher": ["$tsc"],
-			"group": {
-				"kind": "build",
-				"isDefault": true // Optional: Makes this the default build task
-			}
-		}
-	]
+	
+	"include": [
+    "src/**/*.ts", // or your source directories
+  ],
+	"exclude": [
+    "node_modules"
+  ]
 }
