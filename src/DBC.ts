@@ -1,7 +1,11 @@
 /**
  * Provides a [D]esign [B]y [C]ontract Framework using decorators.
+ * 
+ * @remarks
+ * Salvatore Callari / 2025
  */
 export class DBC {
+	/** Stores all request for parameter values registered by {@link DBC.decPrecondition }. */
 	static paramValueRequests: Map<
 		object,
 		Map<string | symbol, Map<number, Array<(value: unknown) => undefined>>>
@@ -9,6 +13,18 @@ export class DBC {
 		object,
 		Map<string | symbol, Map<number, Array<(value: unknown) => undefined>>>
 	>();
+	/**
+	 * Make a request to get the value of a certain parameter of specific method in a specific {@link object }.
+	 * That request gets enlisted in {@link DBC.paramValueRequests } which is used by {@link DBC.PRE} to invoke the given "receptor"
+	 * with the parameter value stored in there.
+	 * This means that an parameter decorator using this method will not receive any value of the top method is not tagged with {@link DBC.PRE}.
+	 * 
+	 * @param target 
+	 * @param methodName 
+	 * @param index 
+	 * @param receptor 
+	 * @returns 
+	 */
 	protected static requestParamValue(
 		target: object,
 		methodName: string | symbol,
@@ -95,7 +111,7 @@ export class DBC {
 	}
 	public g = 0;
 
-	public static log(
+	public static PRE(
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		target: any,
 		propertyKey: string,

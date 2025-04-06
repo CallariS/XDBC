@@ -2,7 +2,7 @@ import { DBC } from "./DBC.js";
 import { REGEX } from "./DBC/REGEX.js";
 
 export class Calculator {
-	@DBC.log
+	@DBC.PRE
 	public divide(@REGEX.PRE("r") a: number, b: number): number {
 		return a / b;
 	}
