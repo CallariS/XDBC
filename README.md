@@ -36,7 +36,7 @@ Leverages the explicit nature of metadata to provide a **D**esign **b**y **C**on
 | Production       | Contracts can be kept or disabled      | Often disabled for performance        |
 
 ## Demo & API Documentation
-Check out the **Demo.ts** to see some examples usages and the [API](www.google.de)'s documentation.
+Check out the **Demo.ts** to see some examples usages and the [API](https://callaris.github.io/XDBC/)'s documentation.
 
 ## Installation
 
@@ -85,7 +85,7 @@ With **PRE**, **POST** and **INVARIANT** decorators an optional **path** paramet
 
 Multiple instances of the class **DBC** with varying settings for e.g. reporting infringements may be instantiated. Which of these instances is used to report can be defined when either using **PRE**, **POST** or **INVARIANT** by defining their **dbc** parameter: **@DBC.INVARIANT([new EQ(1)],"length","MyVendor.MyDBCInstance")**, for example. The standard path (*WaXCode.DBC*) leads to an automatically created instance, that is generated when the Framework is imported.
 
-Many contracts got further features like the **AE**-Contract that can check specific ranges within the tagged array or the **EQ**- and **GREATER**-Contract that can be inverted turning them into **not EQual**- or **LESS**-Contracts. Check out the [API](www.google.de) for details.
+Many contracts got further features like the **AE**-Contract that can check specific ranges within the tagged array or the **EQ**- and **GREATER**-Contract that can be inverted turning them into **not EQual**- or **LESS**-Contracts. Check out the [API](https://callaris.github.io/XDBC/) for details.
 
 A **DBC**'s **warningSettings** & **infringementSettings** determine what happens on warnings and errors, whereas warnings are not implemented yet.
 
