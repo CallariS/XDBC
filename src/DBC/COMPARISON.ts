@@ -1,13 +1,13 @@
 import { DBC } from "../DBC";
 /**
- * A {@link DBC } defining that two {@link object }s gotta be equal.
+ * A {@link DBC } defining a comparison between two {@link object }s.
  *
  * @remarks
  * Maintainer: Callari, Salvatore (XDBC@WaXCode.net) */
-export class GREATER extends DBC {
+export class COMPARISON extends DBC {
 	// #region Condition checking.
 	/**
-	 * Checks if the value **toCheck** is nb   equal to the specified **equivalent**.
+	 * Does a comparison between the {@link object } **toCheck** and the **equivalent**.
 	 *
 	 * @param toCheck		The value that has to be equal to it's possible **equivalent** for this {@link DBC } to be fulfilled.
 	 * @param equivalent	The {@link object } the one **toCheck** has to be equal to in order for this {@link DBC } to be
@@ -20,7 +20,7 @@ export class GREATER extends DBC {
 		}
 
 		if (equalityPermitted && invert && toCheck > equivalent) {
-			return `Value must not to be less than or equal to "${equivalent}"`;
+			return `Value has to be less than or equal to "${equivalent}"`;
 		}
 
 		if (!equalityPermitted && !invert && toCheck <= equivalent) {
@@ -28,17 +28,17 @@ export class GREATER extends DBC {
 		}
 
 		if (!equalityPermitted && invert && toCheck >= equivalent) {
-			return `Value must not to be less than "${equivalent}"`;
+			return `Value has to be less than "${equivalent}"`;
 		}
 
 		return true;
 	}
 	/**
-	 * A parameter-decorator factory using the {@link GREATER.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
+	 * A parameter-decorator factory using the {@link COMPARISON.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
 	 * by the tagged parameter.
 	 *
-	 * @param equivalent	    See {@link GREATER.checkAlgorithm }.
-	 * @param equalityPermitted See {@link GREATER.checkAlgorithm }.
+	 * @param equivalent	    See {@link COMPARISON.checkAlgorithm }.
+	 * @param equalityPermitted See {@link COMPARISON.checkAlgorithm }.
 	 * @param path			    See {@link DBC.decPrecondition }.
 	 * @param dbc			    See {@link DBC.decPrecondition }.
 	 *
@@ -52,7 +52,7 @@ export class GREATER extends DBC {
 	) {
 		return DBC.decPrecondition(
 			(value, target, methodName, parameterIndex) => {
-				return GREATER.checkAlgorithm(
+				return COMPARISON.checkAlgorithm(
 					value,
 					equivalent,
 					equalityPermitted,
@@ -64,11 +64,11 @@ export class GREATER extends DBC {
 		);
 	}
 	/**
-	 * A method-decorator factory using the {@link GREATER.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
+	 * A method-decorator factory using the {@link COMPARISON.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
 	 * by the tagged method's returnvalue.
 	 *
-	 * @param equivalent	    See {@link GREATER.checkAlgorithm }.
-	 * @param equalityPermitted See {@link GREATER.checkAlgorithm }.
+	 * @param equivalent	    See {@link COMPARISON.checkAlgorithm }.
+	 * @param equalityPermitted See {@link COMPARISON.checkAlgorithm }.
 	 * @param path			    See {@link DBC.Postcondition }.
 	 * @param dbc			    See {@link DBC.decPostcondition }.
 	 *
@@ -82,7 +82,7 @@ export class GREATER extends DBC {
 	) {
 		return DBC.decPostcondition(
 			(value, target, propertyKey) => {
-				return GREATER.checkAlgorithm(
+				return COMPARISON.checkAlgorithm(
 					value,
 					equalityPermitted,
 					equivalent,
@@ -94,11 +94,11 @@ export class GREATER extends DBC {
 		);
 	}
 	/**
-	 * A field-decorator factory using the {@link GREATER.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
+	 * A field-decorator factory using the {@link COMPARISON.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
 	 * by the tagged field.
 	 *
-	 * @param equivalent	    See {@link GREATER.checkAlgorithm }.
-	 * @param equalityPermitted See {@link GREATER.checkAlgorithm }.
+	 * @param equivalent	    See {@link COMPARISON.checkAlgorithm }.
+	 * @param equalityPermitted See {@link COMPARISON.checkAlgorithm }.
 	 * @param path			    See {@link DBC.decInvariant }.
 	 * @param dbc			    See {@link DBC.decInvariant }.
 	 *
@@ -111,7 +111,7 @@ export class GREATER extends DBC {
 		dbc = "WaXCode.DBC",
 	) {
 		return DBC.decInvariant(
-			[new GREATER(equivalent, equalityPermitted, invert)],
+			[new COMPARISON(equivalent, equalityPermitted, invert)],
 			path,
 			dbc,
 		);
@@ -120,13 +120,13 @@ export class GREATER extends DBC {
 	// #region Referenced Condition checking.
 	// #region Dynamic usage.
 	/**
-	 * Invokes the {@link GREATER.checkAlgorithm } passing the value **toCheck**, {@link GREATER.equivalent } and {@link GREATER.invert }.
+	 * Invokes the {@link COMPARISON.checkAlgorithm } passing the value **toCheck**, {@link COMPARISON.equivalent } and {@link COMPARISON.invert }.
 	 *
-	 * @param toCheck See {@link GREATER.checkAlgorithm }.
+	 * @param toCheck See {@link COMPARISON.checkAlgorithm }.
 	 *
-	 * @returns See {@link GREATER.checkAlgorithm}. */
+	 * @returns See {@link COMPARISON.checkAlgorithm}. */
 	public check(toCheck) {
-		return GREATER.checkAlgorithm(
+		return COMPARISON.checkAlgorithm(
 			toCheck,
 			this.equivalent,
 			this.equalityPermitted,
@@ -134,11 +134,11 @@ export class GREATER extends DBC {
 		);
 	}
 	/**
-	 * Creates this {@link GREATER } by setting the protected property {@link GREATER.equivalent }, {@link GREATER.equalityPermitted } and {@link GREATER.invert } used by {@link GREATER.check }.
+	 * Creates this {@link COMPARISON } by setting the protected property {@link COMPARISON.equivalent }, {@link COMPARISON.equalityPermitted } and {@link COMPARISON.invert } used by {@link COMPARISON.check }.
 	 *
-	 * @param equivalent        See {@link GREATER.check }.
-	 * @param equalityPermitted See {@link GREATER.check }.
-	 * @param invert            See {@link GREATER.check }. */
+	 * @param equivalent        See {@link COMPARISON.check }.
+	 * @param equalityPermitted See {@link COMPARISON.check }.
+	 * @param invert            See {@link COMPARISON.check }. */
 	constructor(
 		public equivalent,
 		public equalityPermitted = false,

@@ -141,11 +141,20 @@ export class DBC {
 		dbc = "WaXCode.DBC",
 	) {
 		return (target: unknown, propertyKey: string | symbol) => {
+			if (!DBC.resolveDBCPath(window, dbc).executionSettings.checkInvariants) {
+				return;
+			}
 			// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
 			let value: any;
 			// #region Replace original property.
 			Object.defineProperty(target, propertyKey, {
 				set(newValue) {
+					if (
+						!DBC.resolveDBCPath(window, dbc).executionSettings.checkInvariants
+					) {
+						return;
+					}
+
 					const realValue = path ? DBC.resolve(newValue, path) : newValue;
 					// #region Check if all "contracts" are fulfilled.
 					for (const contract of contracts) {
@@ -196,6 +205,11 @@ export class DBC {
 			const originalMethod = descriptor.value;
 			// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
 			descriptor.value = (...args: any[]) => {
+				if (
+					!DBC.resolveDBCPath(window, dbc).executionSettings.checkPostconditions
+				) {
+					return;
+				}
 				// biome-ignore lint/complexity/noThisInStatic: <explanation>
 				const result = originalMethod.apply(this, args);
 				const realValue = path ? DBC.resolve(result, path) : result;
@@ -249,6 +263,13 @@ export class DBC {
 				methodName,
 				parameterIndex,
 				(value: unknown) => {
+					if (
+						!DBC.resolveDBCPath(window, dbc).executionSettings
+							.checkPreconditions
+					) {
+						return;
+					}
+
 					const realValue = path ? DBC.resolve(value, path) : value;
 					const result = check(realValue, target, methodName, parameterIndex);
 
@@ -268,6 +289,18 @@ export class DBC {
 	}
 	// #endregion Precondition
 	// #endregion Decorator
+	// #region Execution Handling
+	/** Stores settings concerning the execution of checks. */
+	public executionSettings: {
+		checkPreconditions: boolean;
+		checkPostconditions: boolean;
+		checkInvariants: boolean;
+	} = {
+		checkPreconditions: true,
+		checkPostconditions: true,
+		checkInvariants: true,
+	};
+	// #endregion Execution Handling
 	// #region Warning handling.
 	/** Stores settings concerning warnings. */
 	public warningSettings: {
@@ -412,12 +445,22 @@ export class DBC {
 	 * Constructs this {@link DBC } by setting the {@link DBC.infringementSettings }, define the **WaXCode** namespace in
 	 * **window** if not yet available and setting the property **DBC** in there to the instance of this {@link DBC }.
 	 *
-	 * @param infringementSettings See {@link DBC.infringementSettings }. */
+	 * @param infringementSettings 	See {@link DBC.infringementSettings }.
+	 * @param executionSettings		See {@link DBC.executionSettings }. */
 	constructor(
 		infringementSettings: {
 			throwException: boolean;
 			logToConsole: boolean;
 		} = { throwException: true, logToConsole: false },
+		executionSettings: {
+			checkPreconditions: boolean;
+			checkPostconditions: boolean;
+			checkInvariants: boolean;
+		} = {
+			checkPreconditions: true,
+			checkPostconditions: true,
+			checkInvariants: true,
+		},
 	) {
 		this.infringementSettings = infringementSettings;
 

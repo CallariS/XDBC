@@ -104,18 +104,19 @@ export class DBC {
      *
      * @throws 	A {@link DBC.Infringement } whenever the property is tried to be set to a value that does not comply to the
      * 			specified **contracts**, by the returned method.*/
-    static INVARIANT(contracts) {
+    static decInvariant(contracts, path = undefined, dbc = "WaXCode.DBC") {
         return (target, propertyKey) => {
             // biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
             let value;
             // #region Replace original property.
             Object.defineProperty(target, propertyKey, {
                 set(newValue) {
+                    const realValue = path ? DBC.resolve(newValue, path) : newValue;
                     // #region Check if all "contracts" are fulfilled.
                     for (const contract of contracts) {
-                        const result = contract.check(newValue);
+                        const result = contract.check(realValue);
                         if (typeof result === "string") {
-                            throw new DBC.Infringement(`[ Property "${propertyKey}"'s value "${newValue}" violates ${contract.constructor.name} cause: ${result} ]`);
+                            DBC.resolveDBCPath(window, dbc).reportFieldInfringement(result, target, path, propertyKey, realValue);
                         }
                     }
                     // #endregion Check if all "contracts" are fulfilled.
@@ -148,9 +149,7 @@ export class DBC {
             descriptor.value = (...args) => {
                 // biome-ignore lint/complexity/noThisInStatic: <explanation>
                 const result = originalMethod.apply(this, args);
-                const realValue = path
-                    ? path === null || path === void 0 ? void 0 : path.split(".").reduce((accumulator, current) => accumulator[current], result)
-                    : result;
+                const realValue = path ? DBC.resolve(result, path) : result;
                 const checkResult = check(realValue, target, propertyKey);
                 if (typeof checkResult === "string") {
                     DBC.resolveDBCPath(window, dbc).reportReturnvalueInfringement(checkResult, target, path, propertyKey, realValue);
@@ -162,7 +161,7 @@ export class DBC {
     }
     // #endregion Postcondition
     // #region Decorator
-    // #region Parameter
+    // #region Precondition
     /**
      * A parameter-decorator factory that requests the tagged parameter's value passing it to the provided
      * "check"-method when the value becomes available.
@@ -176,9 +175,7 @@ export class DBC {
     static decPrecondition(check, dbc, path = undefined) {
         return (target, methodName, parameterIndex) => {
             DBC.requestParamValue(target, methodName, parameterIndex, (value) => {
-                const realValue = path
-                    ? path === null || path === void 0 ? void 0 : path.split(".").reduce((accumulator, current) => accumulator[current], value)
-                    : value;
+                const realValue = path ? DBC.resolve(value, path) : value;
                 const result = check(realValue, target, methodName, parameterIndex);
                 if (typeof result === "string") {
                     DBC.resolveDBCPath(window, dbc).reportParameterInfringement(result, target, path, methodName, parameterIndex, realValue);
@@ -223,6 +220,18 @@ export class DBC {
         this.reportInfringement(`[ Parameter-value "${value}" of the ${properIndex}${properIndex === 1 ? "st" : properIndex === 2 ? "nd" : properIndex === 3 ? "rd" : "th"} parameter did not fulfill one of it's contracts: ${message}]`, method, target, path);
     }
     /**
+     * Reports a field-infringement via {@link reportInfringement } also generating a proper {@link string }-wrapper
+     * for the given **message** & **name**.
+     *
+     * @param message	A {@link string } describing the infringement and it's provenience.
+     * @param key 		The property key.
+     * @param path		The dotted-path {@link string } that leads to the value not fulfilling the contract starting from
+     * 					the tagged one.
+     * @param value		The value not fulfilling a contract. */
+    reportFieldInfringement(message, target, path, key, value) {
+        this.reportInfringement(`[ New value for "${key}"${path === undefined ? "" : `.${path}`} with value "${value}" did not fulfill one of it's contracts: ${message}]`, key, target, path);
+    }
+    /**
      * Reports a returnvalue-infringement according via {@link reportInfringement } also generating a proper {@link string }-wrapper
      * for the given "message","method" & value.
      *
@@ -240,7 +249,7 @@ export class DBC {
      *
      * @param infringementSettings See {@link DBC.infringementSettings }. */
     constructor(infringementSettings = { throwException: true, logToConsole: false }) {
-        // #endregion Parameter
+        // #endregion Precondition
         // #endregion Decorator
         // #region Warning handling.
         /** Stores settings concerning warnings. */
@@ -255,6 +264,45 @@ export class DBC {
             window.WaXCode = {};
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         window.WaXCode.DBC = this;
+    }
+    /**
+     * Resolves the desired {@link object } out a given one **toResolveFrom** using the specified **path**.
+     *
+     * @param toResolveFrom The {@link object } starting to resolve from.
+     * @param path			The dotted path-{@link string }.
+     * 						This string uses ., [...], and () to represent accessing nested properties,
+     * 						array elements/object keys, and calling methods, respectively, mimicking JavaScript syntax to navigate
+     * 						an object's structure. Code, e.g. something like a.b( 1 as number ).c, will not be executed and
+     * 						thus make the retrieval fail.
+     *
+     * @returns The requested {@link object }, NULL or UNDEFINED. */
+    static resolve(toResolveFrom, path) {
+        if (!toResolveFrom || typeof path !== "string") {
+            return undefined;
+        }
+        const parts = path.replace(/\[(['"]?)(.*?)\1\]/g, ".$2").split("."); // Handle indexers
+        let current = toResolveFrom;
+        for (const part of parts) {
+            if (current === null || typeof current === "undefined") {
+                return undefined;
+            }
+            const methodMatch = part.match(/(\w+)\((.*)\)/);
+            if (methodMatch) {
+                const methodName = methodMatch[1];
+                const argsStr = methodMatch[2];
+                const args = argsStr.split(",").map((arg) => arg.trim()); // Simple argument parsing
+                if (typeof current[methodName] === "function") {
+                    current = current[methodName].apply(current, args);
+                }
+                else {
+                    return undefined; // Method not found or not a function
+                }
+            }
+            else {
+                current = current[part];
+            }
+        }
+        return current;
     }
 }
 // #region Parameter-value requests.

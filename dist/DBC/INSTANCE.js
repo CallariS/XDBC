@@ -1,4 +1,4 @@
-import { DBC } from "../DBC.js";
+import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that the an {@link object }s gotta be an instance of a certain {@link INSTANCE.reference }.
  *
@@ -51,6 +51,20 @@ export class INSTANCE extends DBC {
         return DBC.decPostcondition((value, target, propertyKey) => {
             return INSTANCE.checkAlgorithm(value, reference);
         }, dbc, path);
+    }
+    /**
+     * A field-decorator factory using the {@link INSTANCE.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
+     * by the tagged method's returnvalue.
+     *
+     * @param reference	See {@link INSTANCE.checkAlgorithm }.
+     * @param path	See {@link DBC.decInvariant }.
+     * @param dbc	See {@link DBC.decInvariant }.
+     *
+     * @returns See {@link DBC.decInvariant }. */
+    static INVARIANT(
+    // biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
+    reference, path = undefined, dbc = "WaXCode.DBC") {
+        return DBC.decInvariant([new INSTANCE(reference)], path, dbc);
     }
     // #endregion Condition checking.
     // #region Referenced Condition checking.

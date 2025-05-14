@@ -85,9 +85,11 @@ With **PRE**, **POST** and **INVARIANT** decorators an optional **path** paramet
 
 Multiple instances of the class **DBC** with varying settings for e.g. reporting infringements may be instantiated. Which of these instances is used to report can be defined when either using **PRE**, **POST** or **INVARIANT** by defining their **dbc** parameter: **@DBC.INVARIANT([new EQ(1)],"length","MyVendor.MyDBCInstance")**, for example. The standard path (*WaXCode.DBC*) leads to an automatically created instance, that is generated when the Framework is imported.
 
-Many contracts got further features like the **AE**-Contract that can check specific ranges within the tagged array or the **EQ**- and **GREATER**-Contract that can be inverted turning them into **not EQual**- or **LESS**-Contracts. Check out the [API](https://callaris.github.io/XDBC/) for details.
+Many contracts got further features like the **AE**-Contract that can check specific ranges within the tagged array or the **EQ**--Contract that can be inverted turning it into **not EQual**-Contract. Check out the [API](https://callaris.github.io/XDBC/) for details.
 
 A **DBC**'s **warningSettings** & **infringementSettings** determine what happens on warnings and errors, whereas warnings are not implemented yet.
+
+**DBC** can be turned off for **PRE**-, **POST**-Conditions and **INVARIANT**S separately by setting the proper **executionSettings** of the **DBC**-Class.
 
 ## Contribution
 Participation is highly valued and warmly welcomed. The ultimate goal is to create a tool that proves genuinely useful and empowers a wide range of developers to build more robust and reliable applications.

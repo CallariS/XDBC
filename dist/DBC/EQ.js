@@ -1,4 +1,4 @@
-import { DBC } from "../DBC.js";
+import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that two {@link object }s gotta be equal.
  *
@@ -56,6 +56,20 @@ export class EQ extends DBC {
         return DBC.decPostcondition((value, target, propertyKey) => {
             return EQ.checkAlgorithm(value, equivalent, invert);
         }, dbc, path);
+    }
+    /**
+     * A field-decorator factory using the {@link EQ.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
+     * by the tagged field.
+     *
+     * @param equivalent	See {@link EQ.checkAlgorithm }.
+     * @param path			See {@link DBC.decInvariant }.
+     * @param dbc			See {@link DBC.decInvariant }.
+     *
+     * @returns See {@link DBC.decInvariant }. */
+    static INVARIANT(
+    // biome-ignore lint/suspicious/noExplicitAny: To check for UNDEFINED and NULL.
+    equivalent, invert = false, path = undefined, dbc = "WaXCode.DBC") {
+        return DBC.decInvariant([new EQ(equivalent, invert)], path, dbc);
     }
     // #endregion Condition checking.
     // #region Referenced Condition checking.

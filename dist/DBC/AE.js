@@ -1,4 +1,4 @@
-import { DBC } from "../DBC.js";
+import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that all elements of an {@link object }s have to fulfill
  * a given {@link object }'s check-method (**( toCheck : any ) => boolean | string**).
@@ -117,6 +117,21 @@ export class AE extends DBC {
             }
             return true;
         }, dbc, path);
+    }
+    /**
+     * A field-decorator factory using the {@link AE.checkAlgorithm } with either multiple or a single one
+     * of the **realConditions** to check the tagged field.
+     *
+     * @param realConditions	Either one or more { check: (toCheck: any) => boolean | string } to check the tagged parameter-value
+     * 							against with.
+     * @param index				See the {@link AE.checkAlgorithm }.
+     * @param idxEnd			See the {@link AE.checkAlgorithm }.
+     * @param path				See {@link DBC.decInvariant }.
+     * @param dbc				See {@link DBC.decInvariant }.
+     *
+     * @returns	See {@link DBC.decInvariant }. */
+    static INVARIANT(realConditions, index = undefined, idxEnd = undefined, path = undefined, dbc = "WaXCode.DBC") {
+        return DBC.decInvariant([new AE(realConditions, index, idxEnd)], path, dbc);
     }
     // #endregion Condition checking.
     // #region Referenced Condition checking.

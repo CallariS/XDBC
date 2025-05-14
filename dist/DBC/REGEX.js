@@ -1,4 +1,4 @@
-import { DBC } from "../DBC.js";
+import { DBC } from "../DBC";
 /**
  * A {@link DBC } providing {@link REGEX }-contracts and standard {@link RegExp } for common use cases in {@link REGEX.stdExp }.
  *
@@ -47,6 +47,18 @@ export class REGEX extends DBC {
         return DBC.decPostcondition((value, target, propertyKey) => {
             return REGEX.checkAlgorithm(value, expression);
         }, dbc, path);
+    }
+    /**
+     * A field-decorator factory using the {@link REGEX.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
+     * by the tagged field.
+     *
+     * @param expression	See {@link REGEX.checkAlgorithm }.
+     * @param path			See {@link DBC.decInvariant }.
+     * @param dbc			See {@link DBC.decInvariant }.
+     *
+     * @returns See {@link DBC.decInvariant }. */
+    static INVARIANT(expression, path = undefined, dbc = "WaXCode.DBC") {
+        return DBC.decInvariant([new REGEX(expression)], path, dbc);
     }
     // #endregion Condition checking.
     // #region Referenced Condition checking.

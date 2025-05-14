@@ -1,4 +1,4 @@
-import { DBC } from "../DBC.js";
+import { DBC } from "../DBC";
 /**
  * A {@link DBC } demanding that an {@link object } has specific properties of specific types.
  *
@@ -75,6 +75,18 @@ export class JSON_OP extends DBC {
         (value, target, propertyKey) => {
             return JSON_OP.checkAlgorithm(value, necessaryProperties, checkElements);
         }, dbc, path);
+    }
+    /**
+     * A field-decorator factory using the {@link JSON_OP.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
+     * by the tagged field.
+     *
+     * @param expression	See {@link JSON.checkAlgorithm }.
+     * @param path			See {@link DBC.decInvariant }.
+     * @param dbc			See {@link DBC.decInvariant }.
+     *
+     * @returns See {@link DBC.decPostcondition }. */
+    static INVARIANT(necessaryProperties, checkElements = false, path = undefined, dbc = "WaXCode.DBC") {
+        return DBC.decInvariant([new JSON_OP(necessaryProperties, checkElements)], path, dbc);
     }
     // #endregion Condition checking.
     // #region Referenced Condition checking.

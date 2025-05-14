@@ -1,4 +1,4 @@
-import { DBC } from "../DBC.js";
+import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that an {@link object }s gotta be of certain {@link TYPE.type }.
  *
@@ -48,6 +48,18 @@ export class TYPE extends DBC {
         return DBC.decPostcondition((value, target, propertyKey) => {
             return TYPE.checkAlgorithm(value, type);
         }, dbc, path);
+    }
+    /**
+     * A field-decorator factory using the {@link TYPE.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
+     * by the tagged field.
+     *
+     * @param type	See {@link TYPE.checkAlgorithm }.
+     * @param path	See {@link DBC.decInvariant }.
+     * @param dbc	See {@link DBC.decInvariant }.
+     *
+     * @returns See {@link DBC.decInvariant }. */
+    static INVARIANT(type, path = undefined, dbc = "WaXCode.DBC") {
+        return DBC.decInvariant([new TYPE(type)], path, dbc);
     }
     // #endregion Condition checking.
     // #region Referenced Condition checking.

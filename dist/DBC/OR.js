@@ -1,4 +1,4 @@
-import { DBC } from "../DBC.js";
+import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that all elements of an {@link object }s have to fulfill
  * one of the given {@link object }s check-methods (**( toCheck : any ) => boolean | string** ).
@@ -74,6 +74,19 @@ export class OR extends DBC {
         return DBC.decPostcondition((value, target, propertyKey) => {
             return OR.checkAlgorithm(conditions, value);
         }, dbc, path);
+    }
+    /**
+     * A field-decorator factory using the {@link OR.checkAlgorithm } with either multiple or a single one
+     * of the **realConditions** to check the tagged field.
+     *
+     * @param realConditions	Either one or more { check: (toCheck: any) => boolean | string } to check the tagged parameter-value
+     * 							against with.
+     * @param path				See {@link DBC.decInvariant }.
+     * @param dbc				See {@link DBC.decInvariant }.
+     *
+     * @returns	See {@link DBC.decInvariant }. */
+    static INVARIANT(conditions, path = undefined, dbc = "WaXCode.DBC") {
+        return DBC.decInvariant([new OR(conditions)], path, dbc);
     }
     // #endregion Condition checking.
     // #region Referenced Condition checking.

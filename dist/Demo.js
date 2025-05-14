@@ -11,82 +11,110 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 import { DBC } from "./DBC";
-import { REGEX } from "./DBC/REGEX.js";
-import { EQ } from "./DBC/EQ.js";
-import { TYPE } from "./DBC/TYPE.js";
-import { AE } from "./DBC/AE.js";
-import { INSTANCE } from "./DBC/INSTANCE.js";
-/**
- *
- */
+import { REGEX } from "./DBC/REGEX";
+import { EQ } from "./DBC/EQ";
+import { TYPE } from "./DBC/TYPE";
+import { AE } from "./DBC/AE";
+import { INSTANCE } from "./DBC/INSTANCE";
+import { GREATER } from "./DBC/COMPARISON/GREATER";
+/** Demonstrative use of **D**esign **B**y **C**ontract Decorators */
 export class Demo {
     constructor() {
-        this.test = "a";
+        // #region Check Property Decorator
+        this.testProperty = "a";
+        // #endregion Check Comparison
     }
-    divide(a, b) {
-        console.log(a);
+    // #endregion Check Property Decorator
+    // #region Check Parameter. & Returnvalue Decorator
+    testParamvalueAndReturnvalue(a) {
+        return `xxxx${a}`;
+    }
+    // #endregion Check Parameter. & Returnvalue Decorator
+    // #region Check Returnvalue Decorator
+    testReturnvalue(a) {
         return a;
     }
-    HT(o) { }
-    type(o) { }
-    array(x) { }
-    regex(x) { }
-    index(x) { }
-    instance(candidate) { }
-    range(x) { }
-    // biome-ignore lint/suspicious/noExplicitAny: Test
-    invert(g) {
-        return null;
-    }
+    // #endregion Check Returnvalue Decorator
+    // #region Check EQ-DBC & Path to property of Parameter-value
+    testEQAndPath(o) { }
+    // #endregion Check EQ-DBC & Path to property of Parameter-value
+    // #region Check EQ-DBC & Path to property of Parameter-value with Inversion
+    testEQAndPathWithInversion(o) { }
+    // #endregion Check EQ-DBC & Path to property of Parameter-value with Inversion
+    // #region Check TYPE
+    testTYPE(o) { }
+    // #endregion Check TYPE
+    // #region Check AE
+    testAE(x) { }
+    // #endregion Check AE
+    // #region Check REGEX with AE
+    testREGEXWithAE(x) { }
+    // #endregion Check REGEX with AE
+    // #region Check INSTANCE
+    testINSTANCE(candidate) { }
+    // #endregion Check INSTANCE
+    // #region Check AE Range
+    testAERange(x) { }
+    // #endregion Check AE Range
+    // #region Check AE Index
+    testAEIndex(x) { }
+    // #endregion Check AE Index
+    // #region Check Comparison
+    testGREATER(input) { }
 }
 __decorate([
-    DBC.INVARIANT([new REGEX(/^a$/)]),
+    REGEX.INVARIANT(/^a$/),
     __metadata("design:type", Object)
-], Demo.prototype, "test", void 0);
+], Demo.prototype, "testProperty", void 0);
 __decorate([
-    REGEX.POST(/xxxx*/g),
+    REGEX.POST(/^xxxx.*$/),
     DBC.ParamvalueProvider,
     __param(0, REGEX.PRE(/holla*/g)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", String)
-], Demo.prototype, "divide", null);
+], Demo.prototype, "testParamvalueAndReturnvalue", null);
+__decorate([
+    REGEX.POST(/^xxxx.*$/),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", String)
+], Demo.prototype, "testReturnvalue", null);
+__decorate([
+    DBC.ParamvalueProvider,
+    __param(0, EQ.PRE("SELECT", false, "tagName")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [HTMLElement]),
+    __metadata("design:returntype", void 0)
+], Demo.prototype, "testEQAndPath", null);
 __decorate([
     DBC.ParamvalueProvider,
     __param(0, EQ.PRE("SELECT", true, "tagName")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [HTMLElement]),
     __metadata("design:returntype", void 0)
-], Demo.prototype, "HT", null);
+], Demo.prototype, "testEQAndPathWithInversion", null);
 __decorate([
     DBC.ParamvalueProvider,
     __param(0, TYPE.PRE("string")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], Demo.prototype, "type", null);
+], Demo.prototype, "testTYPE", null);
 __decorate([
     DBC.ParamvalueProvider,
     __param(0, AE.PRE([new TYPE("string")])),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", void 0)
-], Demo.prototype, "array", null);
+], Demo.prototype, "testAE", null);
 __decorate([
     DBC.ParamvalueProvider,
     __param(0, AE.PRE(new REGEX(/^(?i:(NOW)|([+-]\d+[dmy]))$/i))),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", void 0)
-], Demo.prototype, "regex", null);
-__decorate([
-    DBC.ParamvalueProvider,
-    __param(0, AE.PRE(new REGEX(/^\d$/i), 0)),
-    __param(0, AE.PRE(new REGEX(/^(?i:(NOW)|([+-]\d+[dmy]))$/i), 1)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
-    __metadata("design:returntype", void 0)
-], Demo.prototype, "index", null);
+], Demo.prototype, "testREGEXWithAE", null);
 __decorate([
     DBC.ParamvalueProvider
     // biome-ignore lint/suspicious/noExplicitAny: Test
@@ -95,34 +123,168 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], Demo.prototype, "instance", null);
+], Demo.prototype, "testINSTANCE", null);
 __decorate([
     DBC.ParamvalueProvider,
     __param(0, AE.PRE([new TYPE("string"), new REGEX(/^abc$/)], 1, 2)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", void 0)
-], Demo.prototype, "range", null);
+], Demo.prototype, "testAERange", null);
 __decorate([
-    AE.POST(new EQ(null, true), 0),
+    DBC.ParamvalueProvider,
+    __param(0, AE.PRE([new TYPE("string"), new REGEX(/^abc$/)], 1)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", void 0)
-], Demo.prototype, "invert", null);
-const calculator = new Demo();
-console.log("Starting demo...");
+], Demo.prototype, "testAEIndex", null);
+__decorate([
+    __param(0, GREATER.PRE(2)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], Demo.prototype, "testGREATER", null);
+const demo = new Demo();
 try {
-    calculator.test = "abd";
+    demo.testProperty = "abd";
 }
 catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
     console.log("INVARIANT Infringement", "OK");
     console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-//new Calculator().divide("xxxx", 1);
-//new Calculator().HT(document.createElement("select"));
-//new Calculator().type("10");
-//new Calculator().array([11, "10", "b"]);
-//new Calculator().index(["1a", "+d1m", "-x10y"]);
-//new Calculator().instance(new Date());
-//new Calculator().range([11, "abc", "abc"]);
-//new Calculator().invert("");
+demo.testProperty = "a";
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("INVARIANT OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+demo.testParamvalueAndReturnvalue("holla");
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("PARAMETER- & RETURNVALUE OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+    demo.testParamvalueAndReturnvalue("yyyy");
+}
+catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+    console.log("PARAMETER- & RETURNVALUE Infringement", "OK");
+    console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testReturnvalue("xxxx");
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("RETURNVALUE OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+    demo.testReturnvalue("yyyy");
+}
+catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+    console.log("RETURNVALUE Infringement", "OK");
+    console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testEQAndPath(document.createElement("select"));
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("EQ with Path Infringement OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+    demo.testEQAndPathWithInversion(document.createElement("select"));
+}
+catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+    console.log("EQ with Path and Inversion Infringement OK");
+    console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testTYPE("x");
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("TYPE OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+    demo.testTYPE(0);
+}
+catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+    console.log("TYPE Infringement OK");
+    console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testAE(["11", "10", "b"]);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("AE OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+    demo.testAE(["11", 11, "b"]);
+}
+catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+    console.log("AE Infringement OK");
+    console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testREGEXWithAE(["+1d", "NOW", "-10y"]);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("REGEX with AE OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+    demo.testREGEXWithAE(["+1d", "+5d", "-x10y"]);
+}
+catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+    console.log("REGEX with AE Infringement OK");
+    console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testINSTANCE(new Date());
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("INSTANCE OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+    demo.testINSTANCE(demo);
+}
+catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+    console.log("INSTANCE Infringement OK");
+    console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testAERange([11, "abc", "abc"]);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("AE Range OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+    demo.testAERange([11, "abc", /a/g]);
+}
+catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+    console.log("AE Range Infringement OK");
+    console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testAEIndex([11, "abc", "abc"]);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("AE Index OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+    demo.testAEIndex(["11", 12, "/a/g"]);
+}
+catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+    console.log("AE Index Infringement OK");
+    console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testGREATER(11);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("GREATER OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+    demo.testGREATER(2);
+}
+catch (X) {
+    console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+    console.log("GREATER OK");
+    console.log(X);
+    console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
