@@ -46,17 +46,22 @@ npm install --save xdbc
 
 ## Usage
 
-As by now there're nine contracts that can be used:
+As by now there're 14 contracts that can be used:
 
 - AE (*Each element of the value-array has to fulfill a certain set of contracts*)
 - EQ (*Value has to be equal to a supplied reference value*)
-- GREATER (*Value has to be greater than a supplied reference value*)
+- COMPARISON (*Value has to be greater, less, greater/equal, equal or less/equal than a supplied reference value*)
 - INSTANCE (*Value has to be an instance of a supplied type*)
 - JSON.OP (*Value has to contain certain properties of certain type*)
 - JSON.Parse (*String-value has to be a parsable JSON*)
 - OR (*At least one of a set of contracts has to be fulfilled*)
 - REGEX (*Value has to be validated by a supplied regular expression*)
 - TYPE (*Value has to be of a certain type*)
+- GREATER (*Derived from COMPARISON*)
+- GREATER_OR_EQUAL (*Derived from COMPARISON*)
+- LESS (*Derived from COMPARISON*)
+- LESS_OR_EQUAL (*Derived from COMPARISON*)
+- DIFFERENT (*Derived from EQ*)
 
 All of which expose a method **PRE**, **POST** and **INVARIANT** (*precondition, postcondition and invariant*).<br>
 Import the classes to use from **xdbc**. If parameters shall be decorated with contracts import class **DBC** also. <br><br>
