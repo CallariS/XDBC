@@ -8,6 +8,7 @@ import { GREATER } from "./DBC/COMPARISON/GREATER";
 import { GREATER_OR_EQUAL } from "./DBC/COMPARISON/GREATER_OR_EQUAL";
 import { LESS } from "./DBC/COMPARISON/LESS";
 import { LESS_OR_EQUAL } from "./DBC/COMPARISON/LESS_OR_EQUAL";
+import { DIFFERENT } from "./DBC/EQ/DIFFERENT";
 /** Demonstrative use of **D**esign **B**y **C**ontract Decorators */
 export class Demo {
 	// #region Check Property Decorator
@@ -82,6 +83,9 @@ export class Demo {
 
 	@DBC.ParamvalueProvider
 	public testLESS_OR_EQUAL(@LESS_OR_EQUAL.PRE(20) input: number) {}
+
+	@DBC.ParamvalueProvider
+	public testDIFFERENT(@DIFFERENT.PRE(20) input: number) {}
 	// #endregion Check Comparison
 }
 
@@ -279,6 +283,20 @@ try {
 } catch (X) {
 	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 	console.log("LESS_OR_EQUAL Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+
+demo.testDIFFERENT(21);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("DIFFERENT OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+
+try {
+	demo.testDIFFERENT(20);
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("DIFFERENT Infringement OK");
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
