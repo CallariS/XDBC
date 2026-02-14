@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build and Publish to NPM",
+			"type": "shell",
+			"command": "npm version patch --no-git-tag-version; npm run build; npm publish",
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Serve Test.html",
+			"type": "shell",
+			"command": "Copy-Item Test.html dist\\index.html; npm start",
+			"problemMatcher": [],
+			"isBackground": true,
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		}
+	]
+}

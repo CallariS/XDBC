@@ -32,61 +32,68 @@ export class Demo {
 	@DBC.ParamvalueProvider
 	public testEQAndPath(
 		@EQ.PRE("SELECT" as unknown as object, false, "tagName") o: HTMLElement,
-	) {}
+	) { }
 	// #endregion Check EQ-DBC & Path to property of Parameter-value
 	// #region Check EQ-DBC & Path to property of Parameter-value with Inversion
 	@DBC.ParamvalueProvider
 	public testEQAndPathWithInversion(
 		@EQ.PRE("SELECT" as unknown as object, true, "tagName") o: HTMLElement,
-	) {}
+	) { }
 	// #endregion Check EQ-DBC & Path to property of Parameter-value with Inversion
 	// #region Check TYPE
 	@DBC.ParamvalueProvider
-	public testTYPE(@TYPE.PRE("string") o: unknown) {}
+	public testTYPE(@TYPE.PRE("string") o: unknown) { }
 	// #endregion Check TYPE
 	// #region Check AE
 	@DBC.ParamvalueProvider
-	public testAE(@AE.PRE([new TYPE("string")]) x: Array<unknown>) {}
+	public testAE(@AE.PRE([new TYPE("string")]) x: Array<unknown>) { }
 	// #endregion Check AE
 	// #region Check REGEX with AE
 	@DBC.ParamvalueProvider
 	public testREGEXWithAE(
 		@AE.PRE(new REGEX(/^(?i:(NOW)|([+-]\d+[dmy]))$/i)) x: Array<string>,
-	) {}
+	) { }
 	// #endregion Check REGEX with AE
 	// #region Check INSTANCE
 	@DBC.ParamvalueProvider
 	// biome-ignore lint/suspicious/noExplicitAny: Test
-	public testINSTANCE(@INSTANCE.PRE(Date) candidate: any): undefined {}
+	public testINSTANCE(@INSTANCE.PRE(Date) candidate: any): undefined { }
 	// #endregion Check INSTANCE
 	// #region Check AE Range
 	@DBC.ParamvalueProvider
 	public testAERange(
 		@AE.PRE([new TYPE("string"), new REGEX(/^abc$/)], 1, 2) x: Array<unknown>,
-	) {}
+	) { }
 	// #endregion Check AE Range
 	// #region Check AE Index
 	@DBC.ParamvalueProvider
 	public testAEIndex(
 		@AE.PRE([new TYPE("string"), new REGEX(/^abc$/)], 1) x: Array<unknown>,
-	) {}
+	) { }
 	// #endregion Check AE Index
 	// #region Check Comparison
 	@DBC.ParamvalueProvider
-	public testGREATER(@GREATER.PRE(2) input: number) {}
+	public testGREATER(@GREATER.PRE(2) input: number) { }
 
 	@DBC.ParamvalueProvider
-	public testGREATER_OR_EQUAL(@GREATER_OR_EQUAL.PRE(2) input: number) {}
+	public testGREATER_OR_EQUAL(@GREATER_OR_EQUAL.PRE(2) input: number) { }
 
 	@DBC.ParamvalueProvider
-	public testLESS(@LESS.PRE(20) input: number) {}
+	public testLESS(@LESS.PRE(20) input: number) { }
 
 	@DBC.ParamvalueProvider
-	public testLESS_OR_EQUAL(@LESS_OR_EQUAL.PRE(20) input: number) {}
+	public testLESS_OR_EQUAL(@LESS_OR_EQUAL.PRE(20) input: number) { }
 
 	@DBC.ParamvalueProvider
-	public testDIFFERENT(@DIFFERENT.PRE(20) input: number) {}
+	public testDIFFERENT(@DIFFERENT.PRE(20) input: number) { }
 	// #endregion Check Comparison
+
+	// #region Check Static Method with ParamvalueProvider
+	@DBC.ParamvalueProvider
+	public static testStaticMethod(@TYPE.PRE("string") message: string, @TYPE.PRE("number") count: number): string {
+		return `${message} repeated ${count} times`;
+	}
+	// #endregion Check Static Method with ParamvalueProvider
 }
 
 const demo = new Demo();
@@ -352,3 +359,43 @@ try {
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
 // #endregion Inactivity Checks
+
+// Re-enable all checks for subsequent tests
+(
+	window as unknown as { [key: string]: { DBC: DBC } }
+).WaXCode.DBC.executionSettings.checkPreconditions = true;
+(
+	window as unknown as { [key: string]: { DBC: DBC } }
+).WaXCode.DBC.executionSettings.checkPostconditions = true;
+(
+	window as unknown as { [key: string]: { DBC: DBC } }
+).WaXCode.DBC.executionSettings.checkInvariants = true;
+
+// #region Static Method Test
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("TESTING STATIC METHOD WITH PARAMVALUEPROVIDER");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+
+Demo.testStaticMethod("Hello", 3);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("STATIC METHOD OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+
+try {
+	Demo.testStaticMethod("Hello", "not a number" as unknown as number);
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("STATIC METHOD Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+
+try {
+	Demo.testStaticMethod(123 as unknown as string, 5);
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("STATIC METHOD Infringement (first param) OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+// #endregion Static Method Test

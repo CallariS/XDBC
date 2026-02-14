@@ -7,9 +7,10 @@ export class LESS extends COMPARISON {
 		equalityPermitted = false,
 		invert = false,
 		path: string = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
-		return COMPARISON.PRE(equivalent, false, true, path, dbc);
+		return COMPARISON.PRE(equivalent, false, true, path, dbc, hint);
 	}
 	/** See {@link COMPARISON.POST }. */
 	public static override POST(
@@ -17,9 +18,10 @@ export class LESS extends COMPARISON {
 		equalityPermitted = false,
 		invert = false,
 		path: string = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
-		return COMPARISON.POST(equivalent, false, true, path, dbc);
+		return COMPARISON.POST(equivalent, false, true, path, dbc, hint);
 	}
 	/** See {@link COMPARISON.INVARIANT }. */
 	public static INVARIANT(
@@ -27,9 +29,10 @@ export class LESS extends COMPARISON {
 		equalityPermitted = false,
 		invert = false,
 		path: string = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
-		return COMPARISON.INVARIANT(equivalent, false, true, path, dbc);
+		return COMPARISON.INVARIANT(equivalent, false, true, path, dbc, hint);
 	}
 	/** See {@link COMPARISON.constructor }. */
 	constructor(public equivalent) {

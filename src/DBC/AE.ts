@@ -82,6 +82,7 @@ export class AE extends DBC {
 	 * @param index				See the {@link AE.checkAlgorithm }.
 	 * @param idxEnd			See the {@link AE.checkAlgorithm }.
 	 * @param path				See {@link DBC.decPrecondition }.
+	 * @param hint				See {@link DBC.decPrecondition }.
 	 * @param dbc				See {@link DBC.decPrecondition }.
 	 *
 	 * @returns	A {@link string } as soon as one { check: (toCheck: any) => boolean | string } of **realConditions** returns one.
@@ -89,13 +90,14 @@ export class AE extends DBC {
 	public static PRE(
 		realConditions:
 			| Array<{
-					check: (toCheck: unknown | undefined | null) => boolean | string;
-			  }>
+				check: (toCheck: unknown | undefined | null) => boolean | string;
+			}>
 			| { check: (toCheck: unknown | undefined | null) => boolean | string },
 		index: number | undefined = undefined,
 		idxEnd: number | undefined = undefined,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		methodName: string | symbol,
@@ -134,6 +136,7 @@ export class AE extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -145,6 +148,7 @@ export class AE extends DBC {
 	 * @param index				See the {@link AE.checkAlgorithm }.
 	 * @param idxEnd			See the {@link AE.checkAlgorithm }.
 	 * @param path				See {@link DBC.decPrecondition }.
+	 * @param hint				See {@link DBC.decPrecondition }.
 	 * @param dbc				See {@link DBC.decPrecondition }.
 	 *
 	 * @returns	A {@link string } as soon as one { check: (toCheck: any) => boolean | string } of **realConditions** return one.
@@ -157,7 +161,8 @@ export class AE extends DBC {
 		index: number | undefined = undefined,
 		idxEnd: number | undefined = undefined,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		propertyKey: string,
@@ -190,6 +195,7 @@ export class AE extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -201,6 +207,7 @@ export class AE extends DBC {
 	 * @param index				See the {@link AE.checkAlgorithm }.
 	 * @param idxEnd			See the {@link AE.checkAlgorithm }.
 	 * @param path				See {@link DBC.decInvariant }.
+	 * @param hint				See {@link DBC.decInvariant }.
 	 * @param dbc				See {@link DBC.decInvariant }.
 	 *
 	 * @returns	See {@link DBC.decInvariant }. */
@@ -212,9 +219,10 @@ export class AE extends DBC {
 		index: number | undefined = undefined,
 		idxEnd: number | undefined = undefined,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new AE(realConditions, index, idxEnd)], path, dbc);
+		return DBC.decInvariant([new AE(realConditions, index, idxEnd)], path, dbc, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -259,9 +267,9 @@ export class AE extends DBC {
 	public constructor(
 		protected conditions:
 			| Array<{
-					check: (toCheck: unknown | undefined | null) => boolean | string;
-			  }>
-			| { check: (toCheck: unknown | undefined | null) => boolean | string },
+				check: (toCheck: object | undefined | null) => boolean | string;
+			}>
+			| { check: (toCheck: object | undefined | null) => boolean | string },
 		protected index: number | undefined = undefined,
 		protected idxEnd: number | undefined = undefined,
 	) {

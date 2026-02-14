@@ -66,7 +66,8 @@ export class OR extends DBC {
 			check: (toCheck: unknown | undefined | null | object) => boolean | string;
 		}>,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		methodName: string | symbol,
@@ -83,6 +84,7 @@ export class OR extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -101,7 +103,8 @@ export class OR extends DBC {
 			check: (toCheck: unknown | undefined | null | object) => boolean | string;
 		}>,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		propertyKey: string,
@@ -113,6 +116,7 @@ export class OR extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -130,9 +134,10 @@ export class OR extends DBC {
 			check: (toCheck: unknown | undefined | null | object) => boolean | string;
 		}>,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new OR(conditions)], path, dbc);
+		return DBC.decInvariant([new OR(conditions)], path, dbc, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -147,6 +152,26 @@ export class OR extends DBC {
 	 * @returns See {@link OR.checkAlgorithm}. */
 	public check(toCheck: unknown | null | undefined) {
 		return OR.checkAlgorithm(this.conditions, toCheck);
+	}
+	/**
+	 * Invokes the {@link OR.checkAlgorithm } passing the value **toCheck** and the {@link OR.type } .
+	 *
+	 * @param toCheck See {@link OR.checkAlgorithm }.
+	 *
+	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link OR }.
+	 * 
+	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link OR }.*/
+	public static tsCheck<CANDIDATE>(toCheck: unknown | undefined | null, conditions: Array<{
+		check: (toCheck: unknown | undefined | null | object) => boolean | string;
+	}>, hint: string = undefined, id: string | undefined = undefined): CANDIDATE {
+		const result = OR.checkAlgorithm(conditions, toCheck);
+
+		if (result) {
+			return toCheck as CANDIDATE;
+		}
+		else {
+			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`);
+		}
 	}
 	/**
 	 * Creates this {@link OR } by setting the protected property {@link OR.conditions } used by {@link OR.check }.

@@ -45,7 +45,8 @@ export class JSON_Parse extends DBC {
 	public static PRE(
 		receptor: (json: object) => void,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		methodName: string | symbol,
@@ -62,6 +63,7 @@ export class JSON_Parse extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -76,7 +78,8 @@ export class JSON_Parse extends DBC {
 	public static POST(
 		receptor: (json: object) => void,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		propertyKey: string,
@@ -89,6 +92,7 @@ export class JSON_Parse extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -103,9 +107,10 @@ export class JSON_Parse extends DBC {
 	public static INVARIANT(
 		receptor: (json: object) => void,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new JSON_Parse(receptor)], path, dbc);
+		return DBC.decInvariant([new JSON_Parse(receptor)], path, dbc, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.

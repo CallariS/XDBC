@@ -44,7 +44,8 @@ export class EQ extends DBC {
 		equivalent: any,
 		invert = false,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined
 	): (
 		target: object,
 		methodName: string | symbol,
@@ -61,6 +62,7 @@ export class EQ extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -77,7 +79,9 @@ export class EQ extends DBC {
 		equivalent: any,
 		invert = false,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
+
 	): (
 		target: object,
 		propertyKey: string,
@@ -89,6 +93,7 @@ export class EQ extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -105,9 +110,10 @@ export class EQ extends DBC {
 		equivalent: any,
 		invert = false,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new EQ(equivalent, invert)], path, dbc);
+		return DBC.decInvariant([new EQ(equivalent, invert)], path, dbc, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -123,6 +129,24 @@ export class EQ extends DBC {
 	// biome-ignore lint/suspicious/noExplicitAny: Necessary to check against NULL & UNDEFINED.
 	public check(toCheck: any) {
 		return EQ.checkAlgorithm(toCheck, this.equivalent, this.invert);
+	}
+	/**
+	 * Invokes the {@link EQ.checkAlgorithm } passing the value **toCheck** and the specified **type** .
+	 *
+	 * @param toCheck See {@link EQ.checkAlgorithm }.
+	 *
+	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link EQ }.
+	 * 
+	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link EQ }.*/
+	public static tsCheck<CANDIDATE>(toCheck: CANDIDATE | undefined | null, equivalent: any): CANDIDATE {
+		const result = EQ.checkAlgorithm(toCheck, equivalent, false);
+
+		if (result) {
+			return toCheck as CANDIDATE;
+		}
+		else {
+			throw new DBC.Infringement(result as string);
+		}
 	}
 	/**
 	 * Creates this {@link EQ } by setting the protected property {@link EQ.equivalent } used by {@link EQ.check }.

@@ -40,6 +40,7 @@ export class COMPARISON extends DBC {
 	 * @param equivalent	    See {@link COMPARISON.checkAlgorithm }.
 	 * @param equalityPermitted See {@link COMPARISON.checkAlgorithm }.
 	 * @param path			    See {@link DBC.decPrecondition }.
+	 * @param hint				See {@link DBC.decPrecondition }.
 	 * @param dbc			    See {@link DBC.decPrecondition }.
 	 *
 	 * @returns See {@link DBC.decPrecondition }. */
@@ -48,7 +49,8 @@ export class COMPARISON extends DBC {
 		equalityPermitted = false,
 		invert = false,
 		path: string = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
 		return DBC.decPrecondition(
 			(value, target, methodName, parameterIndex) => {
@@ -61,6 +63,7 @@ export class COMPARISON extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -70,6 +73,7 @@ export class COMPARISON extends DBC {
 	 * @param equivalent	    See {@link COMPARISON.checkAlgorithm }.
 	 * @param equalityPermitted See {@link COMPARISON.checkAlgorithm }.
 	 * @param path			    See {@link DBC.Postcondition }.
+	 * @param hint				See {@link DBC.decPostcondition }.
 	 * @param dbc			    See {@link DBC.decPostcondition }.
 	 *
 	 * @returns See {@link DBC.decPostcondition }. */
@@ -78,7 +82,8 @@ export class COMPARISON extends DBC {
 		equalityPermitted = false,
 		invert = false,
 		path: string = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
 		return DBC.decPostcondition(
 			(value, target, propertyKey) => {
@@ -91,6 +96,7 @@ export class COMPARISON extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -100,6 +106,7 @@ export class COMPARISON extends DBC {
 	 * @param equivalent	    See {@link COMPARISON.checkAlgorithm }.
 	 * @param equalityPermitted See {@link COMPARISON.checkAlgorithm }.
 	 * @param path			    See {@link DBC.decInvariant }.
+	 * @param hint				See {@link DBC.decInvariant }.
 	 * @param dbc			    See {@link DBC.decInvariant }.
 	 *
 	 * @returns See {@link DBC.decInvariant }. */
@@ -108,12 +115,14 @@ export class COMPARISON extends DBC {
 		equalityPermitted = false,
 		invert = false,
 		path: string = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
 		return DBC.decInvariant(
 			[new COMPARISON(equivalent, equalityPermitted, invert)],
-			path,
 			dbc,
+			path,
+			hint
 		);
 	}
 	// #endregion Condition checking.

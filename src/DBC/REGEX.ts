@@ -17,6 +17,7 @@ export class REGEX extends DBC {
 			/^((D{1,2}[./-]M{1,2}[./-]Y{1,4})|(M{1,2}[./-]D{1,2}[./-]Y{1,4})|Y{1,4}[./-]D{1,2}[./-]M{1,2}|(Y{1,4}[./-]M{1,2}[./-]D{1,2}))$/i,
 		cssSelector:
 			/^(?:\*|#[\w-]+|\.[\w-]+|(?:[\w-]+|\*)(?::(?:[\w-]+(?:\([\w-]+\))?)+)?(?:\[(?:[\w-]+(?:(?:=|~=|\|=|\*=|\$=|\^=)\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*)?)?\])+|\[\s*[\w-]+\s*=\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*\])(?:,\s*(?:\*|#[\w-]+|\.[\w-]+|(?:[\w-]+|\*)(?::(?:[\w-]+(?:\([\w-]+\))?)+)?(?:\[(?:[\w-]+(?:(?:=|~=|\|=|\*=|\$=|\^=)\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*)?)?\])+|\[\s*[\w-]+\s*=\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*\]))*$/,
+		boolean: /^(TRUE|FALSE)$/i
 	};
 	// #region Condition checking.
 	/**
@@ -31,6 +32,8 @@ export class REGEX extends DBC {
 		toCheck: unknown | null | undefined,
 		expression: RegExp,
 	): boolean | string {
+		if (toCheck === undefined || toCheck === null) return true;
+
 		if (!expression.test(toCheck as string)) {
 			return `Value has to comply to regular expression "${expression}"`;
 		}
@@ -49,7 +52,8 @@ export class REGEX extends DBC {
 	public static PRE(
 		expression: RegExp,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		methodName: string | symbol,
@@ -66,6 +70,7 @@ export class REGEX extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -75,12 +80,14 @@ export class REGEX extends DBC {
 	 * @param expression	See {@link REGEX.checkAlgorithm }.
 	 * @param path			See {@link DBC.Postcondition }.
 	 * @param dbc			See {@link DBC.decPostcondition }.
+	 * @param hint			See {@link DBC.decPostcondition }.
 	 *
 	 * @returns See {@link DBC.decPostcondition }. */
 	public static POST(
 		expression: RegExp,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		propertyKey: string,
@@ -92,6 +99,7 @@ export class REGEX extends DBC {
 			},
 			dbc,
 			path,
+			hint
 		);
 	}
 	/**
@@ -101,14 +109,15 @@ export class REGEX extends DBC {
 	 * @param expression	See {@link REGEX.checkAlgorithm }.
 	 * @param path			See {@link DBC.decInvariant }.
 	 * @param dbc			See {@link DBC.decInvariant }.
-	 *
+	 * @param hint			See {@link DBC.decInvariant }.
 	 * @returns See {@link DBC.decInvariant }. */
 	public static INVARIANT(
 		expression: RegExp,
 		path: string | undefined = undefined,
-		dbc = "WaXCode.DBC",
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new REGEX(expression)], path, dbc);
+		return DBC.decInvariant([new REGEX(expression)], path, dbc, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -123,6 +132,27 @@ export class REGEX extends DBC {
 	 * @returns See {@link EQ.checkAlgorithm}. */
 	public check(toCheck: unknown | null | undefined) {
 		return REGEX.checkAlgorithm(toCheck, this.expression);
+	}
+	/**
+	 * Type-safe check that validates a value against a regular expression and returns it as the specified type.
+	 *
+	 * @param toCheck		The value to check against the regular expression.
+	 * @param expression	The regular expression to validate against.
+	 * @param hint			Optional hint message to include in the error if validation fails.
+	 * @param id			Optional identifier to include in the error message.
+	 *
+	 * @returns The validated value cast to the CANDIDATE type.
+	 * 
+	 * @throws {@link DBC.Infringement} if the value does not match the regular expression. */
+	public static tsCheck<CANDIDATE = unknown>(toCheck: any, expression: RegExp, hint: string = undefined, id: string | undefined = undefined): CANDIDATE {
+		const result = REGEX.checkAlgorithm(toCheck, expression);
+
+		if (result) {
+			return toCheck;
+		}
+		else {
+			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`);
+		}
 	}
 	/**
 	 * Creates this {@link REGEX } by setting the protected property {@link REGEX.expression } used by {@link REGEX.check }.
