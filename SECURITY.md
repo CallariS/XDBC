@@ -1,36 +1,78 @@
 # Security Policy
 
-## Introduction
+## Supported Versions
 
-This security policy outlines our commitment to ensuring the security of XDBC and its users.
+| Version | Supported |
+|---|---|
+| 1.0.x (latest) | Yes |
+| < 1.0.0 | No |
 
-## Reporting Vulnerabilities
+Only the latest published version on npm receives security patches. Users are encouraged to stay up to date.
 
-To report a security vulnerability, please send an email to [Security@WaXCode.net](mailto:Security@WaXCode.net). Please include the following information:
+---
 
-* Description of the vulnerability
-* Steps to reproduce
-* Affected components/versions
-* Potential impact
+## Reporting a Vulnerability
 
-We will acknowledge your report within 24 - 48 hours and provide updates as we investigate.
+**Do not open a public GitHub issue for security vulnerabilities.**
 
-## Vulnerability Handling
+To report a security concern, please email **[Security@WaXCode.net](mailto:Security@WaXCode.net)** with the following details:
 
-We will triage and assess reported vulnerabilities, prioritizing them based on severity. We will develop and test patches, and communicate updates to users.
+- Description of the vulnerability
+- Steps to reproduce or a proof of concept
+- Affected component(s) and version(s)
+- Potential impact and severity assessment
+- Suggested fix, if any
 
-## Disclosure Policy
+### Response Timeline
 
-We will publicly disclose vulnerabilities after a fix is available. We may provide credit to reporters with their consent.
+| Stage | Timeframe |
+|---|---|
+| Acknowledgment of report | Within 48 hours |
+| Initial triage and severity assessment | Within 5 business days |
+| Patch development and internal testing | Dependent on severity |
+| Public disclosure (after fix is available) | Coordinated with reporter |
 
-## Security Best Practices
+---
 
-We follow secure coding standards and regularly update dependencies.
+## Vulnerability Handling Process
+
+1. **Triage** — The report is reviewed, reproduced, and assigned a severity level (Critical / High / Medium / Low).
+2. **Fix** — A patch is developed and tested against the current release.
+3. **Release** — A patched version is published to npm.
+4. **Disclosure** — A security advisory is published on GitHub after the fix is available. The reporter will be credited (with consent).
+
+---
+
+## Scope
+
+This policy covers the XDBC npm package (`xdbc`) and its source code. It does **not** cover:
+
+- Third-party dependencies (report those to the respective maintainers)
+- The generated documentation site
+- User applications that consume XDBC
+
+---
+
+## Security Best Practices for Users
+
+- Keep XDBC updated to the latest version
+- Run `npm audit` regularly to check for transitive dependency vulnerabilities
+- Do not disable contract checking in security-sensitive paths without understanding the implications
+- Avoid passing untrusted input directly to `path` resolution without validation
+
+---
 
 ## Responsible Disclosure
 
-We encourage responsible disclosure and will not take legal action against reporters.
+We are committed to responsible disclosure and will not pursue legal action against individuals who:
 
-## Policy Updates
+- Report vulnerabilities in good faith
+- Allow reasonable time for a fix before public disclosure
+- Do not exploit the vulnerability beyond what is necessary to demonstrate it
 
-This policy will be reviewed and updated regularly.
+---
+
+## Contact
+
+Security reports: **[Security@WaXCode.net](mailto:Security@WaXCode.net)**
+General inquiries: **[XDBC@WaXCode.net](mailto:XDBC@WaXCode.net)**
