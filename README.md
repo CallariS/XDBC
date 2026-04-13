@@ -319,6 +319,8 @@ const result = OR.tsCheck<string>(input, [new EQ("a"), new EQ("b")]);
 
 ### DBC Instance Settings
 
+A default DBC instance is automatically registered at `WaXCode.DBC` when the module is imported. You can access and configure it:
+
 ```typescript
 import { DBC } from "xdbc";
 
@@ -337,17 +339,34 @@ dbc.infringementSettings.logToConsole = false;     // log to console instead
 
 ### Multiple DBC Instances
 
-Create isolated DBC instances with separate configurations (e.g., per-vendor or per-module):
+Create isolated DBC instances with separate configurations using `DBC.register()`:
 
 ```typescript
-(globalThis as any).MyVendor = { DBC: new DBC() };
-const vendorDbc = (globalThis as any).MyVendor.DBC;
-vendorDbc.infringementSettings.logToConsole = true;
-vendorDbc.infringementSettings.throwException = false;
+// Register a vendor-specific instance at a custom path
+const vendorDbc = new DBC(
+  { throwException: false, logToConsole: true },
+);
+DBC.register(vendorDbc, "MyVendor.DBC");
 
-// Route a contract to the custom instance
+// Route a contract to the custom instance via its path
 @REGEX.INVARIANT(/^[A-Z]+$/, undefined, undefined, "MyVendor.DBC")
 public code = "ABC";
+```
+
+> **Note:** `new DBC()` does not automatically mount onto `globalThis`. Call `DBC.register(instance, path)` to make an instance available for decorator resolution.
+
+### Test Isolation
+
+Use `DBC.isolated()` to run tests with a temporary DBC instance that doesn't affect other tests:
+
+```typescript
+DBC.isolated((tempDbc) => {
+  // tempDbc is registered at "WaXCode.DBC" for the duration of this callback
+  tempDbc.executionSettings.checkPreconditions = false;
+
+  // ... run tests with contracts disabled ...
+});
+// Original DBC instance is automatically restored here
 ```
 
 ### Disabling Contracts in Production
