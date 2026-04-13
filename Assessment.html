@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XDBC — Code Quality Assessment</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a2e;
+    --accent: #0f3460;
+    --accent-light: #e8eef6;
+    --border: #d1d9e6;
+    --green: #27ae60;
+    --yellow: #f39c12;
+    --red: #e74c3c;
+    --orange: #e67e22;
+    --code-bg: #f4f6f9;
+    --table-header: #0f3460;
+    --table-stripe: #f8f9fc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+    color: var(--fg);
+    background: var(--bg);
+    line-height: 1.7;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+  h1 {
+    font-size: 2rem;
+    color: var(--accent);
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .meta {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+  h2 {
+    font-size: 1.4rem;
+    color: var(--accent);
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.3rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  p, li { margin-bottom: 0.5rem; }
+  ul, ol { padding-left: 1.5rem; }
+
+  /* Summary card */
+  .summary {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    padding: 1.25rem 1.5rem;
+    border-radius: 0 6px 6px 0;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+  }
+
+  /* Score table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.9rem;
+  }
+  thead th {
+    background: var(--table-header);
+    color: #fff;
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    font-weight: 600;
+  }
+  thead th:first-child { border-radius: 6px 0 0 0; }
+  thead th:last-child { border-radius: 0 6px 0 0; }
+  tbody td {
+    padding: 0.55rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr:nth-child(even) { background: var(--table-stripe); }
+
+  /* Score pills */
+  .score {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #fff;
+    min-width: 3.5rem;
+    text-align: center;
+  }
+  .score-high { background: var(--green); }
+  .score-mid { background: var(--yellow); color: #333; }
+  .score-low { background: var(--red); }
+
+  /* Severity badges */
+  .severity {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #fff;
+  }
+  .sev-critical { background: var(--red); }
+  .sev-high { background: var(--orange); }
+  .sev-medium { background: var(--yellow); color: #333; }
+  .sev-low { background: #95a5a6; }
+
+  /* Code */
+  code {
+    background: var(--code-bg);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: 0.88em;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0.75rem 0 1rem;
+  }
+
+  /* Bug card */
+  .bug {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    border-left: 4px solid var(--red);
+  }
+  .bug h4 {
+    margin-bottom: 0.3rem;
+    font-size: 1rem;
+  }
+  .bug .file {
+    color: #666;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Priority sections */
+  .priority {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .priority h4 { margin-bottom: 0.5rem; }
+  .priority ul { margin-bottom: 0; }
+  .priority.p1 { border-left: 4px solid var(--red); }
+  .priority.p2 { border-left: 4px solid var(--orange); }
+  .priority.p3 { border-left: 4px solid var(--yellow); }
+
+  /* Strengths */
+  .strength-list li::marker { content: "✓ "; color: var(--green); font-weight: bold; }
+
+  /* TOC */
+  .toc {
+    background: var(--table-stripe);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .toc ul { list-style: none; padding-left: 0; }
+  .toc li { margin-bottom: 0.3rem; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Overall score */
+  .overall {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 2rem;
+    background: var(--accent-light);
+    border-radius: 8px;
+  }
+  .overall .big-score {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .overall .label {
+    font-size: 1.1rem;
+    color: #666;
+    margin-top: 0.25rem;
+  }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    color: #999;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>XDBC — Code Quality Assessment</h1>
+<div class="meta">
+  <strong>Date:</strong> April 13, 2026 &nbsp;|&nbsp;
+  <strong>Version:</strong> 1.0.208 &nbsp;|&nbsp;
+  <strong>Scope:</strong> Full source review — 21 source files, 9 test files, build configuration
+</div>
+
+<div class="toc">
+  <strong>Contents</strong>
+  <ul>
+    <li><a href="#summary">Executive Summary</a></li>
+    <li><a href="#scores">Score Card</a></li>
+    <li><a href="#architecture">1. Architecture &amp; Design</a></li>
+    <li><a href="#quality">2. Code Quality</a></li>
+    <li><a href="#bugs">3. Critical Bugs</a></li>
+    <li><a href="#tests">4. Test Coverage</a></li>
+    <li><a href="#security">5. Security</a></li>
+    <li><a href="#performance">6. Performance</a></li>
+    <li><a href="#deps">7. Dependencies</a></li>
+    <li><a href="#tooling">8. Build &amp; Tooling</a></li>
+    <li><a href="#strengths">9. Strengths</a></li>
+    <li><a href="#recommendations">10. Recommendations</a></li>
+    <li><a href="#null-matrix">Appendix: Null/Undefined Matrix</a></li>
+  </ul>
+</div>
+
+<!-- ========== SUMMARY ========== -->
+<h2 id="summary">Executive Summary</h2>
+<div class="summary">
+  XDBC is a well-architected Design by Contract framework using TypeScript decorators. The project demonstrates strong fundamental design — clean class hierarchy, consistent decorator patterns, and a rich contract library of 16 validators. However, the assessment reveals several <strong>critical correctness bugs</strong> (parameter ordering, null-check logic), <strong>insufficient test coverage</strong> (decorators are entirely untested), and <strong>security gaps</strong> that should be addressed before production use.
+</div>
+
+<!-- ========== SCORES ========== -->
+<h2 id="scores">Score Card</h2>
+
+<div class="overall">
+  <div class="big-score">6.0 <span style="font-size:1.5rem;color:#999;">/ 10</span></div>
+  <div class="label">Overall Assessment — Solid Foundation with Correctness Issues</div>
+</div>
+
+<table>
+  <thead>
+    <tr><th>Dimension</th><th>Score</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Architecture</td>
+      <td><span class="score score-high">7 / 10</span></td>
+      <td>Good patterns; global state coupling limits testability</td>
+    </tr>
+    <tr>
+      <td>Code Quality</td>
+      <td><span class="score score-low">5 / 10</span></td>
+      <td>Type safety issues, parameter bugs, logic errors</td>
+    </tr>
+    <tr>
+      <td>Test Coverage</td>
+      <td><span class="score score-low">4 / 10</span></td>
+      <td>Only <code>checkAlgorithm</code> tested; no decorator tests</td>
+    </tr>
+    <tr>
+      <td>Security</td>
+      <td><span class="score score-low">5 / 10</span></td>
+      <td>No input validation, ReDoS risk, no output escaping</td>
+    </tr>
+    <tr>
+      <td>Performance</td>
+      <td><span class="score score-mid">6 / 10</span></td>
+      <td>Caching present but unbounded; O(n) parameter queues</td>
+    </tr>
+    <tr>
+      <td>Maintainability</td>
+      <td><span class="score score-mid">6 / 10</span></td>
+      <td>Good structure but high duplication across contracts</td>
+    </tr>
+    <tr>
+      <td>Dependencies</td>
+      <td><span class="score score-high">7 / 10</span></td>
+      <td>Minimal and appropriate; ZOD missing from package.json</td>
+    </tr>
+    <tr>
+      <td>Build &amp; Tooling</td>
+      <td><span class="score score-high">8 / 10</span></td>
+      <td>Well-configured Webpack, TypeScript, Biome, Jest</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========== ARCHITECTURE ========== -->
+<h2 id="architecture">1. Architecture &amp; Design</h2>
+
+<h3>Strengths</h3>
+<ul class="strength-list">
+  <li>Consistent decorator pattern: all contracts expose <code>PRE</code>, <code>POST</code>, and <code>INVARIANT</code> static factories</li>
+  <li>Clear class hierarchy with <code>DBC</code> as base and specialized contracts extending it</li>
+  <li>Separation of concerns between static factories (contract definition) and instance methods (validation logic)</li>
+  <li>Plugin architecture supporting multiple DBC instances via namespace resolution</li>
+  <li>Extensible contract objects with composable <code>check()</code> method signature</li>
+</ul>
+
+<h3>Issues</h3>
+<ul>
+  <li><strong>Global state coupling</strong> — <code>WaXCode.DBC</code> namespace on <code>globalThis</code> makes isolated testing difficult</li>
+  <li><strong>Inconsistent abstraction</strong> — some contracts have <code>check()</code> instance methods, others only static <code>checkAlgorithm()</code></li>
+  <li><strong>No base factory</strong> — adding new contracts requires copy-pasting PRE/POST/INVARIANT boilerplate</li>
+</ul>
+
+<!-- ========== CODE QUALITY ========== -->
+<h2 id="quality">2. Code Quality</h2>
+
+<h3>Type Safety</h3>
+<ul>
+  <li>40+ <code>any</code> annotations suppressed with <code>biome-ignore</code> comments</li>
+  <li><code>COMPARISON.checkAlgorithm()</code> has untyped parameters</li>
+  <li>Unsafe casts: <code>(this as any).constructor</code> in DBC.ts</li>
+</ul>
+
+<h3>Error Messages</h3>
+<ul>
+  <li><strong>Typo:</strong> "has to to be" in COMPARISON.ts, TYPE.ts, EQ.ts</li>
+  <li>Object interpolation produces <code>[object Object]</code> in IF.ts error messages</li>
+  <li>User values interpolated directly without escaping</li>
+</ul>
+
+<h3>Duplication</h3>
+<ul>
+  <li>GREATER, LESS, GREATER_OR_EQUAL, LESS_OR_EQUAL are 95% identical code</li>
+  <li>PRE/POST/INVARIANT factory code repeated across all 16 contract classes</li>
+  <li>Error formatting duplicated 3 times in DBC.ts</li>
+</ul>
+
+<!-- ========== BUGS ========== -->
+<h2 id="bugs">3. Critical Bugs</h2>
+
+<div class="bug">
+  <h4><span class="severity sev-critical">CRITICAL</span> Bug 1 — COMPARISON.POST() parameter swap</h4>
+  <div class="file">src/DBC/COMPARISON.ts — POST decorator factory</div>
+  <p>Arguments to <code>checkAlgorithm</code> are passed in the wrong order — <code>equivalent</code> and <code>equalityPermitted</code> are swapped. Postcondition checks compare against a boolean value and use a number as the equality flag.</p>
+  <pre>// Current (broken):
+COMPARISON.checkAlgorithm(value, equalityPermitted, equivalent, invert);
+
+// Should be:
+COMPARISON.checkAlgorithm(value, equivalent, equalityPermitted, invert);</pre>
+</div>
+
+<div class="bug">
+  <h4><span class="severity sev-critical">CRITICAL</span> Bug 2 — JSON_OP null check logic error</h4>
+  <div class="file">src/DBC/JSON.OP.ts</div>
+  <p>Incorrect operator precedence causes the null branch to never trigger for <code>null</code> inputs.</p>
+  <pre>// Current (broken):
+if (toCheck === undefined || null)
+
+// Should be:
+if (toCheck === undefined || toCheck === null)</pre>
+</div>
+
+<div class="bug">
+  <h4><span class="severity sev-critical">CRITICAL</span> Bug 3 — DIFFERENT.PRE() hint/dbc swapped</h4>
+  <div class="file">src/DBC/EQ/DIFFERENT.ts</div>
+  <p>Calls <code>EQ.PRE(equivalent, true, path, dbc, hint)</code> but EQ.PRE expects <code>(equivalent, invert, path, hint, dbc)</code>. The <code>hint</code> and <code>dbc</code> parameters are transposed.</p>
+</div>
+
+<div class="bug">
+  <h4><span class="severity sev-critical">CRITICAL</span> Bug 4 — GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL parameter swap</h4>
+  <div class="file">src/DBC/COMPARISON/GREATER_OR_EQUAL.ts, LESS.ts, LESS_OR_EQUAL.ts</div>
+  <p>All three pass <code>path, dbc, hint</code> to <code>COMPARISON.PRE()</code> which expects <code>path, hint, dbc</code>.</p>
+</div>
+
+<div class="bug">
+  <h4><span class="severity sev-high">HIGH</span> Bug 5 — getDBC() caches undefined</h4>
+  <div class="file">src/DBC.ts</div>
+  <p>If <code>resolveDBCPath()</code> returns <code>undefined</code>, the result is cached. Calls to <code>getDBC().executionSettings</code> will throw a null reference error.</p>
+</div>
+
+<!-- ========== TESTS ========== -->
+<h2 id="tests">4. Test Coverage</h2>
+
+<h3>What is tested</h3>
+<ul class="strength-list">
+  <li><code>checkAlgorithm()</code> for AE, EQ, GREATER, INSTANCE, JSON_OP, JSON_Parse, OR, REGEX, TYPE</li>
+  <li>Array index/range checking in AE</li>
+  <li>Basic passing and failing cases per contract</li>
+</ul>
+
+<h3>Critical gaps</h3>
+<table>
+  <thead><tr><th>Gap</th><th>Impact</th></tr></thead>
+  <tbody>
+    <tr><td><code>@PRE</code> decorator invocation</td><td>Core value proposition entirely untested</td></tr>
+    <tr><td><code>@POST</code> decorator invocation</td><td>Bug #1 undetectable</td></tr>
+    <tr><td><code>@INVARIANT</code> decorator on fields</td><td>No regression safety for property validation</td></tr>
+    <tr><td><code>@DBC.ParamvalueProvider</code></td><td>Parameter capture mechanism not verified</td></tr>
+    <tr><td><code>DBC.resolve()</code> path resolution</td><td>12+ branches of complex logic untested</td></tr>
+    <tr><td>Error throwing/logging behavior</td><td>Infringement settings not exercised</td></tr>
+    <tr><td>Multiple DBC instances</td><td>Namespace resolution not verified</td></tr>
+    <tr><td>null/undefined edge cases</td><td>Inconsistent behavior across contracts</td></tr>
+  </tbody>
+</table>
+
+<h3>Test quality issues</h3>
+<ul>
+  <li><strong>Wrong describe names:</strong> OR, REGEX, TYPE, JSON.Parse test files all use <code>describe("EQ", ...)</code></li>
+  <li><strong>Broken import:</strong> GREATER.test.ts imports from old path before COMPARISON refactor</li>
+  <li>Most tests check only 1–2 cases per condition type</li>
+</ul>
+
+<!-- ========== SECURITY ========== -->
+<h2 id="security">5. Security</h2>
+
+<table>
+  <thead><tr><th>Risk</th><th>Location</th><th>Severity</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Path traversal — <code>resolve()</code> parses strings without validation; could access <code>__proto__</code></td>
+      <td>src/DBC.ts</td>
+      <td><span class="severity sev-medium">MEDIUM</span></td>
+    </tr>
+    <tr>
+      <td>ReDoS — complex <code>REGEX.stdExp.url</code> regex on pathological input; no timeout</td>
+      <td>src/DBC/REGEX.ts</td>
+      <td><span class="severity sev-medium">MEDIUM</span></td>
+    </tr>
+    <tr>
+      <td>Error message injection — user values interpolated without escaping</td>
+      <td>src/DBC.ts</td>
+      <td><span class="severity sev-medium">MEDIUM</span></td>
+    </tr>
+    <tr>
+      <td>Debug logging left in production — <code>console.log(z.toJSONSchema(schema))</code></td>
+      <td>src/DBC/ZOD.ts</td>
+      <td><span class="severity sev-low">LOW</span></td>
+    </tr>
+    <tr>
+      <td>JSON serialization on error paths could expose sensitive data</td>
+      <td>src/DBC/JSON.OP.ts</td>
+      <td><span class="severity sev-low">LOW</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========== PERFORMANCE ========== -->
+<h2 id="performance">6. Performance</h2>
+
+<h3>Positive</h3>
+<ul class="strength-list">
+  <li><code>pathTokenCache</code> prevents re-parsing identical paths</li>
+  <li><code>dbcCache</code> avoids repeated namespace resolution</li>
+  <li>Execution settings provide zero-cost disable path</li>
+</ul>
+
+<h3>Concerns</h3>
+<table>
+  <thead><tr><th>Issue</th><th>Impact</th></tr></thead>
+  <tbody>
+    <tr><td>Static caches grow unbounded — no eviction</td><td>Memory leak in long-running apps</td></tr>
+    <tr><td>Nested <code>Map&lt;string, Map&lt;number, Array&gt;&gt;</code> for parameter requests</td><td>O(n) iteration per method call</td></tr>
+    <tr><td>Each decorated method creates new function closures</td><td>GC pressure with many contracts</td></tr>
+    <tr><td>All contracts and regex patterns loaded at import</td><td>No tree-shaking or lazy loading</td></tr>
+  </tbody>
+</table>
+
+<!-- ========== DEPS ========== -->
+<h2 id="deps">7. Dependencies</h2>
+
+<h3>Runtime</h3>
+<table>
+  <thead><tr><th>Package</th><th>Purpose</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td><code>reflect-metadata</code></td><td>Decorator metadata</td><td><span class="severity" style="background:var(--green);">OK</span></td></tr>
+    <tr><td><code>@types/reflect-metadata</code></td><td>Type definitions</td><td><span class="severity" style="background:var(--green);">OK</span></td></tr>
+  </tbody>
+</table>
+
+<h3>Issues</h3>
+<ul>
+  <li><strong>Missing:</strong> <code>zod</code> imported in ZOD.ts but not in package.json — will fail at runtime</li>
+  <li><strong>Unused:</strong> <code>@types/express</code> in devDependencies (likely leftover)</li>
+</ul>
+
+<!-- ========== TOOLING ========== -->
+<h2 id="tooling">8. Build &amp; Tooling</h2>
+
+<table>
+  <thead><tr><th>Tool</th><th>Version</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>TypeScript</td><td>5.8</td><td><span class="severity" style="background:var(--green);">Current</span></td></tr>
+    <tr><td>Webpack</td><td>5.99</td><td><span class="severity" style="background:var(--green);">Current</span></td></tr>
+    <tr><td>Jest + ts-jest</td><td>29.7 / 29.3</td><td><span class="severity" style="background:var(--green);">Stable</span></td></tr>
+    <tr><td>Biome</td><td>configured</td><td><span class="severity" style="background:var(--green);">Current</span></td></tr>
+    <tr><td>TypeDoc</td><td>configured</td><td><span class="severity" style="background:var(--green);">Available</span></td></tr>
+  </tbody>
+</table>
+
+<h3>Missing</h3>
+<ul>
+  <li>No CI/CD workflow (GitHub Actions)</li>
+  <li>No pre-commit hooks (husky / lint-staged)</li>
+  <li>No coverage reporting configured</li>
+</ul>
+
+<!-- ========== STRENGTHS ========== -->
+<h2 id="strengths">9. Strengths</h2>
+
+<ul class="strength-list">
+  <li><strong>Rich contract library:</strong> 16 contracts covering types, equality, regex, JSON, arrays, instances, conditionals, and Zod schemas</li>
+  <li><strong>Decorator ergonomics:</strong> Non-invasive validation preserving clean method signatures</li>
+  <li><strong>Detailed error context:</strong> Infringement messages include class name, method name, parameter index, and violation details</li>
+  <li><strong>Configuration flexibility:</strong> Enable/disable preconditions, postconditions, and invariants independently</li>
+  <li><strong>Path resolution:</strong> Dot notation, array indices, method calls, and HTML attributes supported</li>
+  <li><strong>Type-safe static checks:</strong> <code>tsCheck</code> methods for imperative use outside decorators</li>
+  <li><strong>Standard regex library:</strong> Ready-to-use patterns for email, URL, BCP47, date, CSS selectors</li>
+  <li><strong>Modern tooling:</strong> Current versions of TypeScript, Webpack, Biome, Jest</li>
+</ul>
+
+<!-- ========== RECOMMENDATIONS ========== -->
+<h2 id="recommendations">10. Recommendations</h2>
+
+<div class="priority p1">
+  <h4><span class="severity sev-critical">PRIORITY 1 — Critical</span> &nbsp; Estimated: 3 hours</h4>
+  <ol>
+    <li>Fix parameter ordering bugs in COMPARISON.POST, DIFFERENT.PRE, GREATER_OR_EQUAL.PRE, LESS.PRE, LESS_OR_EQUAL.PRE</li>
+    <li>Fix null check in JSON_OP.checkAlgorithm</li>
+    <li>Add <code>zod</code> to package.json dependencies</li>
+    <li>Add null guard after <code>getDBC()</code> calls</li>
+    <li>Remove <code>console.log</code> from ZOD.ts</li>
+  </ol>
+</div>
+
+<div class="priority p2">
+  <h4><span class="severity sev-high">PRIORITY 2 — High</span> &nbsp; Estimated: 6 hours</h4>
+  <ol start="6">
+    <li>Write decorator integration tests for PRE, POST, INVARIANT, and ParamvalueProvider</li>
+    <li>Fix test <code>describe</code> names in OR, REGEX, TYPE, JSON.Parse test files</li>
+    <li>Fix GREATER.test.ts import path</li>
+    <li>Standardize null/undefined handling across all contracts</li>
+    <li>Fix "has to to be" typo in error messages</li>
+  </ol>
+</div>
+
+<div class="priority p3">
+  <h4><span class="severity sev-medium">PRIORITY 3 — Medium</span> &nbsp; Estimated: 12 hours</h4>
+  <ol start="11">
+    <li>Extract base factory for PRE/POST/INVARIANT to eliminate duplication</li>
+    <li>Add path validation in <code>DBC.resolve()</code> (block <code>__proto__</code>, validate syntax)</li>
+    <li>Implement cache eviction (LRU or bounded size) for static caches</li>
+    <li>Sanitize error message interpolation to prevent XSS in web contexts</li>
+    <li>Add <code>check()</code> instance methods to TYPE, DEFINED, UNDEFINED for API consistency</li>
+    <li>Reduce <code>any</code> usage — create a strict <code>Contract</code> interface</li>
+    <li>Add CI/CD workflow (GitHub Actions) with lint + test + build</li>
+    <li>Remove <code>@types/express</code> from devDependencies</li>
+  </ol>
+</div>
+
+<!-- ========== APPENDIX ========== -->
+<h2 id="null-matrix">Appendix: Null/Undefined Behavior Matrix</h2>
+
+<table>
+  <thead>
+    <tr><th>Contract</th><th><code>null</code> input</th><th><code>undefined</code> input</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>TYPE</td><td>Pass</td><td>Pass</td><td>Explicit early return</td></tr>
+    <tr><td>DEFINED</td><td>Error</td><td>Error</td><td>By design</td></tr>
+    <tr><td>UNDEFINED</td><td>Pass</td><td>Pass</td><td>By design</td></tr>
+    <tr><td>REGEX</td><td>Pass</td><td>Pass</td><td>Explicit early return</td></tr>
+    <tr><td>INSTANCE</td><td>Pass</td><td>Pass</td><td>Explicit early return</td></tr>
+    <tr><td>EQ</td><td>Compares via <code>===</code></td><td>Compares via <code>===</code></td><td>Works correctly</td></tr>
+    <tr><td>COMPARISON</td><td>Not handled</td><td>Not handled</td><td style="color:var(--red);">Could crash</td></tr>
+    <tr><td>AE</td><td>Iterates</td><td>Iterates</td><td style="color:var(--red);">Could crash</td></tr>
+    <tr><td>OR</td><td>Delegates</td><td>Delegates</td><td>Inconsistent</td></tr>
+    <tr><td>JSON_OP</td><td>Bug (see #2)</td><td>Error</td><td style="color:var(--red);">Logic error</td></tr>
+    <tr><td>JSON_Parse</td><td>Throws</td><td>Throws</td><td style="color:var(--red);">Unhandled exception</td></tr>
+  </tbody>
+</table>
+
+<footer>
+  XDBC Code Quality Assessment &mdash; Generated April 13, 2026 &mdash; v1.0.208
+</footer>
+
+</body>
+</html>
