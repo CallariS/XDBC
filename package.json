@@ -18,7 +18,7 @@
 		"@types/node": "^22.15.17",
 		"babel-jest": "^29.7.0",
 		"jest": "^29.7.0",
-		"jest-environment-jsdom": "^29.7.0",
+		"jest-environment-jsdom": "^30.3.0",
 		"ts-jest": "^29.3.2",
 		"ts-loader": "^9.5.2",
 		"ts-node": "^10.9.2",
@@ -30,7 +30,6 @@
 	},
 	"dependencies": {
 		"@types/reflect-metadata": "^0.1.0",
-		"parcel": "^2.14.4",
 		"reflect-metadata": "^0.2.2"
 	},
 	"description": "A Typescript Design by Contract Framework",
