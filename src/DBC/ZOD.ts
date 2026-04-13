@@ -17,7 +17,6 @@ export class ZOD extends DBC {
 	// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
 	public static checkAlgorithm(toCheck: any, schema: z.ZodType): boolean | string {
 		if (!schema.safeParse(toCheck).success) {
-			console.log(z.toJSONSchema(schema))
 			return `Value has to correspond to "${JSON.stringify( z.toJSONSchema(schema).properties )}" but is constituted as "${JSON.stringify( toCheck )}"`;
 		}
 

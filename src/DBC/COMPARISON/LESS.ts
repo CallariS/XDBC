@@ -10,7 +10,7 @@ export class LESS extends COMPARISON {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return COMPARISON.PRE(equivalent, false, true, path, dbc, hint);
+		return COMPARISON.PRE(equivalent, false, true, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.POST }. */
 	public static override POST(
@@ -21,7 +21,7 @@ export class LESS extends COMPARISON {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return COMPARISON.POST(equivalent, false, true, path, dbc, hint);
+		return COMPARISON.POST(equivalent, false, true, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.INVARIANT }. */
 	public static INVARIANT(
@@ -32,7 +32,7 @@ export class LESS extends COMPARISON {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return COMPARISON.INVARIANT(equivalent, false, true, path, dbc, hint);
+		return COMPARISON.INVARIANT(equivalent, false, true, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.constructor }. */
 	constructor(public equivalent) {

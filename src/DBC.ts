@@ -5,8 +5,16 @@
  * Maintainer: Callari, Salvatore (XDBC@WaXCode.net) */
 export class DBC {
 	// #region Internal caches.
+	private static readonly MAX_CACHE_SIZE = 1000;
 	private static dbcCache: Map<string, DBC> = new Map();
 	private static pathTokenCache: Map<string, string[]> = new Map();
+	/** Evicts the oldest entry if the cache exceeds the maximum size. */
+	private static evictIfNeeded<K, V>(cache: Map<K, V>): void {
+		if (cache.size > DBC.MAX_CACHE_SIZE) {
+			const oldest = cache.keys().next().value;
+			cache.delete(oldest);
+		}
+	}
 	private static getHost(): unknown {
 		return typeof window !== "undefined" ? window : globalThis;
 	}
@@ -17,9 +25,11 @@ export class DBC {
 		}
 		const resolved = DBC.resolveDBCPath(DBC.getHost(), path);
 		if (resolved) {
+			DBC.evictIfNeeded(DBC.dbcCache);
 			DBC.dbcCache.set(path, resolved);
+			return resolved;
 		}
-		return resolved;
+		throw new Error(`[XDBC] DBC instance not found at path "${path}". Ensure a DBC instance is registered there.`);
 	}
 	// #endregion Internal caches.
 	// #region Parameter-value requests.
@@ -369,6 +379,59 @@ export class DBC {
 	}
 	// #endregion Precondition
 	// #endregion Decorator
+	// #region Contract Factory Helpers
+	/**
+	 * Creates a PRE decorator from a checkAlgorithm function and its bound arguments.
+	 * Reduces boilerplate across contract classes.
+	 *
+	 * @param checkFn  A function that takes (value, ...boundArgs) and returns true or an error string.
+	 * @param boundArgs The arguments to bind to the check function after the value.
+	 * @param dbc      See {@link DBC.decPrecondition}.
+	 * @param path     See {@link DBC.decPrecondition}.
+	 * @param hint     See {@link DBC.decPrecondition}.
+	 */
+	public static createPRE(
+		checkFn: (...args: unknown[]) => boolean | string,
+		boundArgs: unknown[],
+		dbc?: string,
+		path?: string,
+		hint?: string,
+	) {
+		return DBC.decPrecondition(
+			(value, _target, _methodName, _parameterIndex) => {
+				return checkFn(value, ...boundArgs);
+			},
+			dbc,
+			path,
+			hint,
+		);
+	}
+	/**
+	 * Creates a POST decorator from a checkAlgorithm function and its bound arguments.
+	 *
+	 * @param checkFn  A function that takes (value, ...boundArgs) and returns true or an error string.
+	 * @param boundArgs The arguments to bind to the check function after the value.
+	 * @param dbc      See {@link DBC.decPostcondition}.
+	 * @param path     See {@link DBC.decPostcondition}.
+	 * @param hint     See {@link DBC.decPostcondition}.
+	 */
+	public static createPOST(
+		checkFn: (...args: unknown[]) => boolean | string,
+		boundArgs: unknown[],
+		dbc?: string,
+		path?: string,
+		hint?: string,
+	) {
+		return DBC.decPostcondition(
+			(value, _target, _propertyKey) => {
+				return checkFn(value, ...boundArgs);
+			},
+			dbc,
+			path,
+			hint,
+		);
+	}
+	// #endregion Contract Factory Helpers
 	// #region Execution Handling
 	/** Stores settings concerning the execution of checks. */
 	public executionSettings: {
@@ -402,6 +465,20 @@ export class DBC {
 		throwException: boolean;
 		logToConsole: boolean;
 	} = { throwException: true, logToConsole: false };
+	/** Sanitizes a value for safe inclusion in error messages. */
+	private static sanitize(value: unknown): string {
+		const str = typeof value === "string" ? value : String(value);
+		return str.replace(/[<>&"']/g, (ch) => {
+			switch (ch) {
+				case "<": return "&lt;";
+				case ">": return "&gt;";
+				case "&": return "&amp;";
+				case "\"": return "&quot;";
+				case "'": return "&#39;";
+				default: return ch;
+			}
+		});
+	}
 	/**
 	 * Reports an infringement according to the {@link infringementSettings } also generating a proper {@link string }-wrapper
 	 * for the given "message" & violator.
@@ -416,7 +493,9 @@ export class DBC {
 		path: string,
 		hint: string | undefined = undefined,
 	): undefined {
-		const finalMessage: string = `[ From "${violator}"${typeof target === "function" ? ` in "${target.name}"` : typeof target === "object" && target !== null && typeof target.constructor === "function" ? ` in "${target.constructor.name}"` : `in "${target}"`}${path ? ` > "${path}"` : ""}: ${message} ${hint ? `✨ ${hint} ✨` : ""}]`;
+		const safeViolator = DBC.sanitize(violator);
+		const targetName = typeof target === "function" ? DBC.sanitize(target.name) : typeof target === "object" && target !== null && typeof target.constructor === "function" ? DBC.sanitize(target.constructor.name) : DBC.sanitize(target);
+		const finalMessage: string = `[ From "${safeViolator}" in "${targetName}"${path ? ` > "${DBC.sanitize(path)}"` : ""}: ${message} ${hint ? `✨ ${hint} ✨` : ""}]`;
 
 		if (this.infringementSettings.throwException) {
 			throw new DBC.Infringement(finalMessage);
@@ -574,10 +653,23 @@ export class DBC {
 	public static resolve(toResolveFrom: unknown, path: string) {
 		if (!toResolveFrom || typeof path !== "string") { return undefined; }
 
+		// Security: block prototype pollution paths
+		const dangerousTokens = ["__proto__", "constructor", "prototype"];
+
 		const cachedParts = DBC.pathTokenCache.get(path);
 		const parts = cachedParts ?? path.replace(/\[(['"]?)(.*?)\1\]/g, ".$2").split(".");
 
-		if (!cachedParts) { DBC.pathTokenCache.set(path, parts); }
+		if (!cachedParts) {
+			// Validate tokens before caching
+			for (const part of parts) {
+				const tokenName = part.replace(/\(.*\)$/, "");
+				if (dangerousTokens.includes(tokenName)) {
+					throw new Error(`[XDBC] Path "${path}" contains forbidden token "${tokenName}".`);
+				}
+			}
+			DBC.evictIfNeeded(DBC.pathTokenCache);
+			DBC.pathTokenCache.set(path, parts);
+		}
 
 		let current = toResolveFrom;
 

@@ -1,6 +1,6 @@
 import { JSON_Parse } from "../../src/DBC/JSON.Parse";
 
-describe("EQ", () => {
+describe("JSON_Parse", () => {
 	const jsonParse = new JSON_Parse();
 
 	test(`Should not report infringement with '{"d":"o"}' to check`, () => {

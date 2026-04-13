@@ -10,7 +10,7 @@ export class REGEX extends DBC {
 		htmlAttributeName: /^[a-zA-Z_:][a-zA-Z0-9_.:-]*$/,
 		eMail: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
 		property: /^[$_A-Za-z][$_A-Za-z0-9]*$/,
-		url: /^(?:(?:http:|https?|ftp):\/\/)?(?:\S+(?::\S*)?@)?(?:localhost|(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,})(?::\d{2,5})?(?:\/(?:[\w\-\.]*\/)*[\w\-\.]+(?:\?\S*)?(?:#\S*)?)?$/i,
+		url: /^(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i,
 		keyPath: /^([a-zA-Z_$][a-zA-Z0-9_$]*\.)*[a-zA-Z_$][a-zA-Z0-9_$]*$/,
 		date: /^\d{1,4}[.\/-]\d{1,2}[.\/-]\d{1,4}$/i,
 		dateFormat:

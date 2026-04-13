@@ -26,9 +26,9 @@ export class TYPE extends DBC {
 
 		if (!isValid) {
 			if (types.length === 1) {
-				return `Value has to to be of type "${type}" but is of type "${actualType}"`;
+				return `Value has to be of type "${type}" but is of type "${actualType}"`;
 			}
-			return `Value has to to be of type "${types.join(" | ")}" but is of type "${actualType}"`;
+			return `Value has to be of type "${types.join(" | ")}" but is of type "${actualType}"`;
 		}
 		// #endregion Check if the actual type matches at least one of the specified types
 		return true;

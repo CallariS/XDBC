@@ -10,7 +10,7 @@ export class GREATER_OR_EQUAL extends COMPARISON {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return COMPARISON.PRE(equivalent, true, false, path, dbc, hint);
+		return COMPARISON.PRE(equivalent, true, false, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.POST }. */
 	public static override POST(
@@ -21,7 +21,7 @@ export class GREATER_OR_EQUAL extends COMPARISON {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return COMPARISON.POST(equivalent, true, false, path, dbc, hint);
+		return COMPARISON.POST(equivalent, true, false, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.INVARIANT }. */
 	public static INVARIANT(
@@ -32,7 +32,7 @@ export class GREATER_OR_EQUAL extends COMPARISON {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return COMPARISON.INVARIANT(equivalent, true, false, path, dbc, hint);
+		return COMPARISON.INVARIANT(equivalent, true, false, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.constructor }. */
 	constructor(public equivalent) {

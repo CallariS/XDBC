@@ -16,7 +16,7 @@ export class COMPARISON extends DBC {
 	 * @returns TRUE if the value **toCheck** and the **equivalent** are equal to each other, otherwise FALSE. */
 	static checkAlgorithm(toCheck, equivalent, equalityPermitted, invert) {
 		if (equalityPermitted && !invert && toCheck < equivalent) {
-			return `Value has to to be greater than or equal to "${equivalent}"`;
+			return `Value has to be greater than or equal to "${equivalent}"`;
 		}
 
 		if (equalityPermitted && invert && toCheck > equivalent) {
@@ -24,7 +24,7 @@ export class COMPARISON extends DBC {
 		}
 
 		if (!equalityPermitted && !invert && toCheck <= equivalent) {
-			return `Value has to to be greater than "${equivalent}"`;
+			return `Value has to be greater than "${equivalent}"`;
 		}
 
 		if (!equalityPermitted && invert && toCheck >= equivalent) {
@@ -89,8 +89,8 @@ export class COMPARISON extends DBC {
 			(value, target, propertyKey) => {
 				return COMPARISON.checkAlgorithm(
 					value,
-					equalityPermitted,
 					equivalent,
+					equalityPermitted,
 					invert,
 				);
 			},

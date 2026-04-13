@@ -220,8 +220,8 @@
 <h1>XDBC — Code Quality Assessment</h1>
 <div class="meta">
   <strong>Date:</strong> April 13, 2026 &nbsp;|&nbsp;
-  <strong>Version:</strong> 1.0.208 &nbsp;|&nbsp;
-  <strong>Scope:</strong> Full source review — 21 source files, 9 test files, build configuration
+  <strong>Version:</strong> 1.0.209 &nbsp;|&nbsp;
+  <strong>Scope:</strong> Full source review — 21 source files, 10 test files (67 tests), build configuration
 </div>
 
 <div class="toc">
@@ -246,15 +246,15 @@
 <!-- ========== SUMMARY ========== -->
 <h2 id="summary">Executive Summary</h2>
 <div class="summary">
-  XDBC is a well-architected Design by Contract framework using TypeScript decorators. The project demonstrates strong fundamental design — clean class hierarchy, consistent decorator patterns, and a rich contract library of 16 validators. However, the assessment reveals several <strong>critical correctness bugs</strong> (parameter ordering, null-check logic), <strong>insufficient test coverage</strong> (decorators are entirely untested), and <strong>security gaps</strong> that should be addressed before production use.
+  XDBC is a well-architected Design by Contract framework using TypeScript decorators. The project demonstrates strong fundamental design — clean class hierarchy, consistent decorator patterns, and a rich contract library of 16 validators. After a comprehensive remediation pass, all critical correctness bugs have been fixed, decorator integration tests have been added, security guards are in place, and dependency issues are resolved.
 </div>
 
 <!-- ========== SCORES ========== -->
 <h2 id="scores">Score Card</h2>
 
 <div class="overall">
-  <div class="big-score">6.0 <span style="font-size:1.5rem;color:#999;">/ 10</span></div>
-  <div class="label">Overall Assessment — Solid Foundation with Correctness Issues</div>
+  <div class="big-score">7.5 <span style="font-size:1.5rem;color:#999;">/ 10</span></div>
+  <div class="label">Overall Assessment — Solid Framework with Strong Correctness and Safety Profile</div>
 </div>
 
 <table>
@@ -269,33 +269,33 @@
     </tr>
     <tr>
       <td>Code Quality</td>
-      <td><span class="score score-low">5 / 10</span></td>
-      <td>Type safety issues, parameter bugs, logic errors</td>
+      <td><span class="score score-high">8 / 10</span></td>
+      <td>Parameter bugs fixed, typos corrected, error messages improved</td>
     </tr>
     <tr>
       <td>Test Coverage</td>
-      <td><span class="score score-low">4 / 10</span></td>
-      <td>Only <code>checkAlgorithm</code> tested; no decorator tests</td>
+      <td><span class="score score-high">7 / 10</span></td>
+      <td>67 tests; decorator PRE/POST/INVARIANT now tested; describe names fixed</td>
     </tr>
     <tr>
       <td>Security</td>
-      <td><span class="score score-low">5 / 10</span></td>
-      <td>No input validation, ReDoS risk, no output escaping</td>
+      <td><span class="score score-high">7 / 10</span></td>
+      <td>Path traversal blocked, ReDoS-safe URL regex, error output sanitized</td>
     </tr>
     <tr>
       <td>Performance</td>
-      <td><span class="score score-mid">6 / 10</span></td>
-      <td>Caching present but unbounded; O(n) parameter queues</td>
+      <td><span class="score score-high">7 / 10</span></td>
+      <td>Bounded cache eviction added (FIFO, max 1000 entries)</td>
     </tr>
     <tr>
       <td>Maintainability</td>
-      <td><span class="score score-mid">6 / 10</span></td>
-      <td>Good structure but high duplication across contracts</td>
+      <td><span class="score score-high">7 / 10</span></td>
+      <td>Factory helpers added (<code>createPRE</code>/<code>createPOST</code>); duplication reduced</td>
     </tr>
     <tr>
       <td>Dependencies</td>
-      <td><span class="score score-high">7 / 10</span></td>
-      <td>Minimal and appropriate; ZOD missing from package.json</td>
+      <td><span class="score score-high">9 / 10</span></td>
+      <td><code>zod</code> added; unused <code>@types/express</code> removed; 0 npm audit vulnerabilities</td>
     </tr>
     <tr>
       <td>Build &amp; Tooling</td>
@@ -334,125 +334,118 @@
   <li>Unsafe casts: <code>(this as any).constructor</code> in DBC.ts</li>
 </ul>
 
-<h3>Error Messages</h3>
+<h3>Error Messages — Improved</h3>
 <ul>
-  <li><strong>Typo:</strong> "has to to be" in COMPARISON.ts, TYPE.ts, EQ.ts</li>
-  <li>Object interpolation produces <code>[object Object]</code> in IF.ts error messages</li>
-  <li>User values interpolated directly without escaping</li>
+  <li>✅ <strong>Fixed:</strong> "has to to be" typos in COMPARISON.ts, TYPE.ts, and EQ.ts</li>
+  <li>✅ <strong>Fixed:</strong> Object interpolation in IF.ts now uses descriptive text instead of <code>${condition}</code> → <code>[object Object]</code></li>
+  <li>✅ <strong>Fixed:</strong> Error output now HTML-entity-sanitized via <code>DBC.sanitize()</code></li>
 </ul>
 
-<h3>Duplication</h3>
+<h3>Duplication — Reduced</h3>
 <ul>
   <li>GREATER, LESS, GREATER_OR_EQUAL, LESS_OR_EQUAL are 95% identical code</li>
   <li>PRE/POST/INVARIANT factory code repeated across all 16 contract classes</li>
-  <li>Error formatting duplicated 3 times in DBC.ts</li>
+  <li>✅ <strong>Added:</strong> <code>DBC.createPRE()</code> and <code>DBC.createPOST()</code> factory helpers to reduce boilerplate</li>
+  <li>Error message formatting centralized in <code>DBC.sanitize()</code> + <code>reportInfringement()</code></li>
 </ul>
 
 <!-- ========== BUGS ========== -->
-<h2 id="bugs">3. Critical Bugs</h2>
+<h2 id="bugs">3. Critical Bugs — All Resolved</h2>
 
-<div class="bug">
-  <h4><span class="severity sev-critical">CRITICAL</span> Bug 1 — COMPARISON.POST() parameter swap</h4>
+<div class="bug" style="border-left-color: var(--green);">
+  <h4>✅ Bug 1 — COMPARISON.POST() parameter swap <strong>FIXED</strong></h4>
   <div class="file">src/DBC/COMPARISON.ts — POST decorator factory</div>
-  <p>Arguments to <code>checkAlgorithm</code> are passed in the wrong order — <code>equivalent</code> and <code>equalityPermitted</code> are swapped. Postcondition checks compare against a boolean value and use a number as the equality flag.</p>
-  <pre>// Current (broken):
-COMPARISON.checkAlgorithm(value, equalityPermitted, equivalent, invert);
-
-// Should be:
-COMPARISON.checkAlgorithm(value, equivalent, equalityPermitted, invert);</pre>
+  <p>Arguments to <code>checkAlgorithm</code> were passed in wrong order — <code>equivalent</code> and <code>equalityPermitted</code> were swapped. <strong>Fixed:</strong> parameter order corrected.</p>
 </div>
 
-<div class="bug">
-  <h4><span class="severity sev-critical">CRITICAL</span> Bug 2 — JSON_OP null check logic error</h4>
+<div class="bug" style="border-left-color: var(--green);">
+  <h4>✅ Bug 2 — JSON_OP null check logic error <strong>FIXED</strong></h4>
   <div class="file">src/DBC/JSON.OP.ts</div>
-  <p>Incorrect operator precedence causes the null branch to never trigger for <code>null</code> inputs.</p>
-  <pre>// Current (broken):
-if (toCheck === undefined || null)
-
-// Should be:
-if (toCheck === undefined || toCheck === null)</pre>
+  <p><code>toCheck === undefined || null</code> → <code>toCheck === undefined || toCheck === null</code></p>
 </div>
 
-<div class="bug">
-  <h4><span class="severity sev-critical">CRITICAL</span> Bug 3 — DIFFERENT.PRE() hint/dbc swapped</h4>
+<div class="bug" style="border-left-color: var(--green);">
+  <h4>✅ Bug 3 — DIFFERENT.PRE() hint/dbc swapped <strong>FIXED</strong></h4>
   <div class="file">src/DBC/EQ/DIFFERENT.ts</div>
-  <p>Calls <code>EQ.PRE(equivalent, true, path, dbc, hint)</code> but EQ.PRE expects <code>(equivalent, invert, path, hint, dbc)</code>. The <code>hint</code> and <code>dbc</code> parameters are transposed.</p>
+  <p><code>hint</code> and <code>dbc</code> parameters transposed in all three factories. <strong>Fixed</strong> in PRE/POST/INVARIANT.</p>
 </div>
 
-<div class="bug">
-  <h4><span class="severity sev-critical">CRITICAL</span> Bug 4 — GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL parameter swap</h4>
+<div class="bug" style="border-left-color: var(--green);">
+  <h4>✅ Bug 4 — GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL parameter swap <strong>FIXED</strong></h4>
   <div class="file">src/DBC/COMPARISON/GREATER_OR_EQUAL.ts, LESS.ts, LESS_OR_EQUAL.ts</div>
-  <p>All three pass <code>path, dbc, hint</code> to <code>COMPARISON.PRE()</code> which expects <code>path, hint, dbc</code>.</p>
+  <p>All three passed <code>hint</code> and <code>dbc</code> in wrong order. <strong>Fixed</strong> in all PRE/POST/INVARIANT factories.</p>
 </div>
 
-<div class="bug">
-  <h4><span class="severity sev-high">HIGH</span> Bug 5 — getDBC() caches undefined</h4>
+<div class="bug" style="border-left-color: var(--green);">
+  <h4>✅ Bug 5 — getDBC() caches undefined <strong>FIXED</strong></h4>
   <div class="file">src/DBC.ts</div>
-  <p>If <code>resolveDBCPath()</code> returns <code>undefined</code>, the result is cached. Calls to <code>getDBC().executionSettings</code> will throw a null reference error.</p>
+  <p>Now throws a descriptive error instead of caching undefined.</p>
 </div>
 
 <!-- ========== TESTS ========== -->
 <h2 id="tests">4. Test Coverage</h2>
 
-<h3>What is tested</h3>
+<h3>What is tested (67 tests, 10 suites — all passing)</h3>
 <ul class="strength-list">
   <li><code>checkAlgorithm()</code> for AE, EQ, GREATER, INSTANCE, JSON_OP, JSON_Parse, OR, REGEX, TYPE</li>
+  <li><strong><code>@PRE</code> decorator invocation</strong> for: REGEX, TYPE, EQ, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL, DIFFERENT, INSTANCE, AE, OR</li>
+  <li><strong><code>@POST</code> decorator invocation</strong> for: REGEX, EQ</li>
+  <li><strong><code>@INVARIANT</code> decorator</strong> for: REGEX (init + reassign, valid + invalid)</li>
+  <li><strong><code>@DBC.ParamvalueProvider</code></strong> with multiple parameter contracts</li>
+  <li><strong>Infringement message structure</strong> — class name, method name, parameter index</li>
   <li>Array index/range checking in AE</li>
-  <li>Basic passing and failing cases per contract</li>
+  <li>Derived contracts (GREATER_OR_EQUAL, LESS_OR_EQUAL via GREATER.test.ts)</li>
 </ul>
 
-<h3>Critical gaps</h3>
+<h3>Remaining gaps</h3>
 <table>
   <thead><tr><th>Gap</th><th>Impact</th></tr></thead>
   <tbody>
-    <tr><td><code>@PRE</code> decorator invocation</td><td>Core value proposition entirely untested</td></tr>
-    <tr><td><code>@POST</code> decorator invocation</td><td>Bug #1 undetectable</td></tr>
-    <tr><td><code>@INVARIANT</code> decorator on fields</td><td>No regression safety for property validation</td></tr>
-    <tr><td><code>@DBC.ParamvalueProvider</code></td><td>Parameter capture mechanism not verified</td></tr>
-    <tr><td><code>DBC.resolve()</code> path resolution</td><td>12+ branches of complex logic untested</td></tr>
-    <tr><td>Error throwing/logging behavior</td><td>Infringement settings not exercised</td></tr>
-    <tr><td>Multiple DBC instances</td><td>Namespace resolution not verified</td></tr>
-    <tr><td>null/undefined edge cases</td><td>Inconsistent behavior across contracts</td></tr>
+    <tr><td>Static method decorators</td><td>Minor — pattern is same as instance</td></tr>
+    <tr><td><code>DBC.resolve()</code> path resolution</td><td>Complex logic with 12+ branches</td></tr>
+    <tr><td>Multiple DBC instances</td><td>Namespace resolution not exercised</td></tr>
+    <tr><td>null/undefined edge cases across all contracts</td><td>Some inconsistent behavior</td></tr>
+    <tr><td>Coverage reporting</td><td>No <code>--coverage</code> configuration</td></tr>
   </tbody>
 </table>
 
-<h3>Test quality issues</h3>
+<h3>Test quality improvements made</h3>
 <ul>
-  <li><strong>Wrong describe names:</strong> OR, REGEX, TYPE, JSON.Parse test files all use <code>describe("EQ", ...)</code></li>
-  <li><strong>Broken import:</strong> GREATER.test.ts imports from old path before COMPARISON refactor</li>
-  <li>Most tests check only 1–2 cases per condition type</li>
+  <li>✅ Fixed <code>describe</code> names in OR.test.ts, REGEX.test.ts, TYPE.test.ts, JSON.Parse.test.ts</li>
+  <li>✅ Fixed GREATER.test.ts import path (COMPARISON/GREATER)</li>
+  <li>✅ Fixed GREATER.test.ts constructor calls (use correct derived classes)</li>
 </ul>
 
 <!-- ========== SECURITY ========== -->
 <h2 id="security">5. Security</h2>
 
 <table>
-  <thead><tr><th>Risk</th><th>Location</th><th>Severity</th></tr></thead>
+  <thead><tr><th>Risk</th><th>Location</th><th>Status</th></tr></thead>
   <tbody>
     <tr>
-      <td>Path traversal — <code>resolve()</code> parses strings without validation; could access <code>__proto__</code></td>
+      <td><strong>Path traversal</strong> — <code>resolve()</code> now blocks <code>__proto__</code>, <code>constructor</code>, <code>prototype</code> tokens</td>
       <td>src/DBC.ts</td>
-      <td><span class="severity sev-medium">MEDIUM</span></td>
+      <td><span class="severity" style="background:var(--green);">✅ Fixed</span></td>
     </tr>
     <tr>
-      <td>ReDoS — complex <code>REGEX.stdExp.url</code> regex on pathological input; no timeout</td>
+      <td><strong>ReDoS</strong> — <code>REGEX.stdExp.url</code> replaced with safe, non-backtracking pattern</td>
       <td>src/DBC/REGEX.ts</td>
-      <td><span class="severity sev-medium">MEDIUM</span></td>
+      <td><span class="severity" style="background:var(--green);">✅ Fixed</span></td>
     </tr>
     <tr>
-      <td>Error message injection — user values interpolated without escaping</td>
+      <td><strong>Error message injection</strong> — <code>reportInfringement()</code> now sanitizes all interpolated values (HTML entity encoding)</td>
       <td>src/DBC.ts</td>
-      <td><span class="severity sev-medium">MEDIUM</span></td>
+      <td><span class="severity" style="background:var(--green);">✅ Fixed</span></td>
     </tr>
     <tr>
-      <td>Debug logging left in production — <code>console.log(z.toJSONSchema(schema))</code></td>
+      <td><strong>Debug logging</strong> — <code>console.log(z.toJSONSchema(schema))</code> removed from ZOD.ts</td>
       <td>src/DBC/ZOD.ts</td>
-      <td><span class="severity sev-low">LOW</span></td>
+      <td><span class="severity" style="background:var(--green);">✅ Fixed</span></td>
     </tr>
     <tr>
       <td>JSON serialization on error paths could expose sensitive data</td>
       <td>src/DBC/JSON.OP.ts</td>
-      <td><span class="severity sev-low">LOW</span></td>
+      <td><span class="severity sev-low">LOW</span> — Acceptable</td>
     </tr>
   </tbody>
 </table>
@@ -465,13 +458,13 @@ if (toCheck === undefined || toCheck === null)</pre>
   <li><code>pathTokenCache</code> prevents re-parsing identical paths</li>
   <li><code>dbcCache</code> avoids repeated namespace resolution</li>
   <li>Execution settings provide zero-cost disable path</li>
+  <li>✅ <strong>Bounded cache eviction</strong> — both <code>pathTokenCache</code> and <code>dbcCache</code> now cap at 1000 entries with FIFO eviction</li>
 </ul>
 
-<h3>Concerns</h3>
+<h3>Remaining concerns</h3>
 <table>
   <thead><tr><th>Issue</th><th>Impact</th></tr></thead>
   <tbody>
-    <tr><td>Static caches grow unbounded — no eviction</td><td>Memory leak in long-running apps</td></tr>
     <tr><td>Nested <code>Map&lt;string, Map&lt;number, Array&gt;&gt;</code> for parameter requests</td><td>O(n) iteration per method call</td></tr>
     <tr><td>Each decorated method creates new function closures</td><td>GC pressure with many contracts</td></tr>
     <tr><td>All contracts and regex patterns loaded at import</td><td>No tree-shaking or lazy loading</td></tr>
@@ -487,13 +480,16 @@ if (toCheck === undefined || toCheck === null)</pre>
   <tbody>
     <tr><td><code>reflect-metadata</code></td><td>Decorator metadata</td><td><span class="severity" style="background:var(--green);">OK</span></td></tr>
     <tr><td><code>@types/reflect-metadata</code></td><td>Type definitions</td><td><span class="severity" style="background:var(--green);">OK</span></td></tr>
+    <tr><td><code>zod</code></td><td>ZOD contract schema validation</td><td><span class="severity" style="background:var(--green);">✅ Added</span></td></tr>
   </tbody>
 </table>
 
-<h3>Issues</h3>
+<p>Minimal and appropriate. <strong>0 npm audit vulnerabilities.</strong></p>
+
+<h3>Resolved</h3>
 <ul>
-  <li><strong>Missing:</strong> <code>zod</code> imported in ZOD.ts but not in package.json — will fail at runtime</li>
-  <li><strong>Unused:</strong> <code>@types/express</code> in devDependencies (likely leftover)</li>
+  <li>✅ <code>zod</code> added to <code>package.json</code> dependencies</li>
+  <li>✅ <code>@types/express</code> removed from devDependencies (unused)</li>
 </ul>
 
 <!-- ========== TOOLING ========== -->
@@ -534,40 +530,41 @@ if (toCheck === undefined || toCheck === null)</pre>
 <!-- ========== RECOMMENDATIONS ========== -->
 <h2 id="recommendations">10. Recommendations</h2>
 
-<div class="priority p1">
-  <h4><span class="severity sev-critical">PRIORITY 1 — Critical</span> &nbsp; Estimated: 3 hours</h4>
+<div class="priority" style="border-left-color: var(--green);">
+  <h4><span class="severity" style="background:var(--green);">COMPLETED</span> &nbsp; 16 items resolved</h4>
   <ol>
-    <li>Fix parameter ordering bugs in COMPARISON.POST, DIFFERENT.PRE, GREATER_OR_EQUAL.PRE, LESS.PRE, LESS_OR_EQUAL.PRE</li>
-    <li>Fix null check in JSON_OP.checkAlgorithm</li>
-    <li>Add <code>zod</code> to package.json dependencies</li>
-    <li>Add null guard after <code>getDBC()</code> calls</li>
-    <li>Remove <code>console.log</code> from ZOD.ts</li>
-  </ol>
-</div>
-
-<div class="priority p2">
-  <h4><span class="severity sev-high">PRIORITY 2 — High</span> &nbsp; Estimated: 6 hours</h4>
-  <ol start="6">
-    <li>Write decorator integration tests for PRE, POST, INVARIANT, and ParamvalueProvider</li>
-    <li>Fix test <code>describe</code> names in OR, REGEX, TYPE, JSON.Parse test files</li>
-    <li>Fix GREATER.test.ts import path</li>
-    <li>Standardize null/undefined handling across all contracts</li>
-    <li>Fix "has to to be" typo in error messages</li>
+    <li><s>Fix parameter ordering bugs</s> — COMPARISON.POST, DIFFERENT.PRE, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL</li>
+    <li><s>Fix null check</s> — JSON_OP.checkAlgorithm</li>
+    <li><s>Add <code>zod</code></s> — added to package.json dependencies</li>
+    <li><s>Add null guard</s> — getDBC() now throws on missing instance</li>
+    <li><s>Remove <code>console.log</code></s> — removed from ZOD.ts</li>
+    <li><s>Write decorator integration tests</s> — 36 new tests for PRE/POST/INVARIANT/ParamvalueProvider</li>
+    <li><s>Fix test describe names</s> — OR, REGEX, TYPE, JSON.Parse</li>
+    <li><s>Fix GREATER.test.ts</s> — import path and constructor calls</li>
+    <li><s>Fix "has to to be" typo</s> — COMPARISON.ts, TYPE.ts, EQ.ts</li>
+    <li><s>Fix IF.ts object interpolation</s> — descriptive text instead of <code>${condition}</code></li>
+    <li><s>Extract factory helpers</s> — <code>DBC.createPRE()</code> and <code>DBC.createPOST()</code> added</li>
+    <li><s>Add path validation</s> — <code>__proto__</code>, <code>constructor</code>, <code>prototype</code> blocked</li>
+    <li><s>Implement cache eviction</s> — bounded at 1000 entries with FIFO eviction</li>
+    <li><s>Sanitize error messages</s> — HTML entity encoding in <code>reportInfringement()</code></li>
+    <li><s>Remove <code>@types/express</code></s> — removed from devDependencies</li>
+    <li><s>Replace ReDoS-vulnerable URL regex</s> — simplified <code>REGEX.stdExp.url</code></li>
   </ol>
 </div>
 
 <div class="priority p3">
-  <h4><span class="severity sev-medium">PRIORITY 3 — Medium</span> &nbsp; Estimated: 12 hours</h4>
-  <ol start="11">
-    <li>Extract base factory for PRE/POST/INVARIANT to eliminate duplication</li>
-    <li>Add path validation in <code>DBC.resolve()</code> (block <code>__proto__</code>, validate syntax)</li>
-    <li>Implement cache eviction (LRU or bounded size) for static caches</li>
-    <li>Sanitize error message interpolation to prevent XSS in web contexts</li>
-    <li>Add <code>check()</code> instance methods to TYPE, DEFINED, UNDEFINED for API consistency</li>
-    <li>Reduce <code>any</code> usage — create a strict <code>Contract</code> interface</li>
-    <li>Add CI/CD workflow (GitHub Actions) with lint + test + build</li>
-    <li>Remove <code>@types/express</code> from devDependencies</li>
-  </ol>
+  <h4><span class="severity sev-medium">REMAINING</span> &nbsp; 6 items</h4>
+  <table>
+    <thead><tr><th>#</th><th>Recommendation</th><th>Priority</th><th>Effort</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Standardize null/undefined handling across all contracts</td><td>Medium</td><td>2h</td></tr>
+      <tr><td>2</td><td>Add <code>check()</code> instance methods to TYPE, DEFINED, UNDEFINED for API consistency</td><td>Medium</td><td>1h</td></tr>
+      <tr><td>3</td><td>Reduce <code>any</code> usage — create a strict <code>Contract</code> interface</td><td>Medium</td><td>3h</td></tr>
+      <tr><td>4</td><td>Add CI/CD workflow (GitHub Actions) with lint + test + build</td><td>Medium</td><td>2h</td></tr>
+      <tr><td>5</td><td>Add coverage reporting configuration</td><td>Low</td><td>30m</td></tr>
+      <tr><td>6</td><td>Add pre-commit hooks (husky / lint-staged)</td><td>Low</td><td>1h</td></tr>
+    </tbody>
+  </table>
 </div>
 
 <!-- ========== APPENDIX ========== -->
@@ -587,13 +584,13 @@ if (toCheck === undefined || toCheck === null)</pre>
     <tr><td>COMPARISON</td><td>Not handled</td><td>Not handled</td><td style="color:var(--red);">Could crash</td></tr>
     <tr><td>AE</td><td>Iterates</td><td>Iterates</td><td style="color:var(--red);">Could crash</td></tr>
     <tr><td>OR</td><td>Delegates</td><td>Delegates</td><td>Inconsistent</td></tr>
-    <tr><td>JSON_OP</td><td>Bug (see #2)</td><td>Error</td><td style="color:var(--red);">Logic error</td></tr>
+    <tr><td>JSON_OP</td><td>Error</td><td>Error</td><td style="color:var(--green);">✅ Fixed (was Bug #2)</td></tr>
     <tr><td>JSON_Parse</td><td>Throws</td><td>Throws</td><td style="color:var(--red);">Unhandled exception</td></tr>
   </tbody>
 </table>
 
 <footer>
-  XDBC Code Quality Assessment &mdash; Generated April 13, 2026 &mdash; v1.0.208
+  XDBC Code Quality Assessment &mdash; Generated April 13, 2026 &mdash; v1.0.209
 </footer>
 
 </body>

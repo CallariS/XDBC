@@ -42,7 +42,7 @@ export class DIFFERENT extends EQ {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return EQ.PRE(equivalent, true, path, dbc, hint);
+		return EQ.PRE(equivalent, true, path, hint, dbc);
 	}
 
 	public static override POST(
@@ -63,7 +63,7 @@ export class DIFFERENT extends EQ {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return EQ.POST(equivalent, true, path, dbc, hint);
+		return EQ.POST(equivalent, true, path, hint, dbc);
 	}
 	public static override INVARIANT(
 		equivalent,
@@ -83,7 +83,7 @@ export class DIFFERENT extends EQ {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return EQ.INVARIANT(equivalent, true, path, dbc, hint);
+		return EQ.INVARIANT(equivalent, true, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.constructor }. */
 	constructor(public equivalent) {

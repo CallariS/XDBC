@@ -21,11 +21,11 @@ export class EQ extends DBC {
 		invert,
 	): boolean | string {
 		if (!invert && equivalent !== toCheck) {
-			return `Value has to to be equal to "${equivalent}"`;
+			return `Value has to be equal to "${equivalent}"`;
 		}
 
 		if (invert && equivalent === toCheck) {
-			return `Value must not to be equal to "${equivalent}"`;
+			return `Value must not be equal to "${equivalent}"`;
 		}
 
 		return true;

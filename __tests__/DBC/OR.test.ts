@@ -1,7 +1,7 @@
 import { OR } from "../../src/DBC/OR";
 import { EQ } from "../../src/DBC/EQ";
 
-describe("EQ", () => {
+describe("OR", () => {
 	const or = new OR([new EQ("a"), new EQ("b")]);
 
 	test("Should not report infringement with 'b' to check", () => {

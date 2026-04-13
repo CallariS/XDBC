@@ -23,7 +23,7 @@ export class JSON_OP extends DBC {
 		necessaryProperties: Array<{ name: string; type: string }>,
 		checkElements,
 	): boolean | string {
-		if (toCheck === undefined || null) {
+		if (toCheck === undefined || toCheck === null) {
 			return `[ UNDEFINED or NULL received instead of object with following properties: ${JSON.stringify(necessaryProperties)} ]`;
 		}
 

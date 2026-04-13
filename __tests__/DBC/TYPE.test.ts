@@ -1,6 +1,6 @@
 import { TYPE } from "../../src/DBC/TYPE";
 
-describe("EQ", () => {
+describe("TYPE", () => {
 	const type = new TYPE("string");
 
 	test("Should not report infringement with 'a' to check", () => {

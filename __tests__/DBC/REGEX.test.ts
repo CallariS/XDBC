@@ -1,6 +1,6 @@
 import { REGEX } from "../../src/DBC/REGEX";
 
-describe("EQ", () => {
+describe("REGEX", () => {
 	const regex = new REGEX(/^a$/);
 
 	test("Should not report infringement with 'a' to check", () => {

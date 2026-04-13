@@ -25,11 +25,11 @@ export class IF extends DBC {
 		invert,
 	): boolean | string {
 		if (invert && !condition.check(toCheck) && !inCase.check(toCheck)) {
-			return `In case that the value complies to "${condition}" it also has to comply to "${inCase}"`;
+			return `In case that the value does not comply to the condition, it also has to comply to the required contract`;
 		}
 
 		if (!invert && condition.check(toCheck) && !inCase.check(toCheck)) {
-			return `In case that the value does not comply to "${condition}" it has to comply to "${inCase}"`;
+			return `In case that the value complies to the condition, it has to comply to the required contract`;
 		}
 
 		return true;
