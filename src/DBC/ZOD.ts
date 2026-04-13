@@ -17,7 +17,7 @@ export class ZOD extends DBC {
 	// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
 	public static checkAlgorithm(toCheck: any, schema: z.ZodType): boolean | string {
 		if (!schema.safeParse(toCheck).success) {
-			return `Value has to correspond to "${JSON.stringify( z.toJSONSchema(schema).properties )}" but is constituted as "${JSON.stringify( toCheck )}"`;
+			return `Value has to correspond to "${JSON.stringify(z.toJSONSchema(schema).properties)}" but is constituted as "${JSON.stringify(toCheck)}"`;
 		}
 
 		return true;
@@ -123,14 +123,14 @@ export class ZOD extends DBC {
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link ZOD }.
 	 * 
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link DEFINED }. */
-	public static tsCheck < CANDIDATE = unknown > ( toCheck : any, schema : z.ZodType, id : string | undefined = undefined ) : CANDIDATE {
+	public static tsCheck<CANDIDATE = unknown>(toCheck: any, schema: z.ZodType, id: string | undefined = undefined): CANDIDATE {
 		const result = ZOD.checkAlgorithm(toCheck, schema);
 
-		if( result === true ) {
-			return toCheck ;
+		if (result === true) {
+			return toCheck;
 		}
 		else {
-			throw new DBC.Infringement( `${id?`(${id}) `:""}${result as string }`);
+			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}`);
 		}
 	}
 	/**

@@ -18,7 +18,8 @@ export class DBC {
 	private static getHost(): unknown {
 		return typeof window !== "undefined" ? window : globalThis;
 	}
-	private static getDBC(dbc: string | undefined): DBC {
+	private static getDBC(dbc: string | DBC | undefined): DBC {
+		if (dbc instanceof DBC) return dbc;
 		const path = dbc ?? "WaXCode.DBC";
 		if (DBC.dbcCache.has(path)) {
 			return DBC.dbcCache.get(path);
@@ -611,8 +612,8 @@ export class DBC {
 			?.split(".")
 			.reduce((accumulator, current) => accumulator[current], obj);
 	/**
-	 * Constructs this {@link DBC } by setting the {@link DBC.infringementSettings }, define the **WaXCode** namespace in
-	 * **window** if not yet available and setting the property **DBC** in there to the instance of this {@link DBC }.
+	 * Constructs this {@link DBC } without mounting it on the global namespace.
+	 * Use {@link DBC.register } to make the instance available at a specific path on globalThis.
 	 *
 	 * @param infringementSettings 	See {@link DBC.infringementSettings }.
 	 * @param executionSettings		See {@link DBC.executionSettings }. */
@@ -632,12 +633,44 @@ export class DBC {
 			},
 	) {
 		this.infringementSettings = infringementSettings;
-
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		if ((DBC.getHost() as any).WaXCode === undefined) (DBC.getHost() as any).WaXCode = {};
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		(DBC.getHost() as any).WaXCode.DBC = this;
-		DBC.dbcCache.set("WaXCode.DBC", this);
+		this.executionSettings = executionSettings;
+	}
+	/**
+	 * Registers a {@link DBC } instance at the specified dotted path on globalThis (or window),
+	 * making it available for decorator resolution via string paths.
+	 *
+	 * @param instance	The {@link DBC } instance to register.
+	 * @param path		The dotted path to register at (default: `"WaXCode.DBC"`). */
+	static register(instance: DBC, path = "WaXCode.DBC"): void {
+		const segments = path.split(".");
+		// biome-ignore lint/suspicious/noExplicitAny: Must walk dynamic global namespace.
+		let obj: any = DBC.getHost();
+		for (let i = 0; i < segments.length - 1; i++) {
+			if (obj[segments[i]] === undefined) obj[segments[i]] = {};
+			obj = obj[segments[i]];
+		}
+		obj[segments[segments.length - 1]] = instance;
+		DBC.dbcCache.set(path, instance);
+	}
+	/**
+	 * Executes a callback with an isolated {@link DBC } instance temporarily registered at the default path.
+	 * The previous instance (if any) is restored after the callback completes — even if it throws.
+	 * Useful for test isolation.
+	 *
+	 * @param fn The callback receiving the isolated {@link DBC } instance. */
+	static isolated(fn: (dbc: DBC) => void): void {
+		const saved = DBC.dbcCache.get("WaXCode.DBC");
+		const testDbc = new DBC();
+		DBC.register(testDbc);
+		try {
+			fn(testDbc);
+		} finally {
+			if (saved) {
+				DBC.register(saved);
+			} else {
+				DBC.dbcCache.delete("WaXCode.DBC");
+			}
+		}
 	}
 	/**
 	 * Resolves the desired {@link object } out a given one **toResolveFrom** using the specified **path**.
@@ -698,5 +731,5 @@ export class DBC {
 		return current;
 	}
 }
-// Set the main instance with standard **DBC.infringementSettings**.
-new DBC();
+// Register the default instance with standard settings.
+DBC.register(new DBC());
