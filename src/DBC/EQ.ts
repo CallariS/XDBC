@@ -138,14 +138,14 @@ export class EQ extends DBC {
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link EQ }.
 	 * 
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link EQ }.*/
-	public static tsCheck<CANDIDATE>(toCheck: CANDIDATE | undefined | null, equivalent: any): CANDIDATE {
+	public static tsCheck<CANDIDATE>(toCheck: CANDIDATE | undefined | null, equivalent: any, hint: string = undefined, id: string | undefined = undefined): CANDIDATE {
 		const result = EQ.checkAlgorithm(toCheck, equivalent, false);
 
 		if (result) {
 			return toCheck as CANDIDATE;
 		}
 		else {
-			throw new DBC.Infringement(result as string);
+			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string} ${hint ? `✨ ${hint} ✨` : ""}`);
 		}
 	}
 	/**

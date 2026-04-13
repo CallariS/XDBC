@@ -38,7 +38,7 @@ export class INSTANCE extends DBC {
 	 * @returns See {@link DBC.decPrecondition }. */
 	public static PRE(
 		// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
-		reference: any,
+		reference: any | any[],
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
@@ -54,7 +54,7 @@ export class INSTANCE extends DBC {
 				methodName: string,
 				parameterIndex: number,
 			) => {
-				return INSTANCE.checkAlgorithm(value, reference);
+				return Array.isArray(reference) ? INSTANCE.checkAlgorithm(value, ...reference) : INSTANCE.checkAlgorithm(value, reference);
 			},
 			dbc,
 			path,
@@ -72,7 +72,7 @@ export class INSTANCE extends DBC {
 	 * @returns See {@link DBC.decPostcondition }. */
 	public static POST(
 		// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
-		reference: any,
+		reference: any | any[],
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
@@ -83,7 +83,7 @@ export class INSTANCE extends DBC {
 	) => PropertyDescriptor {
 		return DBC.decPostcondition(
 			(value: object, target: object, propertyKey: string) => {
-				return INSTANCE.checkAlgorithm(value, reference);
+				return Array.isArray(reference) ? INSTANCE.checkAlgorithm(value, ...reference) : INSTANCE.checkAlgorithm(value, reference);
 			},
 			dbc,
 			path,
@@ -101,7 +101,7 @@ export class INSTANCE extends DBC {
 	 * @returns See {@link DBC.decInvariant }. */
 	public static INVARIANT(
 		// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
-		reference: any,
+		reference: any | any[],
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
@@ -121,7 +121,7 @@ export class INSTANCE extends DBC {
 	 * @returns See {@link INSTANCE.checkAlgorithm}. */
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
-		return INSTANCE.checkAlgorithm(toCheck, this.reference);
+		return Array.isArray(this.reference) ? INSTANCE.checkAlgorithm(toCheck, ...this.reference) : INSTANCE.checkAlgorithm(toCheck, this.reference);
 	}
 	/**
 	 * Type-safe check that validates if a value is an instance of a specified reference.

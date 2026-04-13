@@ -572,35 +572,34 @@ export class DBC {
 	 *
 	 * @returns The requested {@link object }, NULL or UNDEFINED. */
 	public static resolve(toResolveFrom: unknown, path: string) {
-		if (!toResolveFrom || typeof path !== "string") {
-			return undefined;
-		}
+		if (!toResolveFrom || typeof path !== "string") { return undefined; }
+
 		const cachedParts = DBC.pathTokenCache.get(path);
-		const parts =
-			cachedParts ??
-			path.replace(/\[(['"]?)(.*?)\1\]/g, ".$2").split("."); // Handle indexers
-		if (!cachedParts) {
-			DBC.pathTokenCache.set(path, parts);
-		}
+		const parts = cachedParts ?? path.replace(/\[(['"]?)(.*?)\1\]/g, ".$2").split(".");
+
+		if (!cachedParts) { DBC.pathTokenCache.set(path, parts); }
 
 		let current = toResolveFrom;
+
 		for (const part of parts) {
-			if (current === null || typeof current === "undefined") {
-				return undefined;
-			}
+			if (current === null || typeof current === "undefined") { return undefined; }
 
 			const methodMatch = part.match(/(\w+)\((.*)\)/);
+
 			if (methodMatch) {
 				const methodName = methodMatch[1];
 				const argsStr = methodMatch[2];
-				const args = argsStr.split(",").map((arg) => arg.trim()); // Simple argument parsing
+				const args = argsStr.split(",").map((arg) => arg.trim());
+
 				if (typeof current[methodName] === "function") {
 					current = current[methodName].apply(current, args);
-				} else {
-					return undefined; // Method not found or not a function
-				}
+				} else { return undefined; }
 			} else {
-				current = current[part];
+				if (typeof window !== "undefined" && typeof HTMLElement !== "undefined" && current instanceof HTMLElement && part.startsWith("@")) {
+					current = current.getAttribute(part.slice(1));
+				} else if (typeof current === "object" && current !== null && part in current) { current = current[part]; }
+				else if (typeof window !== "undefined" && typeof HTMLElement !== "undefined" && current instanceof HTMLElement) { current = undefined; }
+				else { current = undefined; }
 			}
 		}
 

@@ -6,33 +6,34 @@ export class GREATER extends COMPARISON {
 		equivalent,
 		equalityPermitted = false,
 		invert = false,
-		dbc: string | undefined = undefined,
+
 		path: string = undefined,
 		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	) {
-		return COMPARISON.PRE(equivalent, false, false, path, dbc, hint);
+		return COMPARISON.PRE(equivalent, false, false, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.POST }. */
 	public static override POST(
 		equivalent,
 		equalityPermitted = false,
 		invert = false,
-		dbc: string | undefined = undefined,
 		path: string = undefined,
 		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined
 	) {
-		return COMPARISON.POST(equivalent, false, false, path, dbc, hint);
+		return COMPARISON.POST(equivalent, false, false, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.INVARIANT }. */
 	public static override INVARIANT(
 		equivalent,
 		equalityPermitted = false,
 		invert = false,
-		dbc: string | undefined = undefined,
 		path: string = undefined,
-		hint: string | undefined = undefined
+		hint: string | undefined = undefined,
+		dbc: string | undefined = undefined
 	) {
-		return COMPARISON.INVARIANT(equivalent, false, false, path, dbc, hint);
+		return COMPARISON.INVARIANT(equivalent, false, false, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.constructor }. */
 	constructor(public override equivalent) {
