@@ -16,8 +16,9 @@ export class ZOD extends DBC {
 	 * @returns TRUE if the value **toCheck** complies to the specified **schema**, otherwise FALSE. */
 	// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
 	public static checkAlgorithm(toCheck: any, schema: z.ZodType): boolean | string {
-		if (!schema.safeParse(toCheck).success) {
-			return `Value has to correspond to "${JSON.stringify(z.toJSONSchema(schema).properties)}" but is constituted as "${JSON.stringify(toCheck)}"`;
+		const result = schema.safeParse(toCheck);
+		if (!result.success) {
+			return `Value does not comply to the specified schema. Received: "${JSON.stringify(toCheck)}". Errors: ${result.error.message}`;
 		}
 
 		return true;
@@ -41,18 +42,7 @@ export class ZOD extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.decPrecondition(
-			(
-				value: object,
-				target: object,
-				methodName: string,
-				parameterIndex: number,
-			) => {
-				return ZOD.checkAlgorithm(value, schema);
-			},
-			dbc,
-			path,
-		);
+		return DBC.createPRE(ZOD.checkAlgorithm, [schema], dbc, path);
 	}
 	/**
 	 * A method-decorator factory using the {@link ZOD.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -73,13 +63,7 @@ export class ZOD extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.decPostcondition(
-			(value: object, target: object, propertyKey: string) => {
-				return ZOD.checkAlgorithm(value, schema);
-			},
-			dbc,
-			path,
-		);
+		return DBC.createPOST(ZOD.checkAlgorithm, [schema], dbc, path);
 	}
 	/**
 	 * A field-decorator factory using the {@link ZOD.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -96,7 +80,7 @@ export class ZOD extends DBC {
 		path: string | undefined = undefined,
 		dbc = "WaXCode.DBC",
 	) {
-		return DBC.decInvariant([new ZOD(schema)], path, dbc);
+		return DBC.createINVARIANT(ZOD, [schema], dbc, path);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.

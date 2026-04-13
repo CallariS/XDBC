@@ -14,7 +14,8 @@ export class COMPARISON extends DBC {
 	 * 						fulfilled.
 	 *
 	 * @returns TRUE if the value **toCheck** and the **equivalent** are equal to each other, otherwise FALSE. */
-	static checkAlgorithm(toCheck, equivalent, equalityPermitted, invert) {
+	// biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic comparison
+	static checkAlgorithm(toCheck: any, equivalent: any, equalityPermitted: boolean, invert: boolean) {
 		if (equalityPermitted && !invert && toCheck < equivalent) {
 			return `Value has to be greater than or equal to "${equivalent}"`;
 		}
@@ -45,26 +46,15 @@ export class COMPARISON extends DBC {
 	 *
 	 * @returns See {@link DBC.decPrecondition }. */
 	static PRE(
-		equivalent,
+		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
+		equivalent: any,
 		equalityPermitted = false,
 		invert = false,
-		path: string = undefined,
+		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decPrecondition(
-			(value, target, methodName, parameterIndex) => {
-				return COMPARISON.checkAlgorithm(
-					value,
-					equivalent,
-					equalityPermitted,
-					invert,
-				);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPRE(COMPARISON.checkAlgorithm, [equivalent, equalityPermitted, invert], dbc, path, hint);
 	}
 	/**
 	 * A method-decorator factory using the {@link COMPARISON.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -78,26 +68,15 @@ export class COMPARISON extends DBC {
 	 *
 	 * @returns See {@link DBC.decPostcondition }. */
 	static POST(
-		equivalent,
+		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
+		equivalent: any,
 		equalityPermitted = false,
 		invert = false,
-		path: string = undefined,
+		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decPostcondition(
-			(value, target, propertyKey) => {
-				return COMPARISON.checkAlgorithm(
-					value,
-					equivalent,
-					equalityPermitted,
-					invert,
-				);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPOST(COMPARISON.checkAlgorithm, [equivalent, equalityPermitted, invert], dbc, path, hint);
 	}
 	/**
 	 * A field-decorator factory using the {@link COMPARISON.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -111,19 +90,15 @@ export class COMPARISON extends DBC {
 	 *
 	 * @returns See {@link DBC.decInvariant }. */
 	static INVARIANT(
-		equivalent,
+		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
+		equivalent: any,
 		equalityPermitted = false,
 		invert = false,
-		path: string = undefined,
+		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant(
-			[new COMPARISON(equivalent, equalityPermitted, invert)],
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createINVARIANT(COMPARISON, [equivalent, equalityPermitted, invert], dbc, path, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -134,7 +109,8 @@ export class COMPARISON extends DBC {
 	 * @param toCheck See {@link COMPARISON.checkAlgorithm }.
 	 *
 	 * @returns See {@link COMPARISON.checkAlgorithm}. */
-	public check(toCheck) {
+	// biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic comparison
+	public check(toCheck: any) {
 		return COMPARISON.checkAlgorithm(
 			toCheck,
 			this.equivalent,
@@ -149,7 +125,8 @@ export class COMPARISON extends DBC {
 	 * @param equalityPermitted See {@link COMPARISON.check }.
 	 * @param invert            See {@link COMPARISON.check }. */
 	constructor(
-		public equivalent,
+		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
+		public equivalent: any,
 		public equalityPermitted = false,
 		public invert = false,
 	) {

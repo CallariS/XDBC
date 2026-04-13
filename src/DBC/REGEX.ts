@@ -5,23 +5,43 @@ import { DBC } from "../DBC";
  * @remarks
  * Maintainer: Callari, Salvatore (XDBC@WaXCode.net) */
 export class REGEX extends DBC {
-	/** Stores often used {@link RegExp }s. */
-	public static stdExp = {
-		htmlAttributeName: /^[a-zA-Z_:][a-zA-Z0-9_.:-]*$/,
-		eMail: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
-		property: /^[$_A-Za-z][$_A-Za-z0-9]*$/,
-		url: /^(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i,
-		keyPath: /^([a-zA-Z_$][a-zA-Z0-9_$]*\.)*[a-zA-Z_$][a-zA-Z0-9_$]*$/,
-		date: /^\d{1,4}[.\/-]\d{1,2}[.\/-]\d{1,4}$/i,
-		dateFormat:
-			/^((D{1,2}[./-]M{1,2}[./-]Y{1,4})|(M{1,2}[./-]D{1,2}[./-]Y{1,4})|Y{1,4}[./-]D{1,2}[./-]M{1,2}|(Y{1,4}[./-]M{1,2}[./-]D{1,2}))$/i,
-		cssSelector:
-			/^(?:\*|#[\w-]+|\.[\w-]+|(?:[\w-]+|\*)(?::(?:[\w-]+(?:\([\w-]+\))?)+)?(?:\[(?:[\w-]+(?:(?:=|~=|\|=|\*=|\$=|\^=)\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*)?)?\])+|\[\s*[\w-]+\s*=\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*\])(?:,\s*(?:\*|#[\w-]+|\.[\w-]+|(?:[\w-]+|\*)(?::(?:[\w-]+(?:\([\w-]+\))?)+)?(?:\[(?:[\w-]+(?:(?:=|~=|\|=|\*=|\$=|\^=)\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*)?)?\])+|\[\s*[\w-]+\s*=\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*\]))*$/,
-		boolean: /^(TRUE|FALSE)$/i,
-		colorCodeHEX: /^#([A-Fa-f\d]{3,4}|[A-Fa-f\d]{6}|[A-Fa-f\d]{8})$/i,
-		simpleHotkey: /^((Alt|Ctrl|Shift|Meta)\+)+[a-z\d]$/i,
-		bcp47: /^(?:[a-z]{2,3}(?:-[a-z]{3}){0,3}|[a-z]{4}|[a-z]{5,8})(?:-[a-z]{4})?(?:-[a-z]{2}|-[0-9]{3})?(?:-[a-z0-9]{5,8}|-[0-9][a-z0-9]{3})*(?:-[0-9a-wy-z](?:-[a-z0-9]{2,8})+)*(?:-x(?:-[a-z0-9]{1,8})+)?$|^x(?:-[a-z0-9]{1,8})+$/i
-	};
+	/** Stores often used {@link RegExp }s. Patterns are compiled lazily on first access. */
+	private static _stdExp: {
+		htmlAttributeName: RegExp;
+		eMail: RegExp;
+		property: RegExp;
+		url: RegExp;
+		keyPath: RegExp;
+		date: RegExp;
+		dateFormat: RegExp;
+		cssSelector: RegExp;
+		boolean: RegExp;
+		colorCodeHEX: RegExp;
+		simpleHotkey: RegExp;
+		bcp47: RegExp;
+	} | undefined;
+
+	public static get stdExp() {
+		if (!REGEX._stdExp) {
+			REGEX._stdExp = {
+				htmlAttributeName: /^[a-zA-Z_:][a-zA-Z0-9_.:-]*$/,
+				eMail: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
+				property: /^[$_A-Za-z][$_A-Za-z0-9]*$/,
+				url: /^(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i,
+				keyPath: /^([a-zA-Z_$][a-zA-Z0-9_$]*\.)*[a-zA-Z_$][a-zA-Z0-9_$]*$/,
+				date: /^\d{1,4}[.\/-]\d{1,2}[.\/-]\d{1,4}$/i,
+				dateFormat:
+					/^((D{1,2}[./-]M{1,2}[./-]Y{1,4})|(M{1,2}[./-]D{1,2}[./-]Y{1,4})|Y{1,4}[./-]D{1,2}[./-]M{1,2}|(Y{1,4}[./-]M{1,2}[./-]D{1,2}))$/i,
+				cssSelector:
+					/^(?:\*|#[\w-]+|\.[\w-]+|(?:[\w-]+|\*)(?::(?:[\w-]+(?:\([\w-]+\))?)+)?(?:\[(?:[\w-]+(?:(?:=|~=|\|=|\*=|\$=|\^=)\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*)?)?\])+|\[\s*[\w-]+\s*=\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*\])(?:,\s*(?:\*|#[\w-]+|\.[\w-]+|(?:[\w-]+|\*)(?::(?:[\w-]+(?:\([\w-]+\))?)+)?(?:\[(?:[\w-]+(?:(?:=|~=|\|=|\*=|\$=|\^=)\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*)?)?\])+|\[\s*[\w-]+\s*=\s*(?:"[^"]*"|'[^']*'|[\w-]+)\s*\]))*$/,
+				boolean: /^(TRUE|FALSE)$/i,
+				colorCodeHEX: /^#([A-Fa-f\d]{3,4}|[A-Fa-f\d]{6}|[A-Fa-f\d]{8})$/i,
+				simpleHotkey: /^((Alt|Ctrl|Shift|Meta)\+)+[a-z\d]$/i,
+				bcp47: /^(?:[a-z]{2,3}(?:-[a-z]{3}){0,3}|[a-z]{4}|[a-z]{5,8})(?:-[a-z]{4})?(?:-[a-z]{2}|-[0-9]{3})?(?:-[a-z0-9]{5,8}|-[0-9][a-z0-9]{3})*(?:-[0-9a-wy-z](?:-[a-z0-9]{2,8})+)*(?:-x(?:-[a-z0-9]{1,8})+)?$|^x(?:-[a-z0-9]{1,8})+$/i
+			};
+		}
+		return REGEX._stdExp;
+	}
 	// #region Condition checking.
 	/**
 	 * Checks if the value **toCheck** is complies to the {@link RegExp } **expression**.
@@ -62,19 +82,7 @@ export class REGEX extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.decPrecondition(
-			(
-				value: string,
-				target: object,
-				methodName: string,
-				parameterIndex: number,
-			) => {
-				return REGEX.checkAlgorithm(value, expression);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPRE(REGEX.checkAlgorithm, [expression], dbc, path, hint);
 	}
 	/**
 	 * A method-decorator factory using the {@link REGEX.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -96,14 +104,7 @@ export class REGEX extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.decPostcondition(
-			(value: string, target: object, propertyKey: string) => {
-				return REGEX.checkAlgorithm(value, expression);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPOST(REGEX.checkAlgorithm, [expression], dbc, path, hint);
 	}
 	/**
 	 * A field-decorator factory using the {@link REGEX.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -120,7 +121,7 @@ export class REGEX extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new REGEX(expression)], path, dbc, hint);
+		return DBC.createINVARIANT(REGEX, [expression], dbc, path, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -147,7 +148,7 @@ export class REGEX extends DBC {
 	 * @returns The validated value cast to the CANDIDATE type.
 	 * 
 	 * @throws {@link DBC.Infringement} if the value does not match the regular expression. */
-	public static tsCheck<CANDIDATE = unknown>(toCheck: any, expression: RegExp, hint: string = undefined, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE = unknown>(toCheck: any, expression: RegExp, hint: string | undefined = undefined, id: string | undefined = undefined): CANDIDATE {
 		const result = REGEX.checkAlgorithm(toCheck, expression);
 
 		if (result) {

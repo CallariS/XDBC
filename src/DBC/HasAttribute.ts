@@ -19,16 +19,16 @@ export class HasAttribute extends DBC {
 		toCheckFor: string,
 		invert,
 	): boolean | string {
-		if(!( toCheck instanceof HTMLElement )) {
-			return `The object to check for whether it has the attribute "${ toCheckFor }" is not a HTMLElement. It is of type "${ typeof toCheck }".`;
+		if (!(toCheck instanceof HTMLElement)) {
+			return `The object to check for whether it has the attribute "${toCheckFor}" is not a HTMLElement. It is of type "${typeof toCheck}".`;
 		}
 
-		if (!invert && !( toCheck as HTMLElement ).hasAttribute( toCheckFor )) {
-			return `Required Attribute "${ toCheckFor }" is not set.`;
+		if (!invert && !(toCheck as HTMLElement).hasAttribute(toCheckFor)) {
+			return `Required Attribute "${toCheckFor}" is not set.`;
 		}
 
-		if (invert && ( toCheck as HTMLElement ).hasAttribute( toCheckFor )) {
-			return `Forbidden Attribute "${ toCheckFor }" is set.`;
+		if (invert && (toCheck as HTMLElement).hasAttribute(toCheckFor)) {
+			return `Forbidden Attribute "${toCheckFor}" is set.`;
 		}
 
 		return true;
@@ -52,18 +52,7 @@ export class HasAttribute extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.decPrecondition(
-			(
-				value: object,
-				target: object,
-				methodName: string,
-				parameterIndex: number,
-			) => {
-				return HasAttribute.checkAlgorithm(value, toCheckFor, invert);
-			},
-			dbc,
-			path,
-		);
+		return DBC.createPRE(HasAttribute.checkAlgorithm, [toCheckFor, invert], dbc, path);
 	}
 	/**
 	 * A method-decorator factory using the {@link HasAttribute.checkAlgorithm } to determine whether this {@link DBC } is
@@ -84,13 +73,7 @@ export class HasAttribute extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.decPostcondition(
-			(value: object, target: object, propertyKey: string) => {
-				return HasAttribute.checkAlgorithm(value, toCheckFor, invert);
-			},
-			dbc,
-			path,
-		);
+		return DBC.createPOST(HasAttribute.checkAlgorithm, [toCheckFor, invert], dbc, path);
 	}
 	/**
 	 * A field-decorator factory using the {@link hasAttribute.checkAlgorithm } to determine whether this {@link DBC } is
@@ -107,7 +90,7 @@ export class HasAttribute extends DBC {
 		path: string | undefined = undefined,
 		dbc = "WaXCode.DBC",
 	) {
-		return DBC.decInvariant([new HasAttribute(toCheckFor, invert)], path, dbc);
+		return DBC.createINVARIANT(HasAttribute, [toCheckFor, invert], dbc, path);
 	}
 	/**
 	 * A field-decorator factory using the {@link hasAttribute.checkAlgorithm } to determine whether this {@link DBC } is

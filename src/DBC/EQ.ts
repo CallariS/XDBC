@@ -18,7 +18,7 @@ export class EQ extends DBC {
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		toCheck: any,
 		equivalent: object,
-		invert,
+		invert: boolean,
 	): boolean | string {
 		if (!invert && equivalent !== toCheck) {
 			return `Value has to be equal to "${equivalent}"`;
@@ -51,19 +51,7 @@ export class EQ extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.decPrecondition(
-			(
-				value: object,
-				target: object,
-				methodName: string,
-				parameterIndex: number,
-			) => {
-				return EQ.checkAlgorithm(value, equivalent, invert);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPRE(EQ.checkAlgorithm, [equivalent, invert], dbc, path, hint);
 	}
 	/**
 	 * A method-decorator factory using the {@link EQ.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -87,14 +75,7 @@ export class EQ extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.decPostcondition(
-			(value: object, target: object, propertyKey: string) => {
-				return EQ.checkAlgorithm(value, equivalent, invert);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPOST(EQ.checkAlgorithm, [equivalent, invert], dbc, path, hint);
 	}
 	/**
 	 * A field-decorator factory using the {@link EQ.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -113,7 +94,7 @@ export class EQ extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new EQ(equivalent, invert)], path, dbc, hint);
+		return DBC.createINVARIANT(EQ, [equivalent, invert], dbc, path, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -138,7 +119,7 @@ export class EQ extends DBC {
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link EQ }.
 	 * 
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link EQ }.*/
-	public static tsCheck<CANDIDATE>(toCheck: CANDIDATE | undefined | null, equivalent: any, hint: string = undefined, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE>(toCheck: CANDIDATE | undefined | null, equivalent: any, hint: string | undefined = undefined, id: string | undefined = undefined): CANDIDATE {
 		const result = EQ.checkAlgorithm(toCheck, equivalent, false);
 
 		if (result) {

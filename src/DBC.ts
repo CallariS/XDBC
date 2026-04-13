@@ -12,7 +12,7 @@ export class DBC {
 	private static evictIfNeeded<K, V>(cache: Map<K, V>): void {
 		if (cache.size > DBC.MAX_CACHE_SIZE) {
 			const oldest = cache.keys().next().value;
-			cache.delete(oldest);
+			if (oldest !== undefined) cache.delete(oldest);
 		}
 	}
 	private static getHost(): unknown {
@@ -22,7 +22,7 @@ export class DBC {
 		if (dbc instanceof DBC) return dbc;
 		const path = dbc ?? "WaXCode.DBC";
 		if (DBC.dbcCache.has(path)) {
-			return DBC.dbcCache.get(path);
+			return DBC.dbcCache.get(path) as DBC;
 		}
 		const resolved = DBC.resolveDBCPath(DBC.getHost(), path);
 		if (resolved) {
@@ -72,10 +72,11 @@ export class DBC {
 		const key = DBC.getRequestKey(target, methodName);
 
 		if (DBC.paramValueRequests.has(key)) {
-			if (DBC.paramValueRequests.get(key).has(index)) {
-				DBC.paramValueRequests.get(key).get(index).push(receptor);
+			const paramMap = DBC.paramValueRequests.get(key)!;
+			if (paramMap.has(index)) {
+				paramMap.get(index)!.push(receptor);
 			} else {
-				DBC.paramValueRequests.get(key).set(index, new Array<(value: unknown) => undefined>(receptor));
+				paramMap.set(index, new Array<(value: unknown) => undefined>(receptor));
 			}
 		} else {
 			DBC.paramValueRequests.set(
@@ -114,9 +115,10 @@ export class DBC {
 			const key = DBC.getRequestKey(actualTarget, propertyKey);
 
 			if (DBC.paramValueRequests.has(key)) {
-				for (const index of DBC.paramValueRequests.get(key).keys()) {
+				const paramMap = DBC.paramValueRequests.get(key)!;
+				for (const index of paramMap.keys()) {
 					if (index < args.length) {
-						for (const receptor of DBC.paramValueRequests.get(key).get(index)) {
+						for (const receptor of paramMap.get(index)!) {
 							receptor(args[index]);
 						}
 					}
@@ -148,8 +150,10 @@ export class DBC {
 		path: string | undefined = undefined,
 		dbc = "WaXCode.DBC",
 	) {
+		let dbcInstance: DBC | undefined;
 		return (target: unknown, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
-			if (!DBC.getDBC(dbc).executionSettings.checkInvariants) {
+			if (!dbcInstance) dbcInstance = DBC.getDBC(dbc);
+			if (!dbcInstance.executionSettings.checkInvariants) {
 				return;
 			}
 			const originalSetter = descriptor.set;
@@ -159,7 +163,7 @@ export class DBC {
 			// #region Replace original property.
 			Object.defineProperty(target, propertyKey, {
 				get() {
-					if (!DBC.getDBC(dbc).executionSettings.checkInvariants) {
+					if (!dbcInstance!.executionSettings.checkInvariants) {
 						return;
 					}
 
@@ -169,7 +173,7 @@ export class DBC {
 						const result = contract.check(realValue);
 
 						if (typeof result === "string") {
-							DBC.getDBC(dbc).reportFieldInfringement(
+							dbcInstance!.reportFieldInfringement(
 								result,
 								target as object,
 								path,
@@ -179,10 +183,10 @@ export class DBC {
 						}
 					}
 					// #endregion Check if all "contracts" are fulfilled.
-					return originalGetter[propertyKey];
+					return originalGetter ? (originalGetter as any)[propertyKey] : value;
 				},
 				set(newValue) {
-					if (!DBC.getDBC(dbc).executionSettings.checkInvariants) {
+					if (!dbcInstance!.executionSettings.checkInvariants) {
 						return;
 					}
 
@@ -192,7 +196,7 @@ export class DBC {
 						const result = contract.check(realValue);
 
 						if (typeof result === "string") {
-							DBC.getDBC(dbc).reportFieldInfringement(
+							dbcInstance!.reportFieldInfringement(
 								result,
 								target as object,
 								path,
@@ -229,8 +233,10 @@ export class DBC {
 		dbc: string | undefined = undefined,
 		hint: string | undefined = undefined,
 	) {
+		let dbcInstance: DBC | undefined;
 		return (target: unknown, propertyKey: string | symbol) => {
-			if (!DBC.getDBC(dbc).executionSettings.checkInvariants) {
+			if (!dbcInstance) dbcInstance = DBC.getDBC(dbc);
+			if (!dbcInstance.executionSettings.checkInvariants) {
 				return;
 			}
 			// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
@@ -238,7 +244,7 @@ export class DBC {
 			// #region Replace original property.
 			Object.defineProperty(target, propertyKey, {
 				set(newValue) {
-					if (!DBC.getDBC(dbc).executionSettings.checkInvariants) {
+					if (!dbcInstance!.executionSettings.checkInvariants) {
 						return;
 					}
 
@@ -248,7 +254,7 @@ export class DBC {
 						const result = contract.check(realValue);
 
 						if (typeof result === "string") {
-							DBC.getDBC(dbc).reportFieldInfringement(
+							dbcInstance!.reportFieldInfringement(
 								result,
 								target as object,
 								path,
@@ -279,13 +285,15 @@ export class DBC {
 	 * @returns The **( target : object, propertyKey : string, descriptor : PropertyDescriptor ) : PropertyDescriptor**
 	 * 			invoked by Typescript.
 	 */
+	// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
 	public static decPostcondition(
 		// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
-		check: (toCheck: any, object, string) => boolean | string,
+		check: (toCheck: any, target: object, propertyKey: string) => boolean | string,
 		dbc: string | undefined = undefined,
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 	) {
+		let dbcInstance: DBC | undefined;
 		return (
 			target: object,
 			propertyKey: string,
@@ -294,7 +302,8 @@ export class DBC {
 			const originalMethod = descriptor.value;
 			// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
 			descriptor.value = (...args: any[]) => {
-				if (!DBC.getDBC(dbc).executionSettings.checkPostconditions) {
+				if (!dbcInstance) dbcInstance = DBC.getDBC(dbc);
+				if (!dbcInstance.executionSettings.checkPostconditions) {
 					return;
 				}
 				// biome-ignore lint/complexity/noThisInStatic: <explanation>
@@ -303,7 +312,7 @@ export class DBC {
 				const checkResult = check(realValue, target, propertyKey);
 
 				if (typeof checkResult === "string") {
-					DBC.getDBC(dbc).reportReturnvalueInfringement(
+					dbcInstance.reportReturnvalueInfringement(
 						checkResult,
 						target,
 						path,
@@ -334,7 +343,8 @@ export class DBC {
 	 *
 	 * @returns The **(target: object, methodName: string | symbol, parameterIndex: number ) => void** invoked by Typescript- */
 	protected static decPrecondition(
-		check: (unknown, object, string, number) => boolean | string,
+		// biome-ignore lint/suspicious/noExplicitAny: Necessary to check any parameter value
+		check: (value: unknown, target: object, methodName: string | symbol, parameterIndex: number) => boolean | string,
 		dbc: string | undefined = undefined,
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
@@ -344,6 +354,7 @@ export class DBC {
 		parameterIndex: number,
 	) => void {
 		const paths = path ? path.replace(/ /g, "").split("::") : [undefined];
+		let dbcInstance: DBC | undefined;
 		return (
 			target: object,
 			methodName: string | symbol,
@@ -354,7 +365,8 @@ export class DBC {
 				methodName,
 				parameterIndex,
 				(value: unknown) => {
-					if (!DBC.getDBC(dbc).executionSettings.checkPreconditions) {
+					if (!dbcInstance) dbcInstance = DBC.getDBC(dbc);
+					if (!dbcInstance.executionSettings.checkPreconditions) {
 						return;
 					}
 
@@ -363,7 +375,7 @@ export class DBC {
 						const result = check(realValue, target, methodName, parameterIndex);
 
 						if (typeof result === "string") {
-							DBC.getDBC(dbc).reportParameterInfringement(
+							dbcInstance.reportParameterInfringement(
 								result,
 								target,
 								singlePath,
@@ -392,8 +404,10 @@ export class DBC {
 	 * @param hint     See {@link DBC.decPrecondition}.
 	 */
 	public static createPRE(
-		checkFn: (...args: unknown[]) => boolean | string,
-		boundArgs: unknown[],
+		// biome-ignore lint/suspicious/noExplicitAny: Must accept any checkAlgorithm signature
+		checkFn: (...args: any[]) => boolean | string,
+		// biome-ignore lint/suspicious/noExplicitAny: Arguments vary per contract
+		boundArgs: any[],
 		dbc?: string,
 		path?: string,
 		hint?: string,
@@ -417,8 +431,10 @@ export class DBC {
 	 * @param hint     See {@link DBC.decPostcondition}.
 	 */
 	public static createPOST(
-		checkFn: (...args: unknown[]) => boolean | string,
-		boundArgs: unknown[],
+		// biome-ignore lint/suspicious/noExplicitAny: Must accept any checkAlgorithm signature
+		checkFn: (...args: any[]) => boolean | string,
+		// biome-ignore lint/suspicious/noExplicitAny: Arguments vary per contract
+		boundArgs: any[],
 		dbc?: string,
 		path?: string,
 		hint?: string,
@@ -429,6 +445,31 @@ export class DBC {
 			},
 			dbc,
 			path,
+			hint,
+		);
+	}
+	/**
+	 * Creates an INVARIANT decorator from a contract constructor and its bound arguments.
+	 *
+	 * @param ContractClass A class with a constructor that produces an object with a `check` method.
+	 * @param ctorArgs      The arguments to pass to the contract constructor.
+	 * @param dbc           See {@link DBC.decInvariant}.
+	 * @param path          See {@link DBC.decInvariant}.
+	 * @param hint          See {@link DBC.decInvariant}.
+	 */
+	public static createINVARIANT(
+		// biome-ignore lint/suspicious/noExplicitAny: Must accept any contract constructor
+		ContractClass: new (...args: any[]) => { check: (toCheck: unknown | null | undefined) => boolean | string },
+		// biome-ignore lint/suspicious/noExplicitAny: Arguments vary per contract
+		ctorArgs: any[],
+		dbc?: string,
+		path?: string,
+		hint?: string,
+	) {
+		return DBC.decInvariant(
+			[new ContractClass(...ctorArgs)],
+			path,
+			dbc,
 			hint,
 		);
 	}
@@ -491,7 +532,7 @@ export class DBC {
 		violator: string,
 		target: object,
 		value: unknown,
-		path: string,
+		path: string | undefined,
 		hint: string | undefined = undefined,
 	): undefined {
 		const safeViolator = DBC.sanitize(violator);
@@ -517,7 +558,7 @@ export class DBC {
 	public reportParameterInfringement(
 		message: string,
 		target: object,
-		path: string,
+		path: string | undefined,
 		method: string,
 		index: number,
 		value: unknown,
@@ -546,7 +587,7 @@ export class DBC {
 	public reportFieldInfringement(
 		message: string,
 		target: object,
-		path: string,
+		path: string | undefined,
 		key: string,
 		value: unknown,
 		hint: string | undefined = undefined,
@@ -569,7 +610,7 @@ export class DBC {
 	public reportReturnvalueInfringement(
 		message: string,
 		target: object,
-		path: string,
+		path: string | undefined,
 		method: string,
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		value: any,
@@ -607,10 +648,12 @@ export class DBC {
 	 *
 	 * @returns The requested {@link DBC }.
 	 */
-	static resolveDBCPath = (obj, path): DBC =>
+	// biome-ignore lint/suspicious/noExplicitAny: Must traverse arbitrary object graphs
+	static resolveDBCPath = (obj: any, path: string): DBC =>
 		path
 			?.split(".")
-			.reduce((accumulator, current) => accumulator[current], obj);
+			// biome-ignore lint/suspicious/noExplicitAny: Must traverse arbitrary object graphs
+			.reduce((accumulator: any, current: string) => accumulator[current], obj);
 	/**
 	 * Constructs this {@link DBC } without mounting it on the global namespace.
 	 * Use {@link DBC.register } to make the instance available at a specific path on globalThis.
@@ -696,7 +739,7 @@ export class DBC {
 			// Validate tokens before caching
 			for (const part of parts) {
 				const tokenName = part.replace(/\(.*\)$/, "");
-				if (dangerousTokens.includes(tokenName)) {
+				if (dangerousTokens.indexOf(tokenName) >= 0) {
 					throw new Error(`[XDBC] Path "${path}" contains forbidden token "${tokenName}".`);
 				}
 			}
@@ -704,7 +747,8 @@ export class DBC {
 			DBC.pathTokenCache.set(path, parts);
 		}
 
-		let current = toResolveFrom;
+		// biome-ignore lint/suspicious/noExplicitAny: Must traverse arbitrary object graphs
+		let current: any = toResolveFrom;
 
 		for (const part of parts) {
 			if (current === null || typeof current === "undefined") { return undefined; }

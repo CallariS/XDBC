@@ -105,9 +105,10 @@ export class AE extends DBC {
 	) => void {
 		return DBC.decPrecondition(
 			(
-				value: object,
+				// biome-ignore lint/suspicious/noExplicitAny: Must match DBC.decPrecondition signature
+				value: any,
 				target: object,
-				methodName: string,
+				methodName: string | symbol,
 				parameterIndex: number,
 			) => {
 				if (Array.isArray(realConditions)) {
@@ -222,7 +223,7 @@ export class AE extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new AE(realConditions, index, idxEnd)], path, dbc, hint);
+		return DBC.createINVARIANT(AE, [realConditions, index, idxEnd], dbc, path, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -236,7 +237,8 @@ export class AE extends DBC {
 	 * @param toCheck See {@link AE.checkAlgorithm }.
 	 *
 	 * @returns See {@link EQ.checkAlgorithm}. */
-	public check(toCheck: object) {
+	// biome-ignore lint/suspicious/noExplicitAny: Must match DBC factory signature
+	public check(toCheck: any) {
 		if (Array.isArray(this.conditions)) {
 			for (const currentCondition of this.conditions) {
 				const result = AE.checkAlgorithm(
@@ -266,10 +268,12 @@ export class AE extends DBC {
 	 * @param equivalent See {@link EQ.check }. */
 	public constructor(
 		protected conditions:
+			// biome-ignore lint/suspicious/noExplicitAny: Must match DBC factory signature
 			| Array<{
-				check: (toCheck: object | undefined | null) => boolean | string;
+				check: (toCheck: any) => boolean | string;
 			}>
-			| { check: (toCheck: object | undefined | null) => boolean | string },
+			// biome-ignore lint/suspicious/noExplicitAny: Must match DBC factory signature
+			| { check: (toCheck: any) => boolean | string },
 		protected index: number | undefined = undefined,
 		protected idxEnd: number | undefined = undefined,
 	) {

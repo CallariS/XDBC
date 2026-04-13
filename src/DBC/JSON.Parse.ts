@@ -52,19 +52,7 @@ export class JSON_Parse extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.decPrecondition(
-			(
-				value: string,
-				target: object,
-				methodName: string,
-				parameterIndex: number,
-			) => {
-				return JSON_Parse.checkAlgorithm(value, receptor);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPRE(JSON_Parse.checkAlgorithm, [receptor], dbc, path, hint);
 	}
 	/**
 	 * A method-decorator factory using the {@link JSON_Parse.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -85,15 +73,7 @@ export class JSON_Parse extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.decPostcondition(
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-			(value: any, target: object, propertyKey: string) => {
-				return JSON_Parse.checkAlgorithm(value, receptor);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPOST(JSON_Parse.checkAlgorithm, [receptor], dbc, path, hint);
 	}
 	/**
 	 * A field-decorator factory using the {@link JSON_Parse.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -110,7 +90,7 @@ export class JSON_Parse extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new JSON_Parse(receptor)], path, dbc, hint);
+		return DBC.createINVARIANT(JSON_Parse, [receptor], dbc, path, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -125,14 +105,14 @@ export class JSON_Parse extends DBC {
 	 * @returns See {@link JSON_Parse.checkAlgorithm}. */
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
-		return JSON_Parse.checkAlgorithm(toCheck, this.receptor);
+		return JSON_Parse.checkAlgorithm(toCheck, this.receptor as (json: object) => void);
 	}
 	/**
 	 * Creates this {@link JSON_Parse } by setting the protected property {@link JSON_Parse.necessaryProperties } and {@link checkElements } used by {@link JSON_Parse.check }.
 	 *
 	 * @param necessaryProperties	See {@link JSON_Parse.check }.
 	 * @param checkElements 		See {@link JSON_Parse.check }. */
-	public constructor(public receptor: (json: object) => void = undefined) {
+	public constructor(public receptor: ((json: object) => void) | undefined = undefined) {
 		super();
 	}
 	// #endregion Referenced Condition checking.

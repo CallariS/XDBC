@@ -47,19 +47,8 @@ export class INSTANCE extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.decPrecondition(
-			(
-				value: object,
-				target: object,
-				methodName: string,
-				parameterIndex: number,
-			) => {
-				return Array.isArray(reference) ? INSTANCE.checkAlgorithm(value, ...reference) : INSTANCE.checkAlgorithm(value, reference);
-			},
-			dbc,
-			path,
-			hint
-		);
+		const refs = Array.isArray(reference) ? reference : [reference];
+		return DBC.createPRE(INSTANCE.checkAlgorithm, refs, dbc, path, hint);
 	}
 	/**
 	 * A method-decorator factory using the {@link INSTANCE.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -81,14 +70,8 @@ export class INSTANCE extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.decPostcondition(
-			(value: object, target: object, propertyKey: string) => {
-				return Array.isArray(reference) ? INSTANCE.checkAlgorithm(value, ...reference) : INSTANCE.checkAlgorithm(value, reference);
-			},
-			dbc,
-			path,
-			hint
-		);
+		const refs = Array.isArray(reference) ? reference : [reference];
+		return DBC.createPOST(INSTANCE.checkAlgorithm, refs, dbc, path, hint);
 	}
 	/**
 	 * A field-decorator factory using the {@link INSTANCE.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -106,7 +89,7 @@ export class INSTANCE extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new INSTANCE(reference)], path, dbc, hint);
+		return DBC.createINVARIANT(INSTANCE, [reference], dbc, path, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.

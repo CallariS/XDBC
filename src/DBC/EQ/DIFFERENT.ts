@@ -14,79 +14,44 @@ import { EQ } from "../EQ";
  * @see {@link EQ}
  */
 export class DIFFERENT extends EQ {
-	/**
-	 * Precondition overload signature.
-	 * @param equivalent - The value to compare for inequality
-	 * @param path - The property path
-	 * @param hint - Optional hint message
-	 */
-	public static override  PRE(
-		equivalent,
-		path,
-		hint
-	);
-	/**
-	 * Precondition overload signature.
-	 * @param equivalent - The value to compare for inequality
-	 * @param path - The property path
-	 */
+	/** See {@link EQ.PRE }. Always inverts equality check. */
+	// biome-ignore lint/suspicious/noExplicitAny: Must match parent signature
 	public static override PRE(
-		equivalent,
-		path,
-	);
-	/** See {@link COMPARISON.PRE }. */
-	public static override PRE(
-		equivalent,
-		invert: boolean = false,
-		path: string = undefined,
+		equivalent: any,
+		_invert = false,
+		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
 		return EQ.PRE(equivalent, true, path, hint, dbc);
 	}
 
+	/** See {@link EQ.POST }. Always inverts equality check. */
+	// biome-ignore lint/suspicious/noExplicitAny: Must match parent signature
 	public static override POST(
-		equivalent,
-		path,
-		hint
-	);
-	public static override POST(
-		equivalent,
-		path,
-	);
-
-	/** See {@link COMPARISON.POST }. */
-	public static override POST(
-		equivalent,
-		invert = false,
-		path: string = undefined,
+		equivalent: any,
+		_invert = false,
+		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
 		return EQ.POST(equivalent, true, path, hint, dbc);
 	}
-	public static override INVARIANT(
-		equivalent,
-		path,
-		hint
-	);
-	public static override INVARIANT(
-		equivalent,
-		path,
-	);
 
-	/** See {@link COMPARISON.INVARIANT }. */
+	/** See {@link EQ.INVARIANT }. Always inverts equality check. */
+	// biome-ignore lint/suspicious/noExplicitAny: Must match parent signature
 	public static INVARIANT(
-		equivalent,
-		invert = false,
-		path: string = undefined,
+		equivalent: any,
+		_invert = false,
+		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
 		return EQ.INVARIANT(equivalent, true, path, hint, dbc);
 	}
-	/** See {@link COMPARISON.constructor }. */
-	constructor(public equivalent) {
+	/** See {@link EQ.constructor }. */
+	// biome-ignore lint/suspicious/noExplicitAny: Must match parent signature
+	constructor(public equivalent: any) {
 		super(equivalent, true);
 	}
 }

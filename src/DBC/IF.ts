@@ -22,13 +22,13 @@ export class IF extends DBC {
 		inCase: {
 			check: (toCheck: unknown | undefined | null | object) => boolean | string;
 		},
-		invert,
+		invert: boolean = false,
 	): boolean | string {
-		if (invert && !condition.check(toCheck) && !inCase.check(toCheck)) {
+		if (invert && condition.check(toCheck) !== true && inCase.check(toCheck) !== true) {
 			return `In case that the value does not comply to the condition, it also has to comply to the required contract`;
 		}
 
-		if (!invert && condition.check(toCheck) && !inCase.check(toCheck)) {
+		if (!invert && condition.check(toCheck) === true && inCase.check(toCheck) !== true) {
 			return `In case that the value complies to the condition, it has to comply to the required contract`;
 		}
 
@@ -56,19 +56,7 @@ export class IF extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.decPrecondition(
-			(
-				value: object,
-				target: object,
-				methodName: string,
-				parameterIndex: number,
-			) => {
-				return IF.checkAlgorithm(value, condition, inCase, invert);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPRE(IF.checkAlgorithm, [condition, inCase, invert], dbc, path, hint);
 	}
 	/**
 	 * A method-decorator factory using the {@link IF.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -92,14 +80,7 @@ export class IF extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.decPostcondition(
-			(value: object, target: object, propertyKey: string) => {
-				return IF.checkAlgorithm(value, condition, inCase, invert);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPOST(IF.checkAlgorithm, [condition, inCase, invert], dbc, path, hint);
 	}
 	/**
 	 * A field-decorator factory using the {@link IF.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -119,7 +100,7 @@ export class IF extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new IF(condition, inCase, invert)], path, dbc, hint);
+		return DBC.createINVARIANT(IF, [condition, inCase, invert], dbc, path, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.

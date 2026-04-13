@@ -74,17 +74,10 @@ export class OR extends DBC {
 		parameterIndex: number,
 	) => void {
 		return DBC.decPrecondition(
-			(
-				value: object,
-				target: object,
-				methodName: string,
-				parameterIndex: number,
-			) => {
-				return OR.checkAlgorithm(conditions, value);
-			},
+			(value) => OR.checkAlgorithm(conditions, value),
 			dbc,
 			path,
-			hint
+			hint,
 		);
 	}
 	/**
@@ -111,12 +104,10 @@ export class OR extends DBC {
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
 		return DBC.decPostcondition(
-			(value: object, target: object, propertyKey: string) => {
-				return OR.checkAlgorithm(conditions, value);
-			},
+			(value) => OR.checkAlgorithm(conditions, value),
 			dbc,
 			path,
-			hint
+			hint,
 		);
 	}
 	/**
@@ -137,7 +128,7 @@ export class OR extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new OR(conditions)], path, dbc, hint);
+		return DBC.createINVARIANT(OR, [conditions], dbc, path, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.

@@ -4,14 +4,17 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"outDir": "./dist",
+		"rootDir": "./src",
 		"esModuleInterop": true,
 		"module": "es6",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"typeRoots": []
 	},
-
 	"include": [
 		"./src/**/*.ts" // or your source directories
 	],
-	"exclude": ["node_modules", "__tests__"]
+	"exclude": [
+		"node_modules",
+		"__tests__"
+	]
 }

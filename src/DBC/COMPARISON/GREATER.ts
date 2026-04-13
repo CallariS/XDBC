@@ -3,11 +3,12 @@ import { COMPARISON } from "../COMPARISON";
 export class GREATER extends COMPARISON {
 	/** See {@link COMPARISON.PRE }. */
 	public static override PRE(
-		equivalent,
+		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
+		equivalent: any,
 		equalityPermitted = false,
 		invert = false,
 
-		path: string = undefined,
+		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
@@ -15,10 +16,11 @@ export class GREATER extends COMPARISON {
 	}
 	/** See {@link COMPARISON.POST }. */
 	public static override POST(
-		equivalent,
+		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
+		equivalent: any,
 		equalityPermitted = false,
 		invert = false,
-		path: string = undefined,
+		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined
 	) {
@@ -26,17 +28,19 @@ export class GREATER extends COMPARISON {
 	}
 	/** See {@link COMPARISON.INVARIANT }. */
 	public static override INVARIANT(
-		equivalent,
+		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
+		equivalent: any,
 		equalityPermitted = false,
 		invert = false,
-		path: string = undefined,
+		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined
 	) {
 		return COMPARISON.INVARIANT(equivalent, false, false, path, hint, dbc);
 	}
 	/** See {@link COMPARISON.constructor }. */
-	constructor(public override equivalent) {
+	// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
+	constructor(public override equivalent: any) {
 		super(equivalent, false, false);
 	}
 }

@@ -38,19 +38,7 @@ export class DEFINED extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.decPrecondition(
-			(
-				value: object,
-				target: object,
-				methodName: string,
-				parameterIndex: number,
-			) => {
-				return DEFINED.checkAlgorithm(value);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPRE(DEFINED.checkAlgorithm, [], dbc, path, hint);
 	}
 	/**
 	 * A method-decorator factory using the {@link DEFINED.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -71,14 +59,7 @@ export class DEFINED extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.decPostcondition(
-			(value: object, target: object, propertyKey: string) => {
-				return DEFINED.checkAlgorithm(value);
-			},
-			dbc,
-			path,
-			hint
-		);
+		return DBC.createPOST(DEFINED.checkAlgorithm, [], dbc, path, hint);
 	}
 	/**
 	 * A field-decorator factory using the {@link DEFINED.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -95,7 +76,7 @@ export class DEFINED extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.decInvariant([new DEFINED()], path, dbc, hint);
+		return DBC.createINVARIANT(DEFINED, [], dbc, path, hint);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -121,7 +102,7 @@ export class DEFINED extends DBC {
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link DEFINED }.
 	 * 
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link DEFINED }.*/
-	public static tsCheck<CANDIDATE = unknown>(toCheck: CANDIDATE | undefined | null, hint: string = undefined, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE = unknown>(toCheck: CANDIDATE | undefined | null, hint: string | undefined = undefined, id: string | undefined = undefined): CANDIDATE {
 		const result = DEFINED.checkAlgorithm(toCheck);
 
 		if (result === true) {
