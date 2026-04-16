@@ -4,6 +4,7 @@
   <img src="https://img.shields.io/npm/dt/xdbc?style=flat-square" alt="downloads" />
   <img src="https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/decorators-stage%203-green?style=flat-square" alt="decorators" />
+  <img src="https://img.shields.io/badge/optimized%20for-VS%20Code-007acc?style=flat-square&logo=visualstudiocode" alt="VS Code" />
 </p>
 
 # XDBC — e**X**plicit **D**esign **b**y **C**ontract for TypeScript
