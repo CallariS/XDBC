@@ -22,7 +22,7 @@ export class GREATER extends COMPARISON {
 		invert = false,
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
-		dbc: string | undefined = undefined
+		dbc: string | undefined = undefined,
 	) {
 		return COMPARISON.POST(equivalent, false, false, path, hint, dbc);
 	}
@@ -34,7 +34,7 @@ export class GREATER extends COMPARISON {
 		invert = false,
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
-		dbc: string | undefined = undefined
+		dbc: string | undefined = undefined,
 	) {
 		return COMPARISON.INVARIANT(equivalent, false, false, path, hint, dbc);
 	}

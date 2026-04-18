@@ -18,20 +18,30 @@ export class IF extends DBC {
 	public static checkAlgorithm(
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		toCheck: any,
-		condition: { check: (toCheck: unknown | undefined | null | object) => boolean | string; },
+		condition: {
+			check: (toCheck: unknown | undefined | null | object) => boolean | string;
+		},
 		inCase: {
 			check: (toCheck: unknown | undefined | null | object) => boolean | string;
 		},
-		invert: boolean = false,
+		invert = false,
 	): boolean | string {
 		if (toCheck === undefined || toCheck === null) return true;
 
-		if (invert && condition.check(toCheck) !== true && inCase.check(toCheck) !== true) {
-			return `In case that the value does not comply to the condition, it also has to comply to the required contract`;
+		if (
+			invert &&
+			condition.check(toCheck) !== true &&
+			inCase.check(toCheck) !== true
+		) {
+			return "In case that the value does not comply to the condition, it also has to comply to the required contract";
 		}
 
-		if (!invert && condition.check(toCheck) === true && inCase.check(toCheck) !== true) {
-			return `In case that the value complies to the condition, it has to comply to the required contract`;
+		if (
+			!invert &&
+			condition.check(toCheck) === true &&
+			inCase.check(toCheck) !== true
+		) {
+			return "In case that the value complies to the condition, it has to comply to the required contract";
 		}
 
 		return true;
@@ -47,18 +57,28 @@ export class IF extends DBC {
 	 *
 	 * @returns See {@link DBC.decPrecondition }. */
 	public static PRE(
-		condition: { check: (toCheck: unknown | undefined | null | object) => boolean | string; },
-		inCase: { check: (toCheck: unknown | undefined | null | object) => boolean | string; },
+		condition: {
+			check: (toCheck: unknown | undefined | null | object) => boolean | string;
+		},
+		inCase: {
+			check: (toCheck: unknown | undefined | null | object) => boolean | string;
+		},
 		path: string | undefined = undefined,
 		invert = false,
 		hint: string | undefined = undefined,
-		dbc: string | undefined = undefined
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.createPRE(IF.checkAlgorithm, [condition, inCase, invert], dbc, path, hint);
+		return DBC.createPRE(
+			IF.checkAlgorithm,
+			[condition, inCase, invert],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	/**
 	 * A method-decorator factory using the {@link IF.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -71,8 +91,12 @@ export class IF extends DBC {
 	 *
 	 * @returns See {@link DBC.decPostcondition }. */
 	public static POST(
-		condition: { check: (toCheck: unknown | undefined | null | object) => boolean | string; },
-		inCase: { check: (toCheck: unknown | undefined | null | object) => boolean | string; },
+		condition: {
+			check: (toCheck: unknown | undefined | null | object) => boolean | string;
+		},
+		inCase: {
+			check: (toCheck: unknown | undefined | null | object) => boolean | string;
+		},
 		path: string | undefined = undefined,
 		invert = false,
 		hint: string | undefined = undefined,
@@ -82,7 +106,13 @@ export class IF extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.createPOST(IF.checkAlgorithm, [condition, inCase, invert], dbc, path, hint);
+		return DBC.createPOST(
+			IF.checkAlgorithm,
+			[condition, inCase, invert],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	/**
 	 * A field-decorator factory using the {@link IF.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -95,14 +125,24 @@ export class IF extends DBC {
 	 *
 	 * @returns See {@link DBC.decInvariant }. */
 	public static INVARIANT(
-		condition: { check: (toCheck: unknown | undefined | null | object) => boolean | string; },
-		inCase: { check: (toCheck: unknown | undefined | null | object) => boolean | string; },
+		condition: {
+			check: (toCheck: unknown | undefined | null | object) => boolean | string;
+		},
+		inCase: {
+			check: (toCheck: unknown | undefined | null | object) => boolean | string;
+		},
 		path: string | undefined = undefined,
 		invert = false,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.createINVARIANT(IF, [condition, inCase, invert], dbc, path, hint);
+		return DBC.createINVARIANT(
+			IF,
+			[condition, inCase, invert],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -125,8 +165,12 @@ export class IF extends DBC {
 	 * @param equivalent See {@link IF.check }. */
 	public constructor(
 		// biome-ignore lint/suspicious/noExplicitAny: To be able to match UNDEFINED and NULL.
-		protected condition: { check: (toCheck: unknown | undefined | null | object) => boolean | string; },
-		protected inCase: { check: (toCheck: unknown | undefined | null | object) => boolean | string; },
+		protected condition: {
+			check: (toCheck: unknown | undefined | null | object) => boolean | string;
+		},
+		protected inCase: {
+			check: (toCheck: unknown | undefined | null | object) => boolean | string;
+		},
 		protected invert = false,
 	) {
 		super();

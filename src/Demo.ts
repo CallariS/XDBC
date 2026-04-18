@@ -1,14 +1,14 @@
 import { DBC } from "./DBC";
-import { REGEX } from "./DBC/REGEX";
-import { EQ } from "./DBC/EQ";
-import { TYPE } from "./DBC/TYPE";
 import { AE } from "./DBC/AE";
-import { INSTANCE } from "./DBC/INSTANCE";
 import { GREATER } from "./DBC/COMPARISON/GREATER";
 import { GREATER_OR_EQUAL } from "./DBC/COMPARISON/GREATER_OR_EQUAL";
 import { LESS } from "./DBC/COMPARISON/LESS";
 import { LESS_OR_EQUAL } from "./DBC/COMPARISON/LESS_OR_EQUAL";
+import { EQ } from "./DBC/EQ";
 import { DIFFERENT } from "./DBC/EQ/DIFFERENT";
+import { INSTANCE } from "./DBC/INSTANCE";
+import { REGEX } from "./DBC/REGEX";
+import { TYPE } from "./DBC/TYPE";
 /** Demonstrative use of **D**esign **B**y **C**ontract Decorators */
 export class Demo {
 	// #region Check Property Decorator
@@ -32,65 +32,68 @@ export class Demo {
 	@DBC.ParamvalueProvider
 	public testEQAndPath(
 		@EQ.PRE("SELECT" as unknown as object, false, "tagName") o: HTMLElement,
-	) { }
+	) {}
 	// #endregion Check EQ-DBC & Path to property of Parameter-value
 	// #region Check EQ-DBC & Path to property of Parameter-value with Inversion
 	@DBC.ParamvalueProvider
 	public testEQAndPathWithInversion(
 		@EQ.PRE("SELECT" as unknown as object, true, "tagName") o: HTMLElement,
-	) { }
+	) {}
 	// #endregion Check EQ-DBC & Path to property of Parameter-value with Inversion
 	// #region Check TYPE
 	@DBC.ParamvalueProvider
-	public testTYPE(@TYPE.PRE("string") o: unknown) { }
+	public testTYPE(@TYPE.PRE("string") o: unknown) {}
 	// #endregion Check TYPE
 	// #region Check AE
 	@DBC.ParamvalueProvider
-	public testAE(@AE.PRE([new TYPE("string")]) x: Array<unknown>) { }
+	public testAE(@AE.PRE([new TYPE("string")]) x: Array<unknown>) {}
 	// #endregion Check AE
 	// #region Check REGEX with AE
 	@DBC.ParamvalueProvider
 	public testREGEXWithAE(
 		@AE.PRE(new REGEX(/^(?i:(NOW)|([+-]\d+[dmy]))$/i)) x: Array<string>,
-	) { }
+	) {}
 	// #endregion Check REGEX with AE
 	// #region Check INSTANCE
 	@DBC.ParamvalueProvider
 	// biome-ignore lint/suspicious/noExplicitAny: Test
-	public testINSTANCE(@INSTANCE.PRE(Date) candidate: any): undefined { }
+	public testINSTANCE(@INSTANCE.PRE(Date) candidate: any): undefined {}
 	// #endregion Check INSTANCE
 	// #region Check AE Range
 	@DBC.ParamvalueProvider
 	public testAERange(
 		@AE.PRE([new TYPE("string"), new REGEX(/^abc$/)], 1, 2) x: Array<unknown>,
-	) { }
+	) {}
 	// #endregion Check AE Range
 	// #region Check AE Index
 	@DBC.ParamvalueProvider
 	public testAEIndex(
 		@AE.PRE([new TYPE("string"), new REGEX(/^abc$/)], 1) x: Array<unknown>,
-	) { }
+	) {}
 	// #endregion Check AE Index
 	// #region Check Comparison
 	@DBC.ParamvalueProvider
-	public testGREATER(@GREATER.PRE(2) input: number) { }
+	public testGREATER(@GREATER.PRE(2) input: number) {}
 
 	@DBC.ParamvalueProvider
-	public testGREATER_OR_EQUAL(@GREATER_OR_EQUAL.PRE(2) input: number) { }
+	public testGREATER_OR_EQUAL(@GREATER_OR_EQUAL.PRE(2) input: number) {}
 
 	@DBC.ParamvalueProvider
-	public testLESS(@LESS.PRE(20) input: number) { }
+	public testLESS(@LESS.PRE(20) input: number) {}
 
 	@DBC.ParamvalueProvider
-	public testLESS_OR_EQUAL(@LESS_OR_EQUAL.PRE(20) input: number) { }
+	public testLESS_OR_EQUAL(@LESS_OR_EQUAL.PRE(20) input: number) {}
 
 	@DBC.ParamvalueProvider
-	public testDIFFERENT(@DIFFERENT.PRE(20) input: number) { }
+	public testDIFFERENT(@DIFFERENT.PRE(20) input: number) {}
 	// #endregion Check Comparison
 
 	// #region Check Static Method with ParamvalueProvider
 	@DBC.ParamvalueProvider
-	public static testStaticMethod(@TYPE.PRE("string") message: string, @TYPE.PRE("number") count: number): string {
+	public static testStaticMethod(
+		@TYPE.PRE("string") message: string,
+		@TYPE.PRE("number") count: number,
+	): string {
 		return `${message} repeated ${count} times`;
 	}
 	// #endregion Check Static Method with ParamvalueProvider

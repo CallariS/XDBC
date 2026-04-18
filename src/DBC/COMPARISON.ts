@@ -15,7 +15,12 @@ export class COMPARISON extends DBC {
 	 *
 	 * @returns TRUE if the value **toCheck** and the **equivalent** are equal to each other, otherwise FALSE. */
 	// biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic comparison
-	static checkAlgorithm(toCheck: any, equivalent: any, equalityPermitted: boolean, invert: boolean) {
+	static checkAlgorithm(
+		toCheck: any,
+		equivalent: any,
+		equalityPermitted: boolean,
+		invert: boolean,
+	) {
 		if (equalityPermitted && !invert && toCheck < equivalent) {
 			return `Value has to be greater than or equal to "${equivalent}"`;
 		}
@@ -54,7 +59,13 @@ export class COMPARISON extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.createPRE(COMPARISON.checkAlgorithm, [equivalent, equalityPermitted, invert], dbc, path, hint);
+		return DBC.createPRE(
+			COMPARISON.checkAlgorithm,
+			[equivalent, equalityPermitted, invert],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	/**
 	 * A method-decorator factory using the {@link COMPARISON.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -76,7 +87,13 @@ export class COMPARISON extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.createPOST(COMPARISON.checkAlgorithm, [equivalent, equalityPermitted, invert], dbc, path, hint);
+		return DBC.createPOST(
+			COMPARISON.checkAlgorithm,
+			[equivalent, equalityPermitted, invert],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	/**
 	 * A field-decorator factory using the {@link COMPARISON.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -98,7 +115,13 @@ export class COMPARISON extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.createINVARIANT(COMPARISON, [equivalent, equalityPermitted, invert], dbc, path, hint);
+		return DBC.createINVARIANT(
+			COMPARISON,
+			[equivalent, equalityPermitted, invert],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.

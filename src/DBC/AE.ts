@@ -90,8 +90,8 @@ export class AE extends DBC {
 	public static PRE(
 		realConditions:
 			| Array<{
-				check: (toCheck: unknown | undefined | null) => boolean | string;
-			}>
+					check: (toCheck: unknown | undefined | null) => boolean | string;
+			  }>
 			| { check: (toCheck: unknown | undefined | null) => boolean | string },
 		index: number | undefined = undefined,
 		idxEnd: number | undefined = undefined,
@@ -137,7 +137,7 @@ export class AE extends DBC {
 			},
 			dbc,
 			path,
-			hint
+			hint,
 		);
 	}
 	/**
@@ -196,7 +196,7 @@ export class AE extends DBC {
 			},
 			dbc,
 			path,
-			hint
+			hint,
 		);
 	}
 	/**
@@ -223,7 +223,13 @@ export class AE extends DBC {
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	) {
-		return DBC.createINVARIANT(AE, [realConditions, index, idxEnd], dbc, path, hint);
+		return DBC.createINVARIANT(
+			AE,
+			[realConditions, index, idxEnd],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.
@@ -267,11 +273,10 @@ export class AE extends DBC {
 	 *
 	 * @param equivalent See {@link EQ.check }. */
 	public constructor(
-		protected conditions:
-			// biome-ignore lint/suspicious/noExplicitAny: Must match DBC factory signature
+		protected conditions: // biome-ignore lint/suspicious/noExplicitAny: Must match DBC factory signature
 			| Array<{
-				check: (toCheck: any) => boolean | string;
-			}>
+					check: (toCheck: any) => boolean | string;
+			  }>
 			// biome-ignore lint/suspicious/noExplicitAny: Must match DBC factory signature
 			| { check: (toCheck: any) => boolean | string },
 		protected index: number | undefined = undefined,

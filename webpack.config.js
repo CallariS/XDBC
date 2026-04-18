@@ -1,4 +1,4 @@
-const path = require("path");
+const path = require("node:path");
 
 module.exports = {
 	mode: "development", // or 'production' for optimized builds

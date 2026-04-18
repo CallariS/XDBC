@@ -98,22 +98,22 @@ export class DEFINED extends DBC {
 	 *
 	 * @param toCheck	See {@link DEFINED.checkAlgorithm }.
 	 * @param id		A {@link string } identifying this {@link INSTANCE } via the {@link DBC.Infringement }-Message.
-	 * 
+	 *
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link DEFINED }.
-	 * 
+	 *
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link DEFINED }.*/
-	public static tsCheck<CANDIDATE = unknown>(toCheck: CANDIDATE | undefined | null, hint: string | undefined = undefined, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE = unknown>(
+		toCheck: CANDIDATE | undefined | null,
+		hint: string | undefined = undefined,
+		id: string | undefined = undefined,
+	): CANDIDATE {
 		const result = DEFINED.checkAlgorithm(toCheck);
 
 		if (result === true) {
 			return toCheck as CANDIDATE;
 		}
-		else {
-			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`);
-		}
-	}
-	/** Creates this {@link DEFINED }. */
-	public constructor() {
-		super();
+		throw new DBC.Infringement(
+			`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`,
+		);
 	}
 }

@@ -52,7 +52,13 @@ export class JSON_Parse extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.createPRE(JSON_Parse.checkAlgorithm, [receptor], dbc, path, hint);
+		return DBC.createPRE(
+			JSON_Parse.checkAlgorithm,
+			[receptor],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	/**
 	 * A method-decorator factory using the {@link JSON_Parse.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -73,7 +79,13 @@ export class JSON_Parse extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.createPOST(JSON_Parse.checkAlgorithm, [receptor], dbc, path, hint);
+		return DBC.createPOST(
+			JSON_Parse.checkAlgorithm,
+			[receptor],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	/**
 	 * A field-decorator factory using the {@link JSON_Parse.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -105,14 +117,19 @@ export class JSON_Parse extends DBC {
 	 * @returns See {@link JSON_Parse.checkAlgorithm}. */
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
-		return JSON_Parse.checkAlgorithm(toCheck, this.receptor as (json: object) => void);
+		return JSON_Parse.checkAlgorithm(
+			toCheck,
+			this.receptor as (json: object) => void,
+		);
 	}
 	/**
 	 * Creates this {@link JSON_Parse } by setting the protected property {@link JSON_Parse.necessaryProperties } and {@link checkElements } used by {@link JSON_Parse.check }.
 	 *
 	 * @param necessaryProperties	See {@link JSON_Parse.check }.
 	 * @param checkElements 		See {@link JSON_Parse.check }. */
-	public constructor(public receptor: ((json: object) => void) | undefined = undefined) {
+	public constructor(
+		public receptor: ((json: object) => void) | undefined = undefined,
+	) {
 		super();
 	}
 	// #endregion Referenced Condition checking.

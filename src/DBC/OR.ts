@@ -150,19 +150,24 @@ export class OR extends DBC {
 	 * @param toCheck See {@link OR.checkAlgorithm }.
 	 *
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link OR }.
-	 * 
+	 *
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link OR }.*/
-	public static tsCheck<CANDIDATE>(toCheck: unknown | undefined | null, conditions: Array<{
-		check: (toCheck: unknown | undefined | null | object) => boolean | string;
-	}>, hint: string = undefined, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE>(
+		toCheck: unknown | undefined | null,
+		conditions: Array<{
+			check: (toCheck: unknown | undefined | null | object) => boolean | string;
+		}>,
+		hint: string = undefined,
+		id: string | undefined = undefined,
+	): CANDIDATE {
 		const result = OR.checkAlgorithm(conditions, toCheck);
 
 		if (result) {
 			return toCheck as CANDIDATE;
 		}
-		else {
-			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`);
-		}
+		throw new DBC.Infringement(
+			`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`,
+		);
 	}
 	/**
 	 * Creates this {@link OR } by setting the protected property {@link OR.conditions } used by {@link OR.check }.

@@ -17,12 +17,12 @@ export class TYPE extends DBC {
 	public static checkAlgorithm(toCheck: any, type: string): boolean | string {
 		if (toCheck === undefined || toCheck === null) return true;
 
-		const types = type.split("|").map(t => t.trim());
+		const types = type.split("|").map((t) => t.trim());
 		const actualType = typeof toCheck;
 
 		// #region Check if the actual type matches at least one of the specified types
 		// biome-ignore lint/suspicious/useValidTypeof: Necessary
-		const isValid = types.some(t => actualType === t);
+		const isValid = types.some((t) => actualType === t);
 
 		if (!isValid) {
 			if (types.length === 1) {
@@ -47,7 +47,7 @@ export class TYPE extends DBC {
 		type: string,
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
-		dbc: string | undefined = undefined
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		methodName: string | symbol,
@@ -70,7 +70,6 @@ export class TYPE extends DBC {
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
-
 	): (
 		target: object,
 		propertyKey: string,
@@ -113,24 +112,29 @@ export class TYPE extends DBC {
 	}
 	/**
 	 * Invokes the {@link TYPE.checkAlgorithm } passing the value **toCheck** and the {@link TYPE.type } .
-	 * 
+	 *
 	 * @param toCheck	See {@link TYPE.checkAlgorithm }.
 	 * @param type		See {@link TYPE.checkAlgorithm }.
 	 * @param hint		An optional {@link string } providing extra information in case of an infringement.
 	 * @param id		A {@link string } identifying this {@link TYPE } via the {@link DBC.Infringement }-Message.
-	 * 
+	 *
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link TYPE }.
-	 * 
+	 *
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link DEFINED }. */
-	public static tsCheck<CANDIDATE = unknown>(toCheck: any, type: string, hint: string | undefined = undefined, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE = unknown>(
+		toCheck: any,
+		type: string,
+		hint: string | undefined = undefined,
+		id: string | undefined = undefined,
+	): CANDIDATE {
 		const result = TYPE.checkAlgorithm(toCheck, type);
 
 		if (result === true) {
 			return toCheck;
 		}
-		else {
-			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`);
-		}
+		throw new DBC.Infringement(
+			`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`,
+		);
 	}
 	/**
 	 * Creates this {@link TYPE } by setting the protected property {@link TYPE.type } used by {@link TYPE.check }.

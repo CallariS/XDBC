@@ -52,7 +52,12 @@ export class HasAttribute extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.createPRE(HasAttribute.checkAlgorithm, [toCheckFor, invert], dbc, path);
+		return DBC.createPRE(
+			HasAttribute.checkAlgorithm,
+			[toCheckFor, invert],
+			dbc,
+			path,
+		);
 	}
 	/**
 	 * A method-decorator factory using the {@link HasAttribute.checkAlgorithm } to determine whether this {@link DBC } is
@@ -73,7 +78,12 @@ export class HasAttribute extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.createPOST(HasAttribute.checkAlgorithm, [toCheckFor, invert], dbc, path);
+		return DBC.createPOST(
+			HasAttribute.checkAlgorithm,
+			[toCheckFor, invert],
+			dbc,
+			path,
+		);
 	}
 	/**
 	 * A field-decorator factory using the {@link hasAttribute.checkAlgorithm } to determine whether this {@link DBC } is
@@ -107,7 +117,11 @@ export class HasAttribute extends DBC {
 		path: string | undefined = undefined,
 		dbc = "WaXCode.DBC",
 	) {
-		return DBC.decClassInvariant([new HasAttribute(toCheckFor, invert)], path, dbc);
+		return DBC.decClassInvariant(
+			[new HasAttribute(toCheckFor, invert)],
+			path,
+			dbc,
+		);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.

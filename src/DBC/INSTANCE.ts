@@ -14,7 +14,10 @@ export class INSTANCE extends DBC {
 	 *
 	 * @returns TRUE if the value **toCheck** is is an instance of the *reference**, **undefined** or **null**, otherwise FALSE. */
 	// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
-	public static checkAlgorithm(toCheck: any, ...references: any[]): boolean | string {
+	public static checkAlgorithm(
+		toCheck: any,
+		...references: any[]
+	): boolean | string {
 		if (toCheck === null || toCheck === undefined) {
 			return true;
 		}
@@ -25,7 +28,7 @@ export class INSTANCE extends DBC {
 			}
 		}
 
-		return `Value has to be an instance of "${references.map(ref => ref.name || ref).join(', ')}" but is of type "${typeof toCheck}"`;
+		return `Value has to be an instance of "${references.map((ref) => ref.name || ref).join(", ")}" but is of type "${typeof toCheck}"`;
 	}
 	/**
 	 * A parameter-decorator factory using the {@link INSTANCE.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -104,42 +107,54 @@ export class INSTANCE extends DBC {
 	 * @returns See {@link INSTANCE.checkAlgorithm}. */
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
-		return Array.isArray(this.reference) ? INSTANCE.checkAlgorithm(toCheck, ...this.reference) : INSTANCE.checkAlgorithm(toCheck, this.reference);
+		return Array.isArray(this.reference)
+			? INSTANCE.checkAlgorithm(toCheck, ...this.reference)
+			: INSTANCE.checkAlgorithm(toCheck, this.reference);
 	}
 	/**
 	 * Type-safe check that validates if a value is an instance of a specified reference.
-	 * 
+	 *
 	 * @param toCheck 	The value to check for instance validity.
 	 * @param reference	The {@link object } the one **toCheck** has to be an instance of.
 	 * @param hint		An optional {@link string } providing extra information in case of an infringement.
 	 * @param id		A {@link string } identifying this {@link INSTANCE } via the {@link DBC.Infringement }-Message.
-	 * 
+	 *
 	 * @returns The **CANDIDATE** **toCheck** if it fulfills this {@link INSTANCE }.
-	 * 
+	 *
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link INSTANCE }. */
-	public static tsCheck<CANDIDATE = unknown>(toCheck: any, reference: any, hint: string = undefined, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE = unknown>(
+		toCheck: any,
+		reference: any,
+		hint: string = undefined,
+		id: string | undefined = undefined,
+	): CANDIDATE {
 		return INSTANCE.tsCheckMulti<CANDIDATE>(toCheck, [reference], hint, id);
 	}
 	/**
 	 * Invokes the {@link INSTANCE.checkAlgorithm } passing the value **toCheck** and the {@link INSTANCE.reference } .
-	 * 
+	 *
 	 * @param toCheck 	See {@link INSTANCE.checkAlgorithm }.
 	 * @param reference	See {@link INSTANCE.checkAlgorithm }.
 	 * @param hint		An optional {@link string } providing extra information in case of an infringement.
 	 * @param id		A {@link string } identifying this {@link INSTANCE } via the {@link DBC.Infringement }-Message.
-	 * 
+	 *
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link INSTANCE }.
-	 * 
+	 *
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link DEFINED }. */
-	public static tsCheckMulti<CANDIDATE = unknown>(toCheck: any, references: any[], hint: string = undefined, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheckMulti<CANDIDATE = unknown>(
+		toCheck: any,
+		references: any[],
+		hint: string = undefined,
+		id: string | undefined = undefined,
+	): CANDIDATE {
 		const result = INSTANCE.checkAlgorithm(toCheck, ...references);
 
 		if (result === true) {
 			return toCheck;
 		}
-		else {
-			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string} ${hint ? `✨ ${hint} ✨` : ""}`);
-		}
+		throw new DBC.Infringement(
+			`${id ? `(${id}) ` : ""}${result as string} ${hint ? `✨ ${hint} ✨` : ""}`,
+		);
 	}
 	/**
 	 * Creates this {@link INSTANCE } by setting the protected property {@link INSTANCE.reference } used by {@link INSTANCE.check }.

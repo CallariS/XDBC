@@ -30,7 +30,9 @@ export class DBC {
 			DBC.dbcCache.set(path, resolved);
 			return resolved;
 		}
-		throw new Error(`[XDBC] DBC instance not found at path "${path}". Ensure a DBC instance is registered there.`);
+		throw new Error(
+			`[XDBC] DBC instance not found at path "${path}". Ensure a DBC instance is registered there.`,
+		);
 	}
 	// #endregion Internal caches.
 	// #region Parameter-value requests.
@@ -48,8 +50,14 @@ export class DBC {
 	 * Generate a unique key for storing parameter value requests.
 	 * Format: "ClassName:methodName"
 	 */
-	private static getRequestKey(target: object, methodName: string | symbol): string {
-		const className = typeof target === 'function' ? target.name : target.constructor?.name || 'Unknown';
+	private static getRequestKey(
+		target: object,
+		methodName: string | symbol,
+	): string {
+		const className =
+			typeof target === "function"
+				? target.name
+				: target.constructor?.name || "Unknown";
 		return `${className}:${String(methodName)}`;
 	}
 	/**
@@ -74,7 +82,7 @@ export class DBC {
 		if (DBC.paramValueRequests.has(key)) {
 			const paramMap = DBC.paramValueRequests.get(key)!;
 			if (paramMap.has(index)) {
-				paramMap.get(index)!.push(receptor);
+				paramMap.get(index)?.push(receptor);
 			} else {
 				paramMap.set(index, new Array<(value: unknown) => undefined>(receptor));
 			}
@@ -106,7 +114,7 @@ export class DBC {
 		descriptor: PropertyDescriptor,
 	): PropertyDescriptor {
 		const originalMethod = descriptor.value;
-		const isStatic = typeof target === 'function';
+		const isStatic = typeof target === "function";
 		// biome-ignore lint/suspicious/noExplicitAny: Gotta be any since parameter-values may be undefined.
 		descriptor.value = function (...args: any[]) {
 			// #region   Check if a value of one of the method's parameter has been requested and pass it to the
@@ -151,7 +159,11 @@ export class DBC {
 		dbc = "WaXCode.DBC",
 	) {
 		let dbcInstance: DBC | undefined;
-		return (target: unknown, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+		return (
+			target: unknown,
+			propertyKey: string | symbol,
+			descriptor: PropertyDescriptor,
+		) => {
 			if (!dbcInstance) dbcInstance = DBC.getDBC(dbc);
 			if (!dbcInstance.executionSettings.checkInvariants) {
 				return;
@@ -163,7 +175,7 @@ export class DBC {
 			// #region Replace original property.
 			Object.defineProperty(target, propertyKey, {
 				get() {
-					if (!dbcInstance!.executionSettings.checkInvariants) {
+					if (!dbcInstance?.executionSettings.checkInvariants) {
 						return;
 					}
 
@@ -173,7 +185,7 @@ export class DBC {
 						const result = contract.check(realValue);
 
 						if (typeof result === "string") {
-							dbcInstance!.reportFieldInfringement(
+							dbcInstance?.reportFieldInfringement(
 								result,
 								target as object,
 								path,
@@ -186,7 +198,7 @@ export class DBC {
 					return originalGetter ? (originalGetter as any)[propertyKey] : value;
 				},
 				set(newValue) {
-					if (!dbcInstance!.executionSettings.checkInvariants) {
+					if (!dbcInstance?.executionSettings.checkInvariants) {
 						return;
 					}
 
@@ -196,7 +208,7 @@ export class DBC {
 						const result = contract.check(realValue);
 
 						if (typeof result === "string") {
-							dbcInstance!.reportFieldInfringement(
+							dbcInstance?.reportFieldInfringement(
 								result,
 								target as object,
 								path,
@@ -244,7 +256,7 @@ export class DBC {
 			// #region Replace original property.
 			Object.defineProperty(target, propertyKey, {
 				set(newValue) {
-					if (!dbcInstance!.executionSettings.checkInvariants) {
+					if (!dbcInstance?.executionSettings.checkInvariants) {
 						return;
 					}
 
@@ -254,13 +266,13 @@ export class DBC {
 						const result = contract.check(realValue);
 
 						if (typeof result === "string") {
-							dbcInstance!.reportFieldInfringement(
+							dbcInstance?.reportFieldInfringement(
 								result,
 								target as object,
 								path,
 								propertyKey as string,
 								realValue,
-								hint
+								hint,
 							);
 						}
 					}
@@ -288,7 +300,11 @@ export class DBC {
 	// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
 	public static decPostcondition(
 		// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
-		check: (toCheck: any, target: object, propertyKey: string) => boolean | string,
+		check: (
+			toCheck: any,
+			target: object,
+			propertyKey: string,
+		) => boolean | string,
 		dbc: string | undefined = undefined,
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
@@ -318,7 +334,7 @@ export class DBC {
 						path,
 						propertyKey,
 						realValue,
-						hint
+						hint,
 					);
 				}
 
@@ -344,7 +360,12 @@ export class DBC {
 	 * @returns The **(target: object, methodName: string | symbol, parameterIndex: number ) => void** invoked by Typescript- */
 	protected static decPrecondition(
 		// biome-ignore lint/suspicious/noExplicitAny: Necessary to check any parameter value
-		check: (value: unknown, target: object, methodName: string | symbol, parameterIndex: number) => boolean | string,
+		check: (
+			value: unknown,
+			target: object,
+			methodName: string | symbol,
+			parameterIndex: number,
+		) => boolean | string,
 		dbc: string | undefined = undefined,
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
@@ -371,7 +392,9 @@ export class DBC {
 					}
 
 					for (const singlePath of paths) {
-						const realValue = singlePath ? DBC.resolve(value, singlePath) : value;
+						const realValue = singlePath
+							? DBC.resolve(value, singlePath)
+							: value;
 						const result = check(realValue, target, methodName, parameterIndex);
 
 						if (typeof result === "string") {
@@ -382,7 +405,7 @@ export class DBC {
 								methodName as string,
 								parameterIndex,
 								realValue,
-								hint
+								hint,
 							);
 						}
 					}
@@ -459,19 +482,16 @@ export class DBC {
 	 */
 	public static createINVARIANT(
 		// biome-ignore lint/suspicious/noExplicitAny: Must accept any contract constructor
-		ContractClass: new (...args: any[]) => { check: (toCheck: unknown | null | undefined) => boolean | string },
+		ContractClass: new (
+			...args: any[]
+		) => { check: (toCheck: unknown | null | undefined) => boolean | string },
 		// biome-ignore lint/suspicious/noExplicitAny: Arguments vary per contract
 		ctorArgs: any[],
 		dbc?: string,
 		path?: string,
 		hint?: string,
 	) {
-		return DBC.decInvariant(
-			[new ContractClass(...ctorArgs)],
-			path,
-			dbc,
-			hint,
-		);
+		return DBC.decInvariant([new ContractClass(...ctorArgs)], path, dbc, hint);
 	}
 	// #endregion Contract Factory Helpers
 	// #region Execution Handling
@@ -481,10 +501,10 @@ export class DBC {
 		checkPostconditions: boolean;
 		checkInvariants: boolean;
 	} = {
-			checkPreconditions: true,
-			checkPostconditions: true,
-			checkInvariants: true,
-		};
+		checkPreconditions: true,
+		checkPostconditions: true,
+		checkInvariants: true,
+	};
 	// #endregion Execution Handling
 	// #region Warning handling.
 	/** Stores settings concerning warnings. */
@@ -512,12 +532,18 @@ export class DBC {
 		const str = typeof value === "string" ? value : String(value);
 		return str.replace(/[<>&"']/g, (ch) => {
 			switch (ch) {
-				case "<": return "&lt;";
-				case ">": return "&gt;";
-				case "&": return "&amp;";
-				case "\"": return "&quot;";
-				case "'": return "&#39;";
-				default: return ch;
+				case "<":
+					return "&lt;";
+				case ">":
+					return "&gt;";
+				case "&":
+					return "&amp;";
+				case '"':
+					return "&quot;";
+				case "'":
+					return "&#39;";
+				default:
+					return ch;
 			}
 		});
 	}
@@ -536,7 +562,14 @@ export class DBC {
 		hint: string | undefined = undefined,
 	): undefined {
 		const safeViolator = DBC.sanitize(violator);
-		const targetName = typeof target === "function" ? DBC.sanitize(target.name) : typeof target === "object" && target !== null && typeof target.constructor === "function" ? DBC.sanitize(target.constructor.name) : DBC.sanitize(target);
+		const targetName =
+			typeof target === "function"
+				? DBC.sanitize(target.name)
+				: typeof target === "object" &&
+						target !== null &&
+						typeof target.constructor === "function"
+					? DBC.sanitize(target.constructor.name)
+					: DBC.sanitize(target);
 		const finalMessage: string = `[ From "${safeViolator}" in "${targetName}"${path ? ` > "${DBC.sanitize(path)}"` : ""}: ${message} ${hint ? `✨ ${hint} ✨` : ""}]`;
 
 		if (this.infringementSettings.throwException) {
@@ -572,7 +605,7 @@ export class DBC {
 			target,
 			value,
 			path,
-			hint
+			hint,
 		);
 	}
 	/**
@@ -622,7 +655,7 @@ export class DBC {
 			target,
 			value,
 			path,
-			hint
+			hint,
 		);
 	}
 	// #region Classes
@@ -670,10 +703,10 @@ export class DBC {
 			checkPostconditions: boolean;
 			checkInvariants: boolean;
 		} = {
-				checkPreconditions: true,
-				checkPostconditions: true,
-				checkInvariants: true,
-			},
+			checkPreconditions: true,
+			checkPostconditions: true,
+			checkInvariants: true,
+		},
 	) {
 		this.infringementSettings = infringementSettings;
 		this.executionSettings = executionSettings;
@@ -727,20 +760,25 @@ export class DBC {
 	 *
 	 * @returns The requested {@link object }, NULL or UNDEFINED. */
 	public static resolve(toResolveFrom: unknown, path: string) {
-		if (!toResolveFrom || typeof path !== "string") { return undefined; }
+		if (!toResolveFrom || typeof path !== "string") {
+			return undefined;
+		}
 
 		// Security: block prototype pollution paths
 		const dangerousTokens = ["__proto__", "constructor", "prototype"];
 
 		const cachedParts = DBC.pathTokenCache.get(path);
-		const parts = cachedParts ?? path.replace(/\[(['"]?)(.*?)\1\]/g, ".$2").split(".");
+		const parts =
+			cachedParts ?? path.replace(/\[(['"]?)(.*?)\1\]/g, ".$2").split(".");
 
 		if (!cachedParts) {
 			// Validate tokens before caching
 			for (const part of parts) {
 				const tokenName = part.replace(/\(.*\)$/, "");
 				if (dangerousTokens.indexOf(tokenName) >= 0) {
-					throw new Error(`[XDBC] Path "${path}" contains forbidden token "${tokenName}".`);
+					throw new Error(
+						`[XDBC] Path "${path}" contains forbidden token "${tokenName}".`,
+					);
 				}
 			}
 			DBC.evictIfNeeded(DBC.pathTokenCache);
@@ -751,7 +789,9 @@ export class DBC {
 		let current: any = toResolveFrom;
 
 		for (const part of parts) {
-			if (current === null || typeof current === "undefined") { return undefined; }
+			if (current === null || typeof current === "undefined") {
+				return undefined;
+			}
 
 			const methodMatch = part.match(/(\w+)\((.*)\)/);
 
@@ -762,13 +802,32 @@ export class DBC {
 
 				if (typeof current[methodName] === "function") {
 					current = current[methodName].apply(current, args);
-				} else { return undefined; }
+				} else {
+					return undefined;
+				}
 			} else {
-				if (typeof window !== "undefined" && typeof HTMLElement !== "undefined" && current instanceof HTMLElement && part.startsWith("@")) {
+				if (
+					typeof window !== "undefined" &&
+					typeof HTMLElement !== "undefined" &&
+					current instanceof HTMLElement &&
+					part.startsWith("@")
+				) {
 					current = current.getAttribute(part.slice(1));
-				} else if (typeof current === "object" && current !== null && part in current) { current = current[part]; }
-				else if (typeof window !== "undefined" && typeof HTMLElement !== "undefined" && current instanceof HTMLElement) { current = undefined; }
-				else { current = undefined; }
+				} else if (
+					typeof current === "object" &&
+					current !== null &&
+					part in current
+				) {
+					current = current[part];
+				} else if (
+					typeof window !== "undefined" &&
+					typeof HTMLElement !== "undefined" &&
+					current instanceof HTMLElement
+				) {
+					current = undefined;
+				} else {
+					current = undefined;
+				}
 			}
 		}
 

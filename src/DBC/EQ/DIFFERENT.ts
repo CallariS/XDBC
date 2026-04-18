@@ -1,15 +1,15 @@
 import { EQ } from "../EQ";
 /**
  * DIFFERENT class for inequality comparisons.
- * 
+ *
  * This class extends EQ and provides methods to check if a value is different (not equal)
  * from a specified equivalent value. It inverts the equality check by always passing
  * `true` for the invert parameter to the parent EQ class methods.
- * 
+ *
  * @remarks
  * The class provides precondition (PRE), postcondition (POST), and invariant (INVARIANT)
  * checks for Design by Contract programming patterns.
- * 
+ *
  * @see {@link COMPARISON}
  * @see {@link EQ}
  */

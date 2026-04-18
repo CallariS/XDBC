@@ -1,5 +1,5 @@
-import { OR } from "../../src/DBC/OR";
 import { EQ } from "../../src/DBC/EQ";
+import { OR } from "../../src/DBC/OR";
 
 describe("OR", () => {
 	const or = new OR([new EQ("a"), new EQ("b")]);

@@ -71,7 +71,12 @@ export class JSON_OP extends DBC {
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.createPRE(JSON_OP.checkAlgorithm, [necessaryProperties, checkElements], dbc, path);
+		return DBC.createPRE(
+			JSON_OP.checkAlgorithm,
+			[necessaryProperties, checkElements],
+			dbc,
+			path,
+		);
 	}
 	/**
 	 * A method-decorator factory using the {@link JSON_OP.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -92,7 +97,12 @@ export class JSON_OP extends DBC {
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.createPOST(JSON_OP.checkAlgorithm, [necessaryProperties, checkElements], dbc, path);
+		return DBC.createPOST(
+			JSON_OP.checkAlgorithm,
+			[necessaryProperties, checkElements],
+			dbc,
+			path,
+		);
 	}
 	/**
 	 * A field-decorator factory using the {@link JSON_OP.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -109,7 +119,12 @@ export class JSON_OP extends DBC {
 		path: string | undefined = undefined,
 		dbc = "WaXCode.DBC",
 	) {
-		return DBC.createINVARIANT(JSON_OP, [necessaryProperties, checkElements], dbc, path);
+		return DBC.createINVARIANT(
+			JSON_OP,
+			[necessaryProperties, checkElements],
+			dbc,
+			path,
+		);
 	}
 	// #endregion Condition checking.
 	// #region Referenced Condition checking.

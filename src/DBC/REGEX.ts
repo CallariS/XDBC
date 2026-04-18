@@ -6,20 +6,22 @@ import { DBC } from "../DBC";
  * Maintainer: Callari, Salvatore (XDBC@WaXCode.net) */
 export class REGEX extends DBC {
 	/** Stores often used {@link RegExp }s. Patterns are compiled lazily on first access. */
-	private static _stdExp: {
-		htmlAttributeName: RegExp;
-		eMail: RegExp;
-		property: RegExp;
-		url: RegExp;
-		keyPath: RegExp;
-		date: RegExp;
-		dateFormat: RegExp;
-		cssSelector: RegExp;
-		boolean: RegExp;
-		colorCodeHEX: RegExp;
-		simpleHotkey: RegExp;
-		bcp47: RegExp;
-	} | undefined;
+	private static _stdExp:
+		| {
+				htmlAttributeName: RegExp;
+				eMail: RegExp;
+				property: RegExp;
+				url: RegExp;
+				keyPath: RegExp;
+				date: RegExp;
+				dateFormat: RegExp;
+				cssSelector: RegExp;
+				boolean: RegExp;
+				colorCodeHEX: RegExp;
+				simpleHotkey: RegExp;
+				bcp47: RegExp;
+		  }
+		| undefined;
 
 	public static get stdExp() {
 		if (!REGEX._stdExp) {
@@ -37,7 +39,8 @@ export class REGEX extends DBC {
 				boolean: /^(TRUE|FALSE)$/i,
 				colorCodeHEX: /^#([A-Fa-f\d]{3,4}|[A-Fa-f\d]{6}|[A-Fa-f\d]{8})$/i,
 				simpleHotkey: /^((Alt|Ctrl|Shift|Meta)\+)+[a-z\d]$/i,
-				bcp47: /^(?:[a-z]{2,3}(?:-[a-z]{3}){0,3}|[a-z]{4}|[a-z]{5,8})(?:-[a-z]{4})?(?:-[a-z]{2}|-[0-9]{3})?(?:-[a-z0-9]{5,8}|-[0-9][a-z0-9]{3})*(?:-[0-9a-wy-z](?:-[a-z0-9]{2,8})+)*(?:-x(?:-[a-z0-9]{1,8})+)?$|^x(?:-[a-z0-9]{1,8})+$/i
+				bcp47:
+					/^(?:[a-z]{2,3}(?:-[a-z]{3}){0,3}|[a-z]{4}|[a-z]{5,8})(?:-[a-z]{4})?(?:-[a-z]{2}|-[0-9]{3})?(?:-[a-z0-9]{5,8}|-[0-9][a-z0-9]{3})*(?:-[0-9a-wy-z](?:-[a-z0-9]{2,8})+)*(?:-x(?:-[a-z0-9]{1,8})+)?$|^x(?:-[a-z0-9]{1,8})+$/i,
 			};
 		}
 		return REGEX._stdExp;
@@ -55,7 +58,8 @@ export class REGEX extends DBC {
 		toCheck: unknown | null | undefined,
 		expression: RegExp,
 	): boolean | string {
-		if (toCheck === undefined || toCheck === null || toCheck === "") return true;
+		if (toCheck === undefined || toCheck === null || toCheck === "")
+			return true;
 
 		if (!expression.test(toCheck as string)) {
 			return `Value has to comply to regular expression "${expression}"`;
@@ -146,17 +150,22 @@ export class REGEX extends DBC {
 	 * @param id			Optional identifier to include in the error message.
 	 *
 	 * @returns The validated value cast to the CANDIDATE type.
-	 * 
+	 *
 	 * @throws {@link DBC.Infringement} if the value does not match the regular expression. */
-	public static tsCheck<CANDIDATE = unknown>(toCheck: any, expression: RegExp, hint: string | undefined = undefined, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE = unknown>(
+		toCheck: any,
+		expression: RegExp,
+		hint: string | undefined = undefined,
+		id: string | undefined = undefined,
+	): CANDIDATE {
 		const result = REGEX.checkAlgorithm(toCheck, expression);
 
 		if (result) {
 			return toCheck;
 		}
-		else {
-			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`);
-		}
+		throw new DBC.Infringement(
+			`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`,
+		);
 	}
 	/**
 	 * Creates this {@link REGEX } by setting the protected property {@link REGEX.expression } used by {@link REGEX.check }.

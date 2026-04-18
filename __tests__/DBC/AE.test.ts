@@ -1,6 +1,6 @@
 import { AE } from "../../src/DBC/AE";
-import { REGEX } from "../../src/DBC/REGEX";
 import { EQ } from "../../src/DBC/EQ";
+import { REGEX } from "../../src/DBC/REGEX";
 
 describe("AE", () => {
 	const ae = new AE([new REGEX(/^a$/), new EQ("a")]);

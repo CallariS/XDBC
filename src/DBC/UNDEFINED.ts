@@ -97,22 +97,19 @@ export class UNDEFINED extends DBC {
 	 *
 	 * @param toCheck	See {@link UNDEFINED.checkAlgorithm }.
 	 * @param id		A {@link string } identifying this {@link INSTANCE } via the {@link DBC.Infringement }-Message.
-	 * 
+	 *
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link UNDEFINED }.
-	 * 
+	 *
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link UNDEFINED }.*/
-	public static tsCheck<CANDIDATE = unknown>(toCheck: CANDIDATE | undefined | null, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE = unknown>(
+		toCheck: CANDIDATE | undefined | null,
+		id: string | undefined = undefined,
+	): CANDIDATE {
 		const result = UNDEFINED.checkAlgorithm(toCheck);
 
 		if (result === true) {
 			return toCheck as CANDIDATE;
 		}
-		else {
-			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}`);
-		}
-	}
-	/** Creates this {@link UNDEFINED }. */
-	public constructor() {
-		super();
+		throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}`);
 	}
 }

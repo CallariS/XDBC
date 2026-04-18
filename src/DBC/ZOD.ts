@@ -1,5 +1,5 @@
+import type { z } from "zod";
 import { DBC } from "../DBC";
-import { z } from 'zod';
 /**
  * A {@link DBC } defining that the an {@link object }s gotta be an instance of a certain {@link ZOD.schema }.
  *
@@ -15,7 +15,10 @@ export class ZOD extends DBC {
 	 *
 	 * @returns TRUE if the value **toCheck** complies to the specified **schema**, otherwise FALSE. */
 	// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
-	public static checkAlgorithm(toCheck: any, schema: z.ZodType): boolean | string {
+	public static checkAlgorithm(
+		toCheck: any,
+		schema: z.ZodType,
+	): boolean | string {
 		const result = schema.safeParse(toCheck);
 		if (!result.success) {
 			return `Value does not comply to the specified schema. Received: "${JSON.stringify(toCheck)}". Errors: ${result.error.message}`;
@@ -99,23 +102,25 @@ export class ZOD extends DBC {
 	}
 	/**
 	 * Invokes the {@link ZOD.checkAlgorithm } passing the value **toCheck** and the {@link ZOD.schema } .
-	 * 
+	 *
 	 * @param toCheck 	See {@link ZOD.checkAlgorithm }.
 	 * @param schema	See {@link ZOD.checkAlgorithm }.
 	 * @param id		A {@link string } identifying this {@link ZOD } via the {@link DBC.Infringement }-Message.
-	 * 
+	 *
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link ZOD }.
-	 * 
+	 *
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link DEFINED }. */
-	public static tsCheck<CANDIDATE = unknown>(toCheck: any, schema: z.ZodType, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE = unknown>(
+		toCheck: any,
+		schema: z.ZodType,
+		id: string | undefined = undefined,
+	): CANDIDATE {
 		const result = ZOD.checkAlgorithm(toCheck, schema);
 
 		if (result === true) {
 			return toCheck;
 		}
-		else {
-			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}`);
-		}
+		throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}`);
 	}
 	/**
 	 * Creates this {@link ZOD } by setting the protected property {@link ZOD.schema } used by {@link ZOD.check }.

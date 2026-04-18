@@ -45,13 +45,19 @@ export class EQ extends DBC {
 		invert = false,
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
-		dbc: string | undefined = undefined
+		dbc: string | undefined = undefined,
 	): (
 		target: object,
 		methodName: string | symbol,
 		parameterIndex: number,
 	) => void {
-		return DBC.createPRE(EQ.checkAlgorithm, [equivalent, invert], dbc, path, hint);
+		return DBC.createPRE(
+			EQ.checkAlgorithm,
+			[equivalent, invert],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	/**
 	 * A method-decorator factory using the {@link EQ.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -69,13 +75,18 @@ export class EQ extends DBC {
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
 		dbc: string | undefined = undefined,
-
 	): (
 		target: object,
 		propertyKey: string,
 		descriptor: PropertyDescriptor,
 	) => PropertyDescriptor {
-		return DBC.createPOST(EQ.checkAlgorithm, [equivalent, invert], dbc, path, hint);
+		return DBC.createPOST(
+			EQ.checkAlgorithm,
+			[equivalent, invert],
+			dbc,
+			path,
+			hint,
+		);
 	}
 	/**
 	 * A field-decorator factory using the {@link EQ.checkAlgorithm } to determine whether this {@link DBC } is fulfilled
@@ -117,17 +128,22 @@ export class EQ extends DBC {
 	 * @param toCheck See {@link EQ.checkAlgorithm }.
 	 *
 	 * @returns The **CANDIDATE** **toCheck** doesn't fulfill this {@link EQ }.
-	 * 
+	 *
 	 * @throws A {@link DBC.Infringement } if the **CANDIDATE** **toCheck** does not fulfill this {@link EQ }.*/
-	public static tsCheck<CANDIDATE>(toCheck: CANDIDATE | undefined | null, equivalent: any, hint: string | undefined = undefined, id: string | undefined = undefined): CANDIDATE {
+	public static tsCheck<CANDIDATE>(
+		toCheck: CANDIDATE | undefined | null,
+		equivalent: any,
+		hint: string | undefined = undefined,
+		id: string | undefined = undefined,
+	): CANDIDATE {
 		const result = EQ.checkAlgorithm(toCheck, equivalent, false);
 
 		if (result) {
 			return toCheck as CANDIDATE;
 		}
-		else {
-			throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string} ${hint ? `✨ ${hint} ✨` : ""}`);
-		}
+		throw new DBC.Infringement(
+			`${id ? `(${id}) ` : ""}${result as string} ${hint ? `✨ ${hint} ✨` : ""}`,
+		);
 	}
 	/**
 	 * Creates this {@link EQ } by setting the protected property {@link EQ.equivalent } used by {@link EQ.check }.
