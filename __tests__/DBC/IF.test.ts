@@ -48,5 +48,15 @@ describe("IF", () => {
         test("Should return true when both condition and inCase pass", () => {
             expect(IF.checkAlgorithm("hello", isString, eqHello)).toBe(true);
         });
+
+        test("Should return true when toCheck is undefined", () => {
+            expect(IF.checkAlgorithm(undefined, isString, eqHello)).toBe(true);
+        });
+
+        test("Should return true when toCheck is null", () => {
+            expect(IF.checkAlgorithm(null, isString, eqHello)).toBe(true);
+        });
+
+
     });
 });

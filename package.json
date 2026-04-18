@@ -1,12 +1,22 @@
 {
-	"version": "1.0.208",
+	"version": "1.0.211",
 	"name": "xdbc",
+	"main": "dist/bundle.js",
+	"types": "dist/DBC.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/bundle.js",
+			"require": "./dist/bundle.js",
+			"types": "./dist/DBC.d.ts"
+		}
+	},
 	"scripts": {
 		"docs": "typedoc",
 		"format": "biome format ./src --write",
 		"lint": "biome check ./",
 		"ci": "biome ci ./",
 		"test": "jest",
+		"test:coverage": "jest --coverage",
 		"build": "webpack",
 		"start": "webpack serve --open"
 	},

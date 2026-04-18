@@ -55,7 +55,7 @@ export class REGEX extends DBC {
 		toCheck: unknown | null | undefined,
 		expression: RegExp,
 	): boolean | string {
-		if (toCheck === undefined || toCheck === null) return true;
+		if (toCheck === undefined || toCheck === null || toCheck === "") return true;
 
 		if (!expression.test(toCheck as string)) {
 			return `Value has to comply to regular expression "${expression}"`;

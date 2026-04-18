@@ -10,4 +10,8 @@ describe("REGEX", () => {
 	test("Should report infringement with 'c' to check", () => {
 		expect(typeof regex.check("c")).toBe("string");
 	});
+
+	test("Should not report infringement with empty string", () => {
+		expect(regex.check("")).toBe(true);
+	});
 });

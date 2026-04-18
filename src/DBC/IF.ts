@@ -24,6 +24,8 @@ export class IF extends DBC {
 		},
 		invert: boolean = false,
 	): boolean | string {
+		if (toCheck === undefined || toCheck === null) return true;
+
 		if (invert && condition.check(toCheck) !== true && inCase.check(toCheck) !== true) {
 			return `In case that the value does not comply to the condition, it also has to comply to the required contract`;
 		}
