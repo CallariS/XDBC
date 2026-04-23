@@ -1,0 +1,8 @@
+# Exclude generated site output from GitHub language statistics.
+docs/** linguist-generated=true
+coverage/** linguist-generated=true
+dist/** linguist-generated=true
+
+# These HTML files are examples/assessment artifacts, not source code.
+Assessment.html linguist-generated=true
+Test.html linguist-generated=true
