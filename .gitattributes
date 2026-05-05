@@ -1,3 +1,11 @@
+# Enforce LF line endings for all text files
+* text=auto eol=lf
+
+# Explicitly binary files
+*.png binary
+*.jpg binary
+*.ico binary
+
 # Exclude generated site output from GitHub language statistics.
 docs/** linguist-generated=true
 coverage/** linguist-generated=true
