@@ -1,15 +1,8 @@
 {
-	"version": "1.0.211",
+	"version": "1.0.217",
 	"name": "xdbc",
 	"main": "dist/bundle.js",
 	"types": "dist/DBC.d.ts",
-	"exports": {
-		".": {
-			"import": "./dist/bundle.js",
-			"require": "./dist/bundle.js",
-			"types": "./dist/DBC.d.ts"
-		}
-	},
 	"scripts": {
 		"docs": "typedoc",
 		"format": "biome format ./src --write",
@@ -17,7 +10,7 @@
 		"ci": "biome ci ./",
 		"test": "jest",
 		"test:coverage": "jest --coverage",
-		"build": "webpack",
+		"build": "tsc --emitDeclarationOnly && webpack",
 		"start": "webpack serve --open"
 	},
 	"devDependencies": {
@@ -48,11 +41,18 @@
 		"type": "git",
 		"url": "git+https://github.com/CallariS/XDBC.git"
 	},
-	"keywords": ["DbC", "DesignByContract", "Typescript"],
+	"keywords": [
+		"DbC",
+		"DesignByContract",
+		"Typescript"
+	],
 	"author": "Callari, Salvatore",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/CallariS/XDBC/issues"
 	},
-	"homepage": "https://github.com/CallariS/XDBC#readme"
+	"homepage": "https://github.com/CallariS/XDBC#readme",
+	"overrides": {
+		"uuid": "^14.0.0"
+	}
 }

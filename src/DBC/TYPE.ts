@@ -50,7 +50,7 @@ export class TYPE extends DBC {
 		dbc: string | undefined = undefined,
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		return DBC.createPRE(TYPE.checkAlgorithm, [type], dbc, path, hint);
@@ -126,15 +126,18 @@ export class TYPE extends DBC {
 		type: string,
 		hint: string | undefined = undefined,
 		id: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = TYPE.checkAlgorithm(toCheck, type);
 
 		if (result === true) {
 			return toCheck;
 		}
-		throw new DBC.Infringement(
+		DBC.reportTsCheckInfringement(
 			`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`,
+			dbc,
 		);
+		return toCheck as CANDIDATE;
 	}
 	/**
 	 * Creates this {@link TYPE } by setting the protected property {@link TYPE.type } used by {@link TYPE.check }.

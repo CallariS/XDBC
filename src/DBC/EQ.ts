@@ -48,7 +48,7 @@ export class EQ extends DBC {
 		dbc: string | undefined = undefined,
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		return DBC.createPRE(
@@ -135,15 +135,18 @@ export class EQ extends DBC {
 		equivalent: any,
 		hint: string | undefined = undefined,
 		id: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = EQ.checkAlgorithm(toCheck, equivalent, false);
 
-		if (result) {
+		if (result === true) {
 			return toCheck as CANDIDATE;
 		}
-		throw new DBC.Infringement(
+		DBC.reportTsCheckInfringement(
 			`${id ? `(${id}) ` : ""}${result as string} ${hint ? `✨ ${hint} ✨` : ""}`,
+			dbc,
 		);
+		return toCheck as CANDIDATE;
 	}
 	/**
 	 * Creates this {@link EQ } by setting the protected property {@link EQ.equivalent } used by {@link EQ.check }.

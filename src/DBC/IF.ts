@@ -69,7 +69,7 @@ export class IF extends DBC {
 		dbc: string | undefined = undefined,
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		return DBC.createPRE(

@@ -49,7 +49,7 @@ export class HasAttribute extends DBC {
 		dbc = "WaXCode.DBC",
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		return DBC.createPRE(

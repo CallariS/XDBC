@@ -68,7 +68,7 @@ export class JSON_OP extends DBC {
 		dbc = "WaXCode.DBC",
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		return DBC.createPRE(
@@ -170,6 +170,7 @@ export class JSON_OP extends DBC {
 		toCheck: any,
 		necessaryProperties: Array<{ name: string; type: string }>,
 		checkElements = false,
+		dbc: string | undefined = undefined,
 	) {
 		const checkResult = JSON_OP.checkAlgorithm(
 			toCheck,
@@ -178,7 +179,7 @@ export class JSON_OP extends DBC {
 		);
 
 		if (typeof checkResult === "string") {
-			throw new DBC.Infringement(checkResult);
+			DBC.reportTsCheckInfringement(checkResult, dbc);
 		}
 	}
 	// #endregion In-Method checking.

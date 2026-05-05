@@ -100,7 +100,7 @@ export class AE extends DBC {
 		dbc: string | undefined = undefined,
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		return DBC.decPrecondition(
@@ -108,7 +108,7 @@ export class AE extends DBC {
 				// biome-ignore lint/suspicious/noExplicitAny: Must match DBC.decPrecondition signature
 				value: any,
 				target: object,
-				methodName: string | symbol,
+				methodName: string | symbol | undefined,
 				parameterIndex: number,
 			) => {
 				if (Array.isArray(realConditions)) {

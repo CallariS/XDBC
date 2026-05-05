@@ -42,7 +42,7 @@ export class ZOD extends DBC {
 		dbc = "WaXCode.DBC",
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		return DBC.createPRE(ZOD.checkAlgorithm, [schema], dbc, path);
@@ -114,13 +114,15 @@ export class ZOD extends DBC {
 		toCheck: any,
 		schema: z.ZodType,
 		id: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = ZOD.checkAlgorithm(toCheck, schema);
 
 		if (result === true) {
 			return toCheck;
 		}
-		throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}`);
+		DBC.reportTsCheckInfringement(`${id ? `(${id}) ` : ""}${result as string}`, dbc);
+		return toCheck as CANDIDATE;
 	}
 	/**
 	 * Creates this {@link ZOD } by setting the protected property {@link ZOD.schema } used by {@link ZOD.check }.

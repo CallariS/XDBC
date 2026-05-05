@@ -47,7 +47,7 @@ export class INSTANCE extends DBC {
 		dbc: string | undefined = undefined,
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		const refs = Array.isArray(reference) ? reference : [reference];
@@ -127,8 +127,9 @@ export class INSTANCE extends DBC {
 		reference: any,
 		hint: string = undefined,
 		id: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): CANDIDATE {
-		return INSTANCE.tsCheckMulti<CANDIDATE>(toCheck, [reference], hint, id);
+		return INSTANCE.tsCheckMulti<CANDIDATE>(toCheck, [reference], hint, id, dbc);
 	}
 	/**
 	 * Invokes the {@link INSTANCE.checkAlgorithm } passing the value **toCheck** and the {@link INSTANCE.reference } .
@@ -146,15 +147,18 @@ export class INSTANCE extends DBC {
 		references: any[],
 		hint: string = undefined,
 		id: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = INSTANCE.checkAlgorithm(toCheck, ...references);
 
 		if (result === true) {
 			return toCheck;
 		}
-		throw new DBC.Infringement(
+		DBC.reportTsCheckInfringement(
 			`${id ? `(${id}) ` : ""}${result as string} ${hint ? `✨ ${hint} ✨` : ""}`,
+			dbc,
 		);
+		return toCheck as CANDIDATE;
 	}
 	/**
 	 * Creates this {@link INSTANCE } by setting the protected property {@link INSTANCE.reference } used by {@link INSTANCE.check }.

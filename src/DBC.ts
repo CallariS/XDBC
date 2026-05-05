@@ -52,7 +52,7 @@ export class DBC {
 	 */
 	private static getRequestKey(
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 	): string {
 		const className =
 			typeof target === "function"
@@ -72,7 +72,7 @@ export class DBC {
 	 * @param receptor		The method the requested parameter-value shall be passed to when it becomes available. */
 	protected static requestParamValue(
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		index: number,
 		// biome-ignore lint/suspicious/noExplicitAny: Gotta be any since parameter-values may be undefined.
 		receptor: (value: any) => undefined,
@@ -98,25 +98,64 @@ export class DBC {
 		return undefined;
 	}
 	/**
-	 * A method-decorator factory checking the {@link paramValueRequests } for value-requests of the method's parameter thus
-	 * also usable on setters.
-	 * When found it will invoke the "receptor" registered there, inter alia by {@link requestParamValue }, with the
-	 * parameter's value.
+	 * A decorator usable on both **methods** (including setters) and **classes**.
 	 *
-	 * @param target 		The {@link object } hosting the tagged method as provided by the runtime.
-	 * @param propertyKey 	The tagged method's name as provided by the runtime.
-	 * @param descriptor 	The {@link PropertyDescriptor } as provided by the runtime.
+	 * - **On a method**: wraps the method so that any {@link DBC } preconditions registered on its parameters
+	 *   via XDBC parameter-decorator factories are dispatched with the actual argument values on each call.
+	 * - **On a class**: wraps the constructor so that preconditions registered on constructor parameters are
+	 *   dispatched **before** the original constructor body runs, upholding true precondition semantics.
 	 *
-	 * @returns The {@link PropertyDescriptor } that was passed by the runtime. */
-	public static ParamvalueProvider(
-		target: object,
-		propertyKey: string,
-		descriptor: PropertyDescriptor,
-	): PropertyDescriptor {
+	 * In both cases the "receptor" callbacks enlisted in {@link paramValueRequests } by {@link requestParamValue }
+	 * are invoked with the live argument values.
+	 *
+	 * @param targetOrConstructor	When used as a **method** decorator: the {@link object } hosting the tagged method.
+	 * 								When used as a **class** decorator: the class constructor.
+	 * @param propertyKey 			*(method decorator only)* The tagged method's name as provided by the runtime.
+	 * @param descriptor 			*(method decorator only)* The {@link PropertyDescriptor } as provided by the runtime.
+	 *
+	 * @returns 	When used as a **method** decorator: the (modified) {@link PropertyDescriptor }.
+	 * 				When used as a **class** decorator: a replacement constructor that performs precondition checks. */
+	// biome-ignore lint/suspicious/noExplicitAny: Must handle both method and class decorator signatures
+	public static ParamvalueProvider(target: object, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor;
+	// biome-ignore lint/suspicious/noExplicitAny: Must handle both method and class decorator signatures
+	public static ParamvalueProvider<T extends new (...args: any[]) => any>(constructor: T): T;
+	// biome-ignore lint/suspicious/noExplicitAny: Must accept abstract class constructors
+	public static ParamvalueProvider<T extends abstract new (...args: any[]) => any>(constructor: T): T;
+	// biome-ignore lint/suspicious/noExplicitAny: Must handle both method and class decorator signatures
+	public static ParamvalueProvider(...args: any[]): any {
+		if (args.length === 1 && typeof args[0] === "function") {
+			// #region Class decorator path
+			// biome-ignore lint/suspicious/noExplicitAny: Must accept any constructor signature
+			const constructor = args[0] as new (...args: any[]) => any;
+			const key = `${constructor.name}:undefined`;
+			// biome-ignore lint/suspicious/noExplicitAny: Must accept any constructor signature
+			const WrappedClass = class extends constructor {
+				// biome-ignore lint/suspicious/noExplicitAny: Must accept any constructor signature
+				constructor(...ctorArgs: any[]) {
+					if (DBC.paramValueRequests.has(key)) {
+						const paramMap = DBC.paramValueRequests.get(key)!;
+						for (const index of paramMap.keys()) {
+							if (index < ctorArgs.length) {
+								for (const receptor of paramMap.get(index)!) {
+									receptor(ctorArgs[index]);
+								}
+							}
+						}
+					}
+					super(...ctorArgs);
+				}
+			} as typeof constructor;
+			Object.defineProperty(WrappedClass, "name", { value: constructor.name });
+			return WrappedClass;
+			// #endregion Class decorator path
+		}
+
+		// #region Method decorator path
+		const [target, propertyKey, descriptor] = args as [object, string, PropertyDescriptor];
 		const originalMethod = descriptor.value;
 		const isStatic = typeof target === "function";
 		// biome-ignore lint/suspicious/noExplicitAny: Gotta be any since parameter-values may be undefined.
-		descriptor.value = function (...args: any[]) {
+		descriptor.value = function (...methodArgs: any[]) {
 			// #region   Check if a value of one of the method's parameter has been requested and pass it to the
 			//           receptor, if so.
 			const actualTarget = isStatic ? this : (this as any).constructor;
@@ -125,9 +164,9 @@ export class DBC {
 			if (DBC.paramValueRequests.has(key)) {
 				const paramMap = DBC.paramValueRequests.get(key)!;
 				for (const index of paramMap.keys()) {
-					if (index < args.length) {
+					if (index < methodArgs.length) {
 						for (const receptor of paramMap.get(index)!) {
-							receptor(args[index]);
+							receptor(methodArgs[index]);
 						}
 					}
 				}
@@ -136,10 +175,10 @@ export class DBC {
 			}
 			// #endregion	Check if a value of one of the method's parameter has been requested and pass it to the
 			//              receptor, if so.
-			return originalMethod.apply(this, args);
+			return originalMethod.apply(this, methodArgs);
 		};
-
 		return descriptor;
+		// #endregion Method decorator path
 	}
 	// #endregion Parameter-value requests.
 	// #region Class
@@ -363,7 +402,7 @@ export class DBC {
 		check: (
 			value: unknown,
 			target: object,
-			methodName: string | symbol,
+			methodName: string | symbol | undefined,
 			parameterIndex: number,
 		) => boolean | string,
 		dbc: string | undefined = undefined,
@@ -371,14 +410,14 @@ export class DBC {
 		hint: string | undefined = undefined,
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		const paths = path ? path.replace(/ /g, "").split("::") : [undefined];
 		let dbcInstance: DBC | undefined;
 		return (
 			target: object,
-			methodName: string | symbol,
+			methodName: string | symbol | undefined,
 			parameterIndex: number,
 		): void => {
 			DBC.requestParamValue(
@@ -657,6 +696,33 @@ export class DBC {
 			path,
 			hint,
 		);
+	}
+	/**
+	 * Routes an imperative infringement (from {@link tsCheck } or static {@link check } calls) through the
+	 * registered DBC instance's {@link infringementSettings }, respecting whether to throw, log, or both.
+	 * Falls back to throwing {@link DBC.Infringement } directly if no DBC instance is registered at the
+	 * specified path, preserving the pre-existing behaviour for code that does not register a DBC instance.
+	 *
+	 * @param message	The fully formatted infringement message.
+	 * @param dbc		The path to the DBC instance. Defaults to `"WaXCode.DBC"`. */
+	public static reportTsCheckInfringement(
+		message: string,
+		dbc: string | undefined = undefined,
+	): void {
+		let dbcInstance: DBC | undefined;
+		try {
+			dbcInstance = DBC.getDBC(dbc);
+		} catch {
+			throw new DBC.Infringement(message);
+		}
+
+		if (dbcInstance.infringementSettings.throwException) {
+			throw new DBC.Infringement(message);
+		}
+
+		if (dbcInstance.infringementSettings.logToConsole) {
+			console.log(message);
+		}
 	}
 	// #region Classes
 	// #region Errors

@@ -35,7 +35,7 @@ export class UNDEFINED extends DBC {
 		dbc: string | undefined = undefined,
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		return DBC.createPRE(UNDEFINED.checkAlgorithm, [], dbc, path, hint);
@@ -104,12 +104,14 @@ export class UNDEFINED extends DBC {
 	public static tsCheck<CANDIDATE = unknown>(
 		toCheck: CANDIDATE | undefined | null,
 		id: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = UNDEFINED.checkAlgorithm(toCheck);
 
 		if (result === true) {
 			return toCheck as CANDIDATE;
 		}
-		throw new DBC.Infringement(`${id ? `(${id}) ` : ""}${result as string}`);
+		DBC.reportTsCheckInfringement(`${id ? `(${id}) ` : ""}${result as string}`, dbc);
+		return toCheck as CANDIDATE;
 	}
 }

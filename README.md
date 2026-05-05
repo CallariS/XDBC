@@ -149,6 +149,7 @@ XDBC ships with **16 contracts** organized into core validators and derived spec
 | **`JSON_Parse`** | String must be valid JSON; optionally forwards parsed result | `new JSON_Parse(receptor?: (json) => void)` |
 | **`DEFINED`** | Value must not be `null` or `undefined` | — |
 | **`UNDEFINED`** | Value must be `undefined` | — |
+| **`ARRAY`** | Value must be an array | — |
 | **`HasAttribute`** | HTMLElement must possess a named attribute | `HasAttribute.PRE(attrName, invert?)` |
 | **`ZOD`** | Value must validate against a Zod schema | `new ZOD(schema: z.ZodType)` |
 
@@ -161,6 +162,7 @@ XDBC ships with **16 contracts** organized into core validators and derived spec
 | **`LESS`** | `COMPARISON` | `value < reference` |
 | **`LESS_OR_EQUAL`** | `COMPARISON` | `value <= reference` |
 | **`DIFFERENT`** | `EQ` | `value !== reference` |
+| **`PLAIN_OBJECT`** | `ARRAY` | Value must be a non-null, non-array object |
 
 ### Built-in Regular Expressions
 

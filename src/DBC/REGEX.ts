@@ -83,7 +83,7 @@ export class REGEX extends DBC {
 		dbc: string | undefined = undefined,
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		return DBC.createPRE(REGEX.checkAlgorithm, [expression], dbc, path, hint);
@@ -157,15 +157,18 @@ export class REGEX extends DBC {
 		expression: RegExp,
 		hint: string | undefined = undefined,
 		id: string | undefined = undefined,
+		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = REGEX.checkAlgorithm(toCheck, expression);
 
-		if (result) {
+		if (result === true) {
 			return toCheck;
 		}
-		throw new DBC.Infringement(
+		DBC.reportTsCheckInfringement(
 			`${id ? `(${id}) ` : ""}${result as string}${hint ? ` ✨ ${hint} ✨` : ""}`,
+			dbc,
 		);
+		return toCheck as CANDIDATE;
 	}
 	/**
 	 * Creates this {@link REGEX } by setting the protected property {@link REGEX.expression } used by {@link REGEX.check }.
@@ -182,11 +185,11 @@ export class REGEX extends DBC {
 	 * @param toCheck		See {@link REGEX.checkAlgorithm}.
 	 * @param expression	See {@link REGEX.checkAlgorithm}.
 	 */
-	public static check(toCheck: unknown | null | undefined, expression: RegExp) {
+	public static check(toCheck: unknown | null | undefined, expression: RegExp, dbc: string | undefined = undefined) {
 		const checkResult = REGEX.checkAlgorithm(toCheck, expression);
 
 		if (typeof checkResult === "string") {
-			throw new DBC.Infringement(checkResult);
+			DBC.reportTsCheckInfringement(checkResult, dbc);
 		}
 	}
 	// #endregion In-Method checking.

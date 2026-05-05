@@ -49,7 +49,7 @@ export class JSON_Parse extends DBC {
 		dbc: string | undefined = undefined,
 	): (
 		target: object,
-		methodName: string | symbol,
+		methodName: string | symbol | undefined,
 		parameterIndex: number,
 	) => void {
 		return DBC.createPRE(
@@ -145,11 +145,12 @@ export class JSON_Parse extends DBC {
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		toCheck: any,
 		receptor: (json: object) => void,
+		dbc: string | undefined = undefined,
 	) {
 		const checkResult = JSON_Parse.checkAlgorithm(toCheck, receptor);
 
 		if (typeof checkResult === "string") {
-			throw new DBC.Infringement(checkResult);
+			DBC.reportTsCheckInfringement(checkResult, dbc);
 		}
 	}
 	// #endregion In-Method checking.
