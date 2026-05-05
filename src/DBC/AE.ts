@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that all elements of an {@link object }s have to fulfill
  * a given {@link object }'s check-method (**( toCheck : any ) => boolean | string**).
@@ -37,25 +37,20 @@ export class AE extends DBC {
 			if (index !== undefined && idxEnd === undefined) {
 				if (index > -1 && index < value.length) {
 					const result = condition.check(value[index]);
-
 					if (typeof result === "string") {
 						return `Violating-Arrayelement at index "${index}" with value "${value[index]}". ${result}`;
 					}
 				}
-
 				return true; // In order for optional parameter to not cause an error if they are omitted.
 			}
-
 			const ending =
 				idxEnd !== undefined
 					? idxEnd !== -1
 						? idxEnd + 1
 						: (value as []).length
 					: (value as []).length;
-
 			for (let i = index ? index : 0; i < ending; i++) {
 				const result = condition.check(value[i]);
-
 				if (result !== true) {
 					return `Violating-Arrayelement at index ${i}. ${result}`;
 				}
@@ -63,7 +58,6 @@ export class AE extends DBC {
 		} else {
 			return condition.check(value);
 		}
-
 		return true;
 	}
 	/**
@@ -105,7 +99,6 @@ export class AE extends DBC {
 	) => void {
 		return DBC.decPrecondition(
 			(
-				// biome-ignore lint/suspicious/noExplicitAny: Must match DBC.decPrecondition signature
 				value: any,
 				target: object,
 				methodName: string | symbol | undefined,
@@ -119,7 +112,6 @@ export class AE extends DBC {
 							index,
 							idxEnd,
 						);
-
 						if (typeof result !== "boolean") return result;
 					}
 				} else {
@@ -132,7 +124,6 @@ export class AE extends DBC {
 						idxEnd,
 					);
 				}
-
 				return true;
 			},
 			dbc,
@@ -155,9 +146,8 @@ export class AE extends DBC {
 	 * @returns	A {@link string } as soon as one { check: (toCheck: any) => boolean | string } of **realConditions** return one.
 	 * 			Otherwise TRUE. */
 	public static POST(
-		realConditions: // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		realConditions:
 			| Array<{ check: (toCheck: any) => boolean | string }>
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			| { check: (toCheck: any) => boolean | string },
 		index: number | undefined = undefined,
 		idxEnd: number | undefined = undefined,
@@ -179,19 +169,16 @@ export class AE extends DBC {
 							index,
 							idxEnd,
 						);
-
 						if (typeof result !== "boolean") return result;
 					}
 				} else {
 					return AE.checkAlgorithm(
-						// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 						realConditions as { check: (toCheck: any) => boolean | string },
 						value,
 						index,
 						idxEnd,
 					);
 				}
-
 				return true;
 			},
 			dbc,
@@ -213,9 +200,8 @@ export class AE extends DBC {
 	 *
 	 * @returns	See {@link DBC.decInvariant }. */
 	public static INVARIANT(
-		realConditions: // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		realConditions:
 			| Array<{ check: (toCheck: any) => boolean | string }>
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			| { check: (toCheck: any) => boolean | string },
 		index: number | undefined = undefined,
 		idxEnd: number | undefined = undefined,
@@ -243,7 +229,6 @@ export class AE extends DBC {
 	 * @param toCheck See {@link AE.checkAlgorithm }.
 	 *
 	 * @returns See {@link EQ.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: Must match DBC factory signature
 	public check(toCheck: any) {
 		if (Array.isArray(this.conditions)) {
 			for (const currentCondition of this.conditions) {
@@ -253,19 +238,16 @@ export class AE extends DBC {
 					this.index,
 					this.idxEnd,
 				);
-
 				if (typeof result !== "boolean") return result;
 			}
 		} else {
 			return AE.checkAlgorithm(
-				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 				this.conditions as { check: (toCheck: any) => boolean | string },
 				toCheck,
 				this.index,
 				this.idxEnd,
 			);
 		}
-
 		return true;
 	}
 	/**
@@ -273,11 +255,10 @@ export class AE extends DBC {
 	 *
 	 * @param equivalent See {@link EQ.check }. */
 	public constructor(
-		protected conditions: // biome-ignore lint/suspicious/noExplicitAny: Must match DBC factory signature
+		protected conditions:
 			| Array<{
 					check: (toCheck: any) => boolean | string;
 			  }>
-			// biome-ignore lint/suspicious/noExplicitAny: Must match DBC factory signature
 			| { check: (toCheck: any) => boolean | string },
 		protected index: number | undefined = undefined,
 		protected idxEnd: number | undefined = undefined,

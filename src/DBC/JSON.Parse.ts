@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } demanding that a {@link string } is {@link JSON.parse}able.
  *
@@ -18,19 +18,15 @@ export class JSON_Parse extends DBC {
 		toCheck: string,
 		receptor: (json: object) => void,
 	): boolean | string {
-		// biome-ignore lint/suspicious/noExplicitAny: JSON.parse returns any.
 		let parsed: any;
-
 		try {
 			parsed = JSON.parse(toCheck);
 		} catch (X: unknown) {
 			return `[ Following string is not a valid JSON: ${toCheck}]`;
 		}
-
 		if (receptor) {
 			receptor(parsed);
 		}
-
 		return true;
 	}
 	/**
@@ -115,7 +111,6 @@ export class JSON_Parse extends DBC {
 	 * @param toCheck See {@link JSON_Parse.checkAlgorithm }.
 	 *
 	 * @returns See {@link JSON_Parse.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
 		return JSON_Parse.checkAlgorithm(
 			toCheck,
@@ -142,13 +137,11 @@ export class JSON_Parse extends DBC {
 	 * @param checkElements			See {@link JSON_Parse.checkAlgorithm} }.
 	 */
 	public static check(
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		toCheck: any,
 		receptor: (json: object) => void,
 		dbc: string | undefined = undefined,
 	) {
 		const checkResult = JSON_Parse.checkAlgorithm(toCheck, receptor);
-
 		if (typeof checkResult === "string") {
 			DBC.reportTsCheckInfringement(checkResult, dbc);
 		}

@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } demanding that an {@link object } has specific properties of specific types.
  *
@@ -18,7 +18,6 @@ export class JSON_OP extends DBC {
 	 *
 	 * @returns TRUE if the value **toCheck** or it's elements, if **checkElements** is TRUE, has all **necessaryProperties**, otherwise a {@link string } to report the infringement. */
 	public static checkAlgorithm(
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		toCheck: any,
 		necessaryProperties: Array<{ name: string; type: string }>,
 		checkElements,
@@ -26,14 +25,12 @@ export class JSON_OP extends DBC {
 		if (toCheck === undefined || toCheck === null) {
 			return `[ UNDEFINED or NULL received instead of object with following properties: ${JSON.stringify(necessaryProperties)} ]`;
 		}
-
 		for (const property of necessaryProperties)
 			if (checkElements && typeof toCheck[Symbol.iterator] === "function") {
 				for (const element of toCheck) {
 					if (
 						// biome-ignore lint/suspicious/noPrototypeBuiltins: <explanation>
 						!element.hasOwnProperty(property.name) ||
-						// biome-ignore lint/suspicious/useValidTypeof: <explanation>
 						typeof element[property.name] !== property.type
 					) {
 						return `[ Object "${JSON.stringify(element)}" in Array "${JSON.stringify(toCheck)}" does not contain the necessary property "${property.name}" of type "${property.type}"]`;
@@ -43,13 +40,11 @@ export class JSON_OP extends DBC {
 				if (
 					// biome-ignore lint/suspicious/noPrototypeBuiltins: <explanation>
 					!toCheck.hasOwnProperty(property.name) ||
-					// biome-ignore lint/suspicious/useValidTypeof: <explanation>
 					typeof toCheck[property.name] !== property.type
 				) {
 					return `[ Object does not contain the necessary property "${property.name}" of type "${property.type}"]`;
 				}
 			}
-
 		return true;
 	}
 	/**
@@ -137,7 +132,6 @@ export class JSON_OP extends DBC {
 	 * @param toCheck See {@link JSON_OP.checkAlgorithm }.
 	 *
 	 * @returns See {@link JSON_OP.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
 		return JSON_OP.checkAlgorithm(
 			toCheck,
@@ -166,7 +160,6 @@ export class JSON_OP extends DBC {
 	 * @param checkElements			See {@link JSON_OP.checkAlgorithm} }.
 	 */
 	public static check(
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		toCheck: any,
 		necessaryProperties: Array<{ name: string; type: string }>,
 		checkElements = false,
@@ -177,7 +170,6 @@ export class JSON_OP extends DBC {
 			necessaryProperties,
 			checkElements,
 		);
-
 		if (typeof checkResult === "string") {
 			DBC.reportTsCheckInfringement(checkResult, dbc);
 		}

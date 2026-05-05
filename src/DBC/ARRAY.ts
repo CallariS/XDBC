@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that a value must be an array.
  *
@@ -11,14 +11,11 @@ export class ARRAY extends DBC {
 	 * @param toCheck	The value to check.
 	 *
 	 * @returns TRUE if the value **toCheck** is an array, otherwise a string describing the infringement. */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic type checking.
 	public static checkAlgorithm(toCheck: any): boolean | string {
 		if (toCheck === undefined || toCheck === null) return true;
-
 		if (!Array.isArray(toCheck)) {
 			return `Value has to be an ARRAY but is of type "${typeof toCheck}"`;
 		}
-
 		return true;
 	}
 	/**
@@ -88,7 +85,6 @@ export class ARRAY extends DBC {
 	 * @param toCheck See {@link ARRAY.checkAlgorithm }.
 	 *
 	 * @returns See {@link ARRAY.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
 		return ARRAY.checkAlgorithm(toCheck);
 	}
@@ -109,7 +105,6 @@ export class ARRAY extends DBC {
 		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = ARRAY.checkAlgorithm(toCheck);
-
 		if (result === true) {
 			return toCheck as CANDIDATE;
 		}
@@ -118,10 +113,5 @@ export class ARRAY extends DBC {
 			dbc,
 		);
 		return toCheck as CANDIDATE;
-	}
-	/**
-	 * Creates this {@link ARRAY } instance.  No parameters needed — the check is always {@link Array.isArray }. */
-	public constructor() {
-		super();
 	}
 }

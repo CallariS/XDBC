@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that all elements of an {@link object }s have to fulfill
  * one of the given {@link object }s check-methods (**( toCheck : any ) => boolean | string** ).
@@ -30,17 +30,14 @@ export class OR extends DBC {
 		value: unknown | null | undefined,
 	): boolean | string {
 		let result = "";
-
 		for (let i = 0; i < conditions.length; i++) {
 			const conditionResult = conditions[i].check(value);
-
 			if (typeof conditionResult === "string") {
 				result += `${conditionResult}${i === conditions.length - 1 ? "" : " or "}`;
 			} else {
 				return true;
 			}
 		}
-
 		return result;
 	}
 	/**
@@ -162,7 +159,6 @@ export class OR extends DBC {
 		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = OR.checkAlgorithm(conditions, toCheck);
-
 		if (result === true) {
 			return toCheck as CANDIDATE;
 		}

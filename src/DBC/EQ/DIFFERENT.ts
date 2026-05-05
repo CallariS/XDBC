@@ -1,4 +1,4 @@
-import { EQ } from "../EQ";
+﻿import { EQ } from "../EQ";
 /**
  * DIFFERENT class for inequality comparisons.
  *
@@ -15,7 +15,6 @@ import { EQ } from "../EQ";
  */
 export class DIFFERENT extends EQ {
 	/** See {@link EQ.PRE }. Always inverts equality check. */
-	// biome-ignore lint/suspicious/noExplicitAny: Must match parent signature
 	public static override PRE(
 		equivalent: any,
 		_invert = false,
@@ -25,9 +24,7 @@ export class DIFFERENT extends EQ {
 	) {
 		return EQ.PRE(equivalent, true, path, hint, dbc);
 	}
-
 	/** See {@link EQ.POST }. Always inverts equality check. */
-	// biome-ignore lint/suspicious/noExplicitAny: Must match parent signature
 	public static override POST(
 		equivalent: any,
 		_invert = false,
@@ -37,9 +34,7 @@ export class DIFFERENT extends EQ {
 	) {
 		return EQ.POST(equivalent, true, path, hint, dbc);
 	}
-
 	/** See {@link EQ.INVARIANT }. Always inverts equality check. */
-	// biome-ignore lint/suspicious/noExplicitAny: Must match parent signature
 	public static INVARIANT(
 		equivalent: any,
 		_invert = false,
@@ -50,7 +45,6 @@ export class DIFFERENT extends EQ {
 		return EQ.INVARIANT(equivalent, true, path, hint, dbc);
 	}
 	/** See {@link EQ.constructor }. */
-	// biome-ignore lint/suspicious/noExplicitAny: Must match parent signature
 	constructor(public equivalent: any) {
 		super(equivalent, true);
 	}

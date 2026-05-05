@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that a {@link HTMLElement } gotta have a certain attribute set.
  *
@@ -14,7 +14,6 @@ export class HasAttribute extends DBC {
 	 * @returns TRUE if the {@link HTMLElement } **toCheck** has set the attribute **toCheckFor**,
 	 * 			otherwise a proper errormessage. */
 	public static checkAlgorithm(
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		toCheck: any,
 		toCheckFor: string,
 		invert,
@@ -22,15 +21,12 @@ export class HasAttribute extends DBC {
 		if (!(toCheck instanceof HTMLElement)) {
 			return `The object to check for whether it has the attribute "${toCheckFor}" is not a HTMLElement. It is of type "${typeof toCheck}".`;
 		}
-
 		if (!invert && !(toCheck as HTMLElement).hasAttribute(toCheckFor)) {
 			return `Required Attribute "${toCheckFor}" is not set.`;
 		}
-
 		if (invert && (toCheck as HTMLElement).hasAttribute(toCheckFor)) {
 			return `Forbidden Attribute "${toCheckFor}" is set.`;
 		}
-
 		return true;
 	}
 	/**
@@ -135,7 +131,6 @@ export class HasAttribute extends DBC {
 	 * @param toCheck See {@link EQ.checkAlgorithm }.
 	 *
 	 * @returns See {@link EQ.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary to check against NULL & UNDEFINED.
 	public check(toCheck: any) {
 		return HasAttribute.checkAlgorithm(toCheck, this.toCheckFor, this.invert);
 	}

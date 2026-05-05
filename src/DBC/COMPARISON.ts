@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining a comparison between two {@link object }s.
  *
@@ -14,7 +14,6 @@ export class COMPARISON extends DBC {
 	 * 						fulfilled.
 	 *
 	 * @returns TRUE if the value **toCheck** and the **equivalent** are equal to each other, otherwise FALSE. */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic comparison
 	static checkAlgorithm(
 		toCheck: any,
 		equivalent: any,
@@ -24,19 +23,15 @@ export class COMPARISON extends DBC {
 		if (equalityPermitted && !invert && toCheck < equivalent) {
 			return `Value has to be greater than or equal to "${equivalent}"`;
 		}
-
 		if (equalityPermitted && invert && toCheck > equivalent) {
 			return `Value has to be less than or equal to "${equivalent}"`;
 		}
-
 		if (!equalityPermitted && !invert && toCheck <= equivalent) {
 			return `Value has to be greater than "${equivalent}"`;
 		}
-
 		if (!equalityPermitted && invert && toCheck >= equivalent) {
 			return `Value has to be less than "${equivalent}"`;
 		}
-
 		return true;
 	}
 	/**
@@ -51,7 +46,6 @@ export class COMPARISON extends DBC {
 	 *
 	 * @returns See {@link DBC.decPrecondition }. */
 	static PRE(
-		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
 		equivalent: any,
 		equalityPermitted = false,
 		invert = false,
@@ -79,7 +73,6 @@ export class COMPARISON extends DBC {
 	 *
 	 * @returns See {@link DBC.decPostcondition }. */
 	static POST(
-		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
 		equivalent: any,
 		equalityPermitted = false,
 		invert = false,
@@ -107,7 +100,6 @@ export class COMPARISON extends DBC {
 	 *
 	 * @returns See {@link DBC.decInvariant }. */
 	static INVARIANT(
-		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
 		equivalent: any,
 		equalityPermitted = false,
 		invert = false,
@@ -132,7 +124,6 @@ export class COMPARISON extends DBC {
 	 * @param toCheck See {@link COMPARISON.checkAlgorithm }.
 	 *
 	 * @returns See {@link COMPARISON.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic comparison
 	public check(toCheck: any) {
 		return COMPARISON.checkAlgorithm(
 			toCheck,
@@ -148,7 +139,6 @@ export class COMPARISON extends DBC {
 	 * @param equalityPermitted See {@link COMPARISON.check }.
 	 * @param invert            See {@link COMPARISON.check }. */
 	constructor(
-		// biome-ignore lint/suspicious/noExplicitAny: Comparison target can be any numeric value
 		public equivalent: any,
 		public equalityPermitted = false,
 		public invert = false,

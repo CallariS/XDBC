@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that an {@link object }s must be defined thus it's value may not be **null** or **undefined**.
  *
@@ -11,13 +11,10 @@ export class DEFINED extends DBC {
 	 * @param toCheck	The {@link Object } to check.
 	 *
 	 * @returns TRUE if the value **toCheck** is of the specified **type**, otherwise FALSE. */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic type checking of also UNDEFINED.
 	public static checkAlgorithm(toCheck: any): boolean | string {
-		// biome-ignore lint/suspicious/useValidTypeof: Necessary
 		if (toCheck === undefined || toCheck === null) {
 			return `Value may not be UNDEFINED or NULL but it is ${toCheck === undefined ? "UNDEFINED" : "NULL"}`;
 		}
-
 		return true;
 	}
 	/**
@@ -89,7 +86,6 @@ export class DEFINED extends DBC {
 	 * @param toCheck See {@link DEFINED.checkAlgorithm }.
 	 *
 	 * @returns See {@link DEFINED.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
 		return DEFINED.checkAlgorithm(toCheck);
 	}
@@ -109,7 +105,6 @@ export class DEFINED extends DBC {
 		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = DEFINED.checkAlgorithm(toCheck);
-
 		if (result === true) {
 			return toCheck as CANDIDATE;
 		}

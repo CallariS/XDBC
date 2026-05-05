@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } providing {@link REGEX }-contracts and standard {@link RegExp } for common use cases in {@link REGEX.stdExp }.
  *
@@ -22,7 +22,6 @@ export class REGEX extends DBC {
 				bcp47: RegExp;
 		  }
 		| undefined;
-
 	public static get stdExp() {
 		if (!REGEX._stdExp) {
 			REGEX._stdExp = {
@@ -60,11 +59,9 @@ export class REGEX extends DBC {
 	): boolean | string {
 		if (toCheck === undefined || toCheck === null || toCheck === "")
 			return true;
-
 		if (!expression.test(toCheck as string)) {
 			return `Value has to comply to regular expression "${expression}"`;
 		}
-
 		return true;
 	}
 	/**
@@ -160,7 +157,6 @@ export class REGEX extends DBC {
 		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = REGEX.checkAlgorithm(toCheck, expression);
-
 		if (result === true) {
 			return toCheck;
 		}
@@ -185,9 +181,12 @@ export class REGEX extends DBC {
 	 * @param toCheck		See {@link REGEX.checkAlgorithm}.
 	 * @param expression	See {@link REGEX.checkAlgorithm}.
 	 */
-	public static check(toCheck: unknown | null | undefined, expression: RegExp, dbc: string | undefined = undefined) {
+	public static check(
+		toCheck: unknown | null | undefined,
+		expression: RegExp,
+		dbc: string | undefined = undefined,
+	) {
 		const checkResult = REGEX.checkAlgorithm(toCheck, expression);
-
 		if (typeof checkResult === "string") {
 			DBC.reportTsCheckInfringement(checkResult, dbc);
 		}

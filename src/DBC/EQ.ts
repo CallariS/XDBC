@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that two {@link object }s gotta be equal.
  *
@@ -15,7 +15,6 @@ export class EQ extends DBC {
 	 *
 	 * @returns TRUE if the value **toCheck** and the **equivalent** are equal to each other, otherwise FALSE. */
 	public static checkAlgorithm(
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		toCheck: any,
 		equivalent: object,
 		invert: boolean,
@@ -23,11 +22,9 @@ export class EQ extends DBC {
 		if (!invert && equivalent !== toCheck) {
 			return `Value has to be equal to "${equivalent}"`;
 		}
-
 		if (invert && equivalent === toCheck) {
 			return `Value must not be equal to "${equivalent}"`;
 		}
-
 		return true;
 	}
 	/**
@@ -40,7 +37,6 @@ export class EQ extends DBC {
 	 *
 	 * @returns See {@link DBC.decPrecondition }. */
 	public static PRE(
-		// biome-ignore lint/suspicious/noExplicitAny: To check for UNDEFINED and NULL.
 		equivalent: any,
 		invert = false,
 		path: string | undefined = undefined,
@@ -69,7 +65,6 @@ export class EQ extends DBC {
 	 *
 	 * @returns See {@link DBC.decPostcondition }. */
 	public static POST(
-		// biome-ignore lint/suspicious/noExplicitAny: To check for UNDEFINED and NULL.
 		equivalent: any,
 		invert = false,
 		path: string | undefined = undefined,
@@ -98,7 +93,6 @@ export class EQ extends DBC {
 	 *
 	 * @returns See {@link DBC.decInvariant }. */
 	public static INVARIANT(
-		// biome-ignore lint/suspicious/noExplicitAny: To check for UNDEFINED and NULL.
 		equivalent: any,
 		invert = false,
 		path: string | undefined = undefined,
@@ -118,7 +112,6 @@ export class EQ extends DBC {
 	 * @param toCheck See {@link EQ.checkAlgorithm }.
 	 *
 	 * @returns See {@link EQ.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary to check against NULL & UNDEFINED.
 	public check(toCheck: any) {
 		return EQ.checkAlgorithm(toCheck, this.equivalent, this.invert);
 	}
@@ -138,7 +131,6 @@ export class EQ extends DBC {
 		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = EQ.checkAlgorithm(toCheck, equivalent, false);
-
 		if (result === true) {
 			return toCheck as CANDIDATE;
 		}
@@ -153,7 +145,6 @@ export class EQ extends DBC {
 	 *
 	 * @param equivalent See {@link EQ.check }. */
 	public constructor(
-		// biome-ignore lint/suspicious/noExplicitAny: To be able to match UNDEFINED and NULL.
 		protected equivalent: any,
 		protected invert = false,
 	) {

@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that an {@link object }s must be **undefined**.
  *
@@ -11,13 +11,10 @@ export class UNDEFINED extends DBC {
 	 * @param toCheck	The {@link Object } to check.
 	 *
 	 * @returns TRUE if the value **toCheck** is of the specified **type**, otherwise FALSE. */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic type checking of also UNDEFINED.
 	public static checkAlgorithm(toCheck: any): boolean | string {
-		// biome-ignore lint/suspicious/useValidTypeof: Necessary
 		if (toCheck !== undefined) {
 			return `Value must be UNDEFINED but it is ${typeof toCheck}`;
 		}
-
 		return true;
 	}
 	/**
@@ -88,7 +85,6 @@ export class UNDEFINED extends DBC {
 	 * @param toCheck See {@link UNDEFINED.checkAlgorithm }.
 	 *
 	 * @returns See {@link UNDEFINED.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
 		return UNDEFINED.checkAlgorithm(toCheck);
 	}
@@ -107,11 +103,13 @@ export class UNDEFINED extends DBC {
 		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = UNDEFINED.checkAlgorithm(toCheck);
-
 		if (result === true) {
 			return toCheck as CANDIDATE;
 		}
-		DBC.reportTsCheckInfringement(`${id ? `(${id}) ` : ""}${result as string}`, dbc);
+		DBC.reportTsCheckInfringement(
+			`${id ? `(${id}) ` : ""}${result as string}`,
+			dbc,
+		);
 		return toCheck as CANDIDATE;
 	}
 }

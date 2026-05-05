@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Provides a **D**esign **B**y **C**ontract Framework using decorators.
  *
  * @remarks
@@ -39,13 +39,8 @@ export class DBC {
 	/** Stores all request for parameter values registered by {@link decPrecondition }. */
 	static paramValueRequests: Map<
 		string,
-		// biome-ignore lint/suspicious/noExplicitAny: Gotta be any since parameter-values may be undefined.
 		Map<number, Array<(value: any) => undefined>>
-	> = new Map<
-		string,
-		// biome-ignore lint/suspicious/noExplicitAny: Gotta be any since parameter-values may be undefined.
-		Map<number, Array<(value: any) => undefined>>
-	>();
+	> = new Map<string, Map<number, Array<(value: any) => undefined>>>();
 	/**
 	 * Generate a unique key for storing parameter value requests.
 	 * Format: "ClassName:methodName"
@@ -74,11 +69,9 @@ export class DBC {
 		target: object,
 		methodName: string | symbol | undefined,
 		index: number,
-		// biome-ignore lint/suspicious/noExplicitAny: Gotta be any since parameter-values may be undefined.
 		receptor: (value: any) => undefined,
 	): undefined {
 		const key = DBC.getRequestKey(target, methodName);
-
 		if (DBC.paramValueRequests.has(key)) {
 			const paramMap = DBC.paramValueRequests.get(key)!;
 			if (paramMap.has(index)) {
@@ -94,7 +87,6 @@ export class DBC {
 				]),
 			);
 		}
-
 		return undefined;
 	}
 	/**
@@ -115,22 +107,25 @@ export class DBC {
 	 *
 	 * @returns 	When used as a **method** decorator: the (modified) {@link PropertyDescriptor }.
 	 * 				When used as a **class** decorator: a replacement constructor that performs precondition checks. */
-	// biome-ignore lint/suspicious/noExplicitAny: Must handle both method and class decorator signatures
-	public static ParamvalueProvider(target: object, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor;
-	// biome-ignore lint/suspicious/noExplicitAny: Must handle both method and class decorator signatures
-	public static ParamvalueProvider<T extends new (...args: any[]) => any>(constructor: T): T;
-	// biome-ignore lint/suspicious/noExplicitAny: Must accept abstract class constructors
-	public static ParamvalueProvider<T extends abstract new (...args: any[]) => any>(constructor: T): T;
-	// biome-ignore lint/suspicious/noExplicitAny: Must handle both method and class decorator signatures
+	public static ParamvalueProvider(
+		target: object,
+		propertyKey: string,
+		descriptor: PropertyDescriptor,
+	): PropertyDescriptor;
+	public static ParamvalueProvider<T extends new (...args: any[]) => any>(
+		ctor: T,
+	): T;
+	public static ParamvalueProvider<
+		T extends abstract new (
+			...args: any[]
+		) => any,
+	>(ctor: T): T;
 	public static ParamvalueProvider(...args: any[]): any {
 		if (args.length === 1 && typeof args[0] === "function") {
 			// #region Class decorator path
-			// biome-ignore lint/suspicious/noExplicitAny: Must accept any constructor signature
-			const constructor = args[0] as new (...args: any[]) => any;
-			const key = `${constructor.name}:undefined`;
-			// biome-ignore lint/suspicious/noExplicitAny: Must accept any constructor signature
-			const WrappedClass = class extends constructor {
-				// biome-ignore lint/suspicious/noExplicitAny: Must accept any constructor signature
+			const ctor = args[0] as new (...args: any[]) => any;
+			const key = `${ctor.name}:undefined`;
+			const WrappedClass = class extends ctor {
 				constructor(...ctorArgs: any[]) {
 					if (DBC.paramValueRequests.has(key)) {
 						const paramMap = DBC.paramValueRequests.get(key)!;
@@ -144,23 +139,24 @@ export class DBC {
 					}
 					super(...ctorArgs);
 				}
-			} as typeof constructor;
-			Object.defineProperty(WrappedClass, "name", { value: constructor.name });
+			} as typeof ctor;
+			Object.defineProperty(WrappedClass, "name", { value: ctor.name });
 			return WrappedClass;
 			// #endregion Class decorator path
 		}
-
 		// #region Method decorator path
-		const [target, propertyKey, descriptor] = args as [object, string, PropertyDescriptor];
+		const [target, propertyKey, descriptor] = args as [
+			object,
+			string,
+			PropertyDescriptor,
+		];
 		const originalMethod = descriptor.value;
 		const isStatic = typeof target === "function";
-		// biome-ignore lint/suspicious/noExplicitAny: Gotta be any since parameter-values may be undefined.
 		descriptor.value = function (...methodArgs: any[]) {
 			// #region   Check if a value of one of the method's parameter has been requested and pass it to the
 			//           receptor, if so.
 			const actualTarget = isStatic ? this : (this as any).constructor;
 			const key = DBC.getRequestKey(actualTarget, propertyKey);
-
 			if (DBC.paramValueRequests.has(key)) {
 				const paramMap = DBC.paramValueRequests.get(key)!;
 				for (const index of paramMap.keys()) {
@@ -209,7 +205,6 @@ export class DBC {
 			}
 			const originalSetter = descriptor.set;
 			const originalGetter = descriptor.get;
-			// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
 			let value: any;
 			// #region Replace original property.
 			Object.defineProperty(target, propertyKey, {
@@ -217,12 +212,10 @@ export class DBC {
 					if (!dbcInstance?.executionSettings.checkInvariants) {
 						return;
 					}
-
 					const realValue = path ? DBC.resolve(this, path) : this;
 					// #region Check if all "contracts" are fulfilled.
 					for (const contract of contracts) {
 						const result = contract.check(realValue);
-
 						if (typeof result === "string") {
 							dbcInstance?.reportFieldInfringement(
 								result,
@@ -240,12 +233,10 @@ export class DBC {
 					if (!dbcInstance?.executionSettings.checkInvariants) {
 						return;
 					}
-
 					const realValue = path ? DBC.resolve(this, path) : this;
 					// #region Check if all "contracts" are fulfilled.
 					for (const contract of contracts) {
 						const result = contract.check(realValue);
-
 						if (typeof result === "string") {
 							dbcInstance?.reportFieldInfringement(
 								result,
@@ -290,7 +281,6 @@ export class DBC {
 			if (!dbcInstance.executionSettings.checkInvariants) {
 				return;
 			}
-			// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
 			let value: any;
 			// #region Replace original property.
 			Object.defineProperty(target, propertyKey, {
@@ -298,12 +288,10 @@ export class DBC {
 					if (!dbcInstance?.executionSettings.checkInvariants) {
 						return;
 					}
-
 					const realValue = path ? DBC.resolve(newValue, path) : newValue;
 					// #region Check if all "contracts" are fulfilled.
 					for (const contract of contracts) {
 						const result = contract.check(realValue);
-
 						if (typeof result === "string") {
 							dbcInstance?.reportFieldInfringement(
 								result,
@@ -336,9 +324,7 @@ export class DBC {
 	 * @returns The **( target : object, propertyKey : string, descriptor : PropertyDescriptor ) : PropertyDescriptor**
 	 * 			invoked by Typescript.
 	 */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
 	public static decPostcondition(
-		// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
 		check: (
 			toCheck: any,
 			target: object,
@@ -355,7 +341,6 @@ export class DBC {
 			descriptor: PropertyDescriptor,
 		): PropertyDescriptor => {
 			const originalMethod = descriptor.value;
-			// biome-ignore lint/suspicious/noExplicitAny: Necessary to intercept UNDEFINED and NULL.
 			descriptor.value = (...args: any[]) => {
 				if (!dbcInstance) dbcInstance = DBC.getDBC(dbc);
 				if (!dbcInstance.executionSettings.checkPostconditions) {
@@ -365,7 +350,6 @@ export class DBC {
 				const result = originalMethod.apply(this, args);
 				const realValue = path ? DBC.resolve(result, path) : result;
 				const checkResult = check(realValue, target, propertyKey);
-
 				if (typeof checkResult === "string") {
 					dbcInstance.reportReturnvalueInfringement(
 						checkResult,
@@ -376,10 +360,8 @@ export class DBC {
 						hint,
 					);
 				}
-
 				return result;
 			};
-
 			return descriptor;
 		};
 	}
@@ -398,7 +380,6 @@ export class DBC {
 	 *
 	 * @returns The **(target: object, methodName: string | symbol, parameterIndex: number ) => void** invoked by Typescript- */
 	protected static decPrecondition(
-		// biome-ignore lint/suspicious/noExplicitAny: Necessary to check any parameter value
 		check: (
 			value: unknown,
 			target: object,
@@ -429,13 +410,11 @@ export class DBC {
 					if (!dbcInstance.executionSettings.checkPreconditions) {
 						return;
 					}
-
 					for (const singlePath of paths) {
 						const realValue = singlePath
 							? DBC.resolve(value, singlePath)
 							: value;
 						const result = check(realValue, target, methodName, parameterIndex);
-
 						if (typeof result === "string") {
 							dbcInstance.reportParameterInfringement(
 								result,
@@ -466,9 +445,7 @@ export class DBC {
 	 * @param hint     See {@link DBC.decPrecondition}.
 	 */
 	public static createPRE(
-		// biome-ignore lint/suspicious/noExplicitAny: Must accept any checkAlgorithm signature
 		checkFn: (...args: any[]) => boolean | string,
-		// biome-ignore lint/suspicious/noExplicitAny: Arguments vary per contract
 		boundArgs: any[],
 		dbc?: string,
 		path?: string,
@@ -493,9 +470,7 @@ export class DBC {
 	 * @param hint     See {@link DBC.decPostcondition}.
 	 */
 	public static createPOST(
-		// biome-ignore lint/suspicious/noExplicitAny: Must accept any checkAlgorithm signature
 		checkFn: (...args: any[]) => boolean | string,
-		// biome-ignore lint/suspicious/noExplicitAny: Arguments vary per contract
 		boundArgs: any[],
 		dbc?: string,
 		path?: string,
@@ -520,11 +495,9 @@ export class DBC {
 	 * @param hint          See {@link DBC.decInvariant}.
 	 */
 	public static createINVARIANT(
-		// biome-ignore lint/suspicious/noExplicitAny: Must accept any contract constructor
 		ContractClass: new (
 			...args: any[]
 		) => { check: (toCheck: unknown | null | undefined) => boolean | string },
-		// biome-ignore lint/suspicious/noExplicitAny: Arguments vary per contract
 		ctorArgs: any[],
 		dbc?: string,
 		path?: string,
@@ -610,11 +583,9 @@ export class DBC {
 					? DBC.sanitize(target.constructor.name)
 					: DBC.sanitize(target);
 		const finalMessage: string = `[ From "${safeViolator}" in "${targetName}"${path ? ` > "${DBC.sanitize(path)}"` : ""}: ${message} ${hint ? `✨ ${hint} ✨` : ""}]`;
-
 		if (this.infringementSettings.throwException) {
 			throw new DBC.Infringement(finalMessage);
 		}
-
 		if (this.infringementSettings.logToConsole) {
 			console.log(finalMessage);
 		}
@@ -637,7 +608,6 @@ export class DBC {
 		hint: string | undefined = undefined,
 	): undefined {
 		const properIndex = index + 1;
-
 		this.reportInfringement(
 			`[ Parameter-value "${value}" of the ${properIndex}${properIndex === 1 ? "st" : properIndex === 2 ? "nd" : properIndex === 3 ? "rd" : "th"} parameter did not fulfill one of it's contracts: ${message} ]`,
 			method,
@@ -684,7 +654,6 @@ export class DBC {
 		target: object,
 		path: string | undefined,
 		method: string,
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		value: any,
 		hint: string | undefined = undefined,
 	) {
@@ -715,11 +684,9 @@ export class DBC {
 		} catch {
 			throw new DBC.Infringement(message);
 		}
-
 		if (dbcInstance.infringementSettings.throwException) {
 			throw new DBC.Infringement(message);
 		}
-
 		if (dbcInstance.infringementSettings.logToConsole) {
 			console.log(message);
 		}
@@ -747,11 +714,9 @@ export class DBC {
 	 *
 	 * @returns The requested {@link DBC }.
 	 */
-	// biome-ignore lint/suspicious/noExplicitAny: Must traverse arbitrary object graphs
 	static resolveDBCPath = (obj: any, path: string): DBC =>
 		path
 			?.split(".")
-			// biome-ignore lint/suspicious/noExplicitAny: Must traverse arbitrary object graphs
 			.reduce((accumulator: any, current: string) => accumulator[current], obj);
 	/**
 	 * Constructs this {@link DBC } without mounting it on the global namespace.
@@ -785,7 +750,6 @@ export class DBC {
 	 * @param path		The dotted path to register at (default: `"WaXCode.DBC"`). */
 	static register(instance: DBC, path = "WaXCode.DBC"): void {
 		const segments = path.split(".");
-		// biome-ignore lint/suspicious/noExplicitAny: Must walk dynamic global namespace.
 		let obj: any = DBC.getHost();
 		for (let i = 0; i < segments.length - 1; i++) {
 			if (obj[segments[i]] === undefined) obj[segments[i]] = {};
@@ -829,14 +793,11 @@ export class DBC {
 		if (!toResolveFrom || typeof path !== "string") {
 			return undefined;
 		}
-
 		// Security: block prototype pollution paths
 		const dangerousTokens = ["__proto__", "constructor", "prototype"];
-
 		const cachedParts = DBC.pathTokenCache.get(path);
 		const parts =
 			cachedParts ?? path.replace(/\[(['"]?)(.*?)\1\]/g, ".$2").split(".");
-
 		if (!cachedParts) {
 			// Validate tokens before caching
 			for (const part of parts) {
@@ -850,22 +811,16 @@ export class DBC {
 			DBC.evictIfNeeded(DBC.pathTokenCache);
 			DBC.pathTokenCache.set(path, parts);
 		}
-
-		// biome-ignore lint/suspicious/noExplicitAny: Must traverse arbitrary object graphs
 		let current: any = toResolveFrom;
-
 		for (const part of parts) {
 			if (current === null || typeof current === "undefined") {
 				return undefined;
 			}
-
 			const methodMatch = part.match(/(\w+)\((.*)\)/);
-
 			if (methodMatch) {
 				const methodName = methodMatch[1];
 				const argsStr = methodMatch[2];
 				const args = argsStr.split(",").map((arg) => arg.trim());
-
 				if (typeof current[methodName] === "function") {
 					current = current[methodName].apply(current, args);
 				} else {
@@ -896,7 +851,6 @@ export class DBC {
 				}
 			}
 		}
-
 		return current;
 	}
 }

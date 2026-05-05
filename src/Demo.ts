@@ -1,4 +1,4 @@
-import { DBC } from "./DBC";
+﻿import { DBC } from "./DBC";
 import { AE } from "./DBC/AE";
 import { GREATER } from "./DBC/COMPARISON/GREATER";
 import { GREATER_OR_EQUAL } from "./DBC/COMPARISON/GREATER_OR_EQUAL";
@@ -56,7 +56,6 @@ export class Demo {
 	// #endregion Check REGEX with AE
 	// #region Check INSTANCE
 	@DBC.ParamvalueProvider
-	// biome-ignore lint/suspicious/noExplicitAny: Test
 	public testINSTANCE(@INSTANCE.PRE(Date) candidate: any): undefined {}
 	// #endregion Check INSTANCE
 	// #region Check AE Range
@@ -74,20 +73,15 @@ export class Demo {
 	// #region Check Comparison
 	@DBC.ParamvalueProvider
 	public testGREATER(@GREATER.PRE(2) input: number) {}
-
 	@DBC.ParamvalueProvider
 	public testGREATER_OR_EQUAL(@GREATER_OR_EQUAL.PRE(2) input: number) {}
-
 	@DBC.ParamvalueProvider
 	public testLESS(@LESS.PRE(20) input: number) {}
-
 	@DBC.ParamvalueProvider
 	public testLESS_OR_EQUAL(@LESS_OR_EQUAL.PRE(20) input: number) {}
-
 	@DBC.ParamvalueProvider
 	public testDIFFERENT(@DIFFERENT.PRE(20) input: number) {}
 	// #endregion Check Comparison
-
 	// #region Check Static Method with ParamvalueProvider
 	@DBC.ParamvalueProvider
 	public static testStaticMethod(
@@ -98,9 +92,7 @@ export class Demo {
 	}
 	// #endregion Check Static Method with ParamvalueProvider
 }
-
 const demo = new Demo();
-
 try {
 	demo.testProperty = "abd";
 } catch (X) {
@@ -109,17 +101,14 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testProperty = "a";
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("INVARIANT OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 demo.testParamvalueAndReturnvalue("holla");
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("PARAMETER- & RETURNVALUE OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testParamvalueAndReturnvalue("yyyy");
 } catch (X) {
@@ -128,12 +117,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testReturnvalue("xxxx");
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("RETURNVALUE OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testReturnvalue("yyyy");
 } catch (X) {
@@ -142,12 +129,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testEQAndPath(document.createElement("select"));
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("EQ with Path Infringement OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testEQAndPathWithInversion(document.createElement("select"));
 } catch (X) {
@@ -156,12 +141,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testTYPE("x");
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("TYPE OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testTYPE(0);
 } catch (X) {
@@ -170,12 +153,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testAE(["11", "10", "b"]);
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("AE OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testAE(["11", 11, "b"]);
 } catch (X) {
@@ -184,12 +165,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testREGEXWithAE(["+1d", "NOW", "-10y"]);
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("REGEX with AE OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testREGEXWithAE(["+1d", "+5d", "-x10y"]);
 } catch (X) {
@@ -198,12 +177,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testINSTANCE(new Date());
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("INSTANCE OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testINSTANCE(demo);
 } catch (X) {
@@ -212,12 +189,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testAERange([11, "abc", "abc"]);
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("AE Range OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testAERange([11, "abc", /a/g]);
 } catch (X) {
@@ -226,12 +201,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testAEIndex([11, "abc", "abc"]);
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("AE Index OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testAEIndex(["11", 12, "/a/g"]);
 } catch (X) {
@@ -240,12 +213,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testGREATER(11);
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("GREATER OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testGREATER(2);
 } catch (X) {
@@ -254,12 +225,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testGREATER_OR_EQUAL(2);
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("GREATER_OR_EQUAL OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testGREATER_OR_EQUAL(1);
 } catch (X) {
@@ -268,12 +237,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testLESS(10);
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("LESS OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testLESS(20);
 } catch (X) {
@@ -282,12 +249,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testLESS_OR_EQUAL(20);
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("LESS OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testLESS_OR_EQUAL(21);
 } catch (X) {
@@ -296,12 +261,10 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 demo.testDIFFERENT(21);
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("DIFFERENT OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	demo.testDIFFERENT(20);
 } catch (X) {
@@ -314,10 +277,8 @@ try {
 (
 	window as unknown as { [key: string]: { DBC: DBC } }
 ).WaXCode.DBC.executionSettings.checkPreconditions = false;
-
 try {
 	demo.testLESS_OR_EQUAL(21);
-
 	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 	console.log("INACTIVE PRECONDITIONS OK");
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
@@ -327,14 +288,11 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 (
 	window as unknown as { [key: string]: { DBC: DBC } }
 ).WaXCode.DBC.executionSettings.checkPostconditions = false;
-
 try {
 	demo.testReturnvalue("qqqqq");
-
 	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 	console.log("INACTIVE POSTCONDITIONS OK");
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
@@ -344,14 +302,11 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 (
 	window as unknown as { [key: string]: { DBC: DBC } }
 ).WaXCode.DBC.executionSettings.checkInvariants = false;
-
 try {
 	demo.testProperty = "b";
-
 	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 	console.log("INACTIVE INVARIANTS OK");
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
@@ -362,7 +317,6 @@ try {
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
 // #endregion Inactivity Checks
-
 // Re-enable all checks for subsequent tests
 (
 	window as unknown as { [key: string]: { DBC: DBC } }
@@ -373,17 +327,14 @@ try {
 (
 	window as unknown as { [key: string]: { DBC: DBC } }
 ).WaXCode.DBC.executionSettings.checkInvariants = true;
-
 // #region Static Method Test
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("TESTING STATIC METHOD WITH PARAMVALUEPROVIDER");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 Demo.testStaticMethod("Hello", 3);
 console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
 console.log("STATIC METHOD OK");
 console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
 try {
 	Demo.testStaticMethod("Hello", "not a number" as unknown as number);
 } catch (X) {
@@ -392,7 +343,6 @@ try {
 	console.log(X);
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
-
 try {
 	Demo.testStaticMethod(123 as unknown as string, 5);
 } catch (X) {

@@ -1,4 +1,4 @@
-import { DBC } from "../../DBC";
+﻿import { DBC } from "../../DBC";
 import { ARRAY } from "../ARRAY";
 /**
  * A {@link DBC } defining that a value must be a plain object — i.e. `typeof value === "object"`,
@@ -13,18 +13,14 @@ export class PLAIN_OBJECT extends ARRAY {
 	 * @param toCheck	The value to check.
 	 *
 	 * @returns TRUE if the value **toCheck** is a plain object, otherwise a string describing the infringement. */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic type checking.
 	public static checkAlgorithm(toCheck: any): boolean | string {
 		if (toCheck === undefined || toCheck === null) return true;
-
 		if (typeof toCheck !== "object") {
 			return `Value has to be a PLAIN_OBJECT but is of type "${typeof toCheck}"`;
 		}
-
 		if (Array.isArray(toCheck)) {
 			return "Value has to be a PLAIN_OBJECT but is an ARRAY";
 		}
-
 		return true;
 	}
 	/**
@@ -94,7 +90,6 @@ export class PLAIN_OBJECT extends ARRAY {
 	 * @param toCheck See {@link PLAIN_OBJECT.checkAlgorithm }.
 	 *
 	 * @returns See {@link PLAIN_OBJECT.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
 		return PLAIN_OBJECT.checkAlgorithm(toCheck);
 	}
@@ -115,7 +110,6 @@ export class PLAIN_OBJECT extends ARRAY {
 		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = PLAIN_OBJECT.checkAlgorithm(toCheck);
-
 		if (result === true) {
 			return toCheck as CANDIDATE;
 		}
@@ -124,10 +118,5 @@ export class PLAIN_OBJECT extends ARRAY {
 			dbc,
 		);
 		return toCheck as CANDIDATE;
-	}
-	/**
-	 * Creates this {@link PLAIN_OBJECT } instance. No parameters needed — the check is always the same. */
-	public constructor() {
-		super();
 	}
 }

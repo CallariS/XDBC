@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that an {@link object } has also to comply to a certain {@link DBC } if it complies to
  * another specified one.
@@ -16,7 +16,6 @@ export class IF extends DBC {
 	 *
 	 * @returns TRUE if the value **toCheck** and the **equivalent** are equal to each other, otherwise FALSE. */
 	public static checkAlgorithm(
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		toCheck: any,
 		condition: {
 			check: (toCheck: unknown | undefined | null | object) => boolean | string;
@@ -27,7 +26,6 @@ export class IF extends DBC {
 		invert = false,
 	): boolean | string {
 		if (toCheck === undefined || toCheck === null) return true;
-
 		if (
 			invert &&
 			condition.check(toCheck) !== true &&
@@ -35,7 +33,6 @@ export class IF extends DBC {
 		) {
 			return "In case that the value does not comply to the condition, it also has to comply to the required contract";
 		}
-
 		if (
 			!invert &&
 			condition.check(toCheck) === true &&
@@ -43,7 +40,6 @@ export class IF extends DBC {
 		) {
 			return "In case that the value complies to the condition, it has to comply to the required contract";
 		}
-
 		return true;
 	}
 	/**
@@ -155,7 +151,6 @@ export class IF extends DBC {
 	 * @param toCheck See {@link IF.checkAlgorithm }.
 	 *
 	 * @returns See {@link IF.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary to check against NULL & UNDEFINED.
 	public check(toCheck: any) {
 		return IF.checkAlgorithm(toCheck, this.condition, this.inCase, this.invert);
 	}
@@ -164,7 +159,6 @@ export class IF extends DBC {
 	 *
 	 * @param equivalent See {@link IF.check }. */
 	public constructor(
-		// biome-ignore lint/suspicious/noExplicitAny: To be able to match UNDEFINED and NULL.
 		protected condition: {
 			check: (toCheck: unknown | undefined | null | object) => boolean | string;
 		},

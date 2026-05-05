@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that the an {@link object }s gotta be an instance of a certain {@link INSTANCE.reference }.
  *
@@ -13,7 +13,6 @@ export class INSTANCE extends DBC {
 	 * @param reference	The {@link object } the one **toCheck** has to be an instance of.
 	 *
 	 * @returns TRUE if the value **toCheck** is is an instance of the *reference**, **undefined** or **null**, otherwise FALSE. */
-	// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
 	public static checkAlgorithm(
 		toCheck: any,
 		...references: any[]
@@ -21,13 +20,11 @@ export class INSTANCE extends DBC {
 		if (toCheck === null || toCheck === undefined) {
 			return true;
 		}
-
 		for (const ref of references) {
 			if (toCheck instanceof ref) {
 				return true;
 			}
 		}
-
 		return `Value has to be an instance of "${references.map((ref) => ref.name || ref).join(", ")}" but is of type "${typeof toCheck}"`;
 	}
 	/**
@@ -40,7 +37,6 @@ export class INSTANCE extends DBC {
 	 *
 	 * @returns See {@link DBC.decPrecondition }. */
 	public static PRE(
-		// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
 		reference: any | any[],
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
@@ -63,7 +59,6 @@ export class INSTANCE extends DBC {
 	 *
 	 * @returns See {@link DBC.decPostcondition }. */
 	public static POST(
-		// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
 		reference: any | any[],
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
@@ -86,7 +81,6 @@ export class INSTANCE extends DBC {
 	 *
 	 * @returns See {@link DBC.decInvariant }. */
 	public static INVARIANT(
-		// biome-ignore lint/suspicious/noExplicitAny: In order to perform an "instanceof" check.
 		reference: any | any[],
 		path: string | undefined = undefined,
 		hint: string | undefined = undefined,
@@ -105,7 +99,6 @@ export class INSTANCE extends DBC {
 	 * @param toCheck See {@link INSTANCE.checkAlgorithm }.
 	 *
 	 * @returns See {@link INSTANCE.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
 		return Array.isArray(this.reference)
 			? INSTANCE.checkAlgorithm(toCheck, ...this.reference)
@@ -129,7 +122,13 @@ export class INSTANCE extends DBC {
 		id: string | undefined = undefined,
 		dbc: string | undefined = undefined,
 	): CANDIDATE {
-		return INSTANCE.tsCheckMulti<CANDIDATE>(toCheck, [reference], hint, id, dbc);
+		return INSTANCE.tsCheckMulti<CANDIDATE>(
+			toCheck,
+			[reference],
+			hint,
+			id,
+			dbc,
+		);
 	}
 	/**
 	 * Invokes the {@link INSTANCE.checkAlgorithm } passing the value **toCheck** and the {@link INSTANCE.reference } .
@@ -150,7 +149,6 @@ export class INSTANCE extends DBC {
 		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = INSTANCE.checkAlgorithm(toCheck, ...references);
-
 		if (result === true) {
 			return toCheck;
 		}
@@ -164,7 +162,6 @@ export class INSTANCE extends DBC {
 	 * Creates this {@link INSTANCE } by setting the protected property {@link INSTANCE.reference } used by {@link INSTANCE.check }.
 	 *
 	 * @param reference See {@link INSTANCE.check }. */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public constructor(protected reference: any) {
 		super();
 	}

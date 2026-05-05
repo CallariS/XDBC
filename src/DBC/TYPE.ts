@@ -1,4 +1,4 @@
-import { DBC } from "../DBC";
+﻿import { DBC } from "../DBC";
 /**
  * A {@link DBC } defining that an {@link object }s gotta be of certain {@link TYPE.type }.
  *
@@ -13,17 +13,12 @@ export class TYPE extends DBC {
 	 * @param type		The type the {@link object} **toCheck** has to be of. Can be a single type or multiple types separated by "|".
 	 *
 	 * @returns TRUE if the value **toCheck** is of the specified **type**, otherwise FALSE. */
-	// biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic type checking of also UNDEFINED.
 	public static checkAlgorithm(toCheck: any, type: string): boolean | string {
 		if (toCheck === undefined || toCheck === null) return true;
-
 		const types = type.split("|").map((t) => t.trim());
 		const actualType = typeof toCheck;
-
 		// #region Check if the actual type matches at least one of the specified types
-		// biome-ignore lint/suspicious/useValidTypeof: Necessary
 		const isValid = types.some((t) => actualType === t);
-
 		if (!isValid) {
 			if (types.length === 1) {
 				return `Value has to be of type "${type}" but is of type "${actualType}"`;
@@ -106,7 +101,6 @@ export class TYPE extends DBC {
 	 * @param toCheck See {@link TYPE.checkAlgorithm }.
 	 *
 	 * @returns See {@link TYPE.checkAlgorithm}. */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public check(toCheck: any) {
 		return TYPE.checkAlgorithm(toCheck, this.type);
 	}
@@ -129,7 +123,6 @@ export class TYPE extends DBC {
 		dbc: string | undefined = undefined,
 	): CANDIDATE {
 		const result = TYPE.checkAlgorithm(toCheck, type);
-
 		if (result === true) {
 			return toCheck;
 		}
