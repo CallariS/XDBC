@@ -1,5 +1,5 @@
-import { PLAIN_OBJECT } from "../../src/DBC/ARR/PLAIN_OBJECT";
 import { DBC } from "../../src/DBC";
+import { PLAIN_OBJECT } from "../../src/DBC/ARR/PLAIN_OBJECT";
 
 describe("PLAIN_OBJECT", () => {
 	const plainObject = new PLAIN_OBJECT();

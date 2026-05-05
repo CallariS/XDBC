@@ -1,5 +1,5 @@
-import { ARRAY } from "../../src/DBC/ARRAY";
 import { DBC } from "../../src/DBC";
+import { ARRAY } from "../../src/DBC/ARRAY";
 
 describe("ARRAY", () => {
 	const array = new ARRAY();
