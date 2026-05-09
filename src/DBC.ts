@@ -34,6 +34,14 @@ export class DBC {
 			`[XDBC] DBC instance not found at path "${path}". Ensure a DBC instance is registered there.`,
 		);
 	}
+	/**
+	 * Returns the registered {@link DBC } instance at the specified path.
+	 * Throws if no instance is registered there.
+	 *
+	 * @param path The dotted path to look up (default: `"WaXCode.DBC"`). */
+	public static getRegistered(path?: string): DBC {
+		return DBC.getDBC(path);
+	}
 	// #endregion Internal caches.
 	// #region Parameter-value requests.
 	/** Stores all request for parameter values registered by {@link decPrecondition }. */
