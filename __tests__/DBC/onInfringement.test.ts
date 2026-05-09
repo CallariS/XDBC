@@ -6,12 +6,22 @@ import { TYPE } from "../../src/DBC/TYPE";
 
 type InfringementCallback = (
 	infringement: InstanceType<typeof DBC.Infringement>,
-	context: { type: "precondition" | "postcondition" | "invariant"; value: unknown },
+	context: {
+		type: "precondition" | "postcondition" | "invariant";
+		value: unknown;
+	},
 ) => void;
 
-function makeDbcWithSpy(throwException = false): { dbc: DBC; spy: jest.MockedFunction<InfringementCallback> } {
+function makeDbcWithSpy(throwException = false): {
+	dbc: DBC;
+	spy: jest.MockedFunction<InfringementCallback>;
+} {
 	const spy = jest.fn<void, Parameters<InfringementCallback>>();
-	const dbc = new DBC({ throwException, logToConsole: false, onInfringement: spy });
+	const dbc = new DBC({
+		throwException,
+		logToConsole: false,
+		onInfringement: spy,
+	});
 	return { dbc, spy };
 }
 
@@ -20,27 +30,52 @@ function makeDbcWithSpy(throwException = false): { dbc: DBC; spy: jest.MockedFun
 describe("onInfringement — reportParameterInfringement", () => {
 	test("calls callback with a DBC.Infringement instance", () => {
 		const { dbc, spy } = makeDbcWithSpy();
-		dbc.reportParameterInfringement("must be a string", {}, undefined, "myMethod", 0, 42);
+		dbc.reportParameterInfringement(
+			"must be a string",
+			{},
+			undefined,
+			"myMethod",
+			0,
+			42,
+		);
 		expect(spy).toHaveBeenCalledTimes(1);
 		expect(spy.mock.calls[0][0]).toBeInstanceOf(DBC.Infringement);
 	});
 
 	test("context.type is 'precondition'", () => {
 		const { dbc, spy } = makeDbcWithSpy();
-		dbc.reportParameterInfringement("must be a string", {}, undefined, "myMethod", 0, 42);
+		dbc.reportParameterInfringement(
+			"must be a string",
+			{},
+			undefined,
+			"myMethod",
+			0,
+			42,
+		);
 		expect(spy.mock.calls[0][1].type).toBe("precondition");
 	});
 
 	test("context.value reflects the violating argument", () => {
 		const { dbc, spy } = makeDbcWithSpy();
-		dbc.reportParameterInfringement("must be a string", {}, undefined, "myMethod", 0, 42);
+		dbc.reportParameterInfringement(
+			"must be a string",
+			{},
+			undefined,
+			"myMethod",
+			0,
+			42,
+		);
 		expect(spy.mock.calls[0][1].value).toBe(42);
 	});
 
 	test("callback is invoked before the exception is thrown", () => {
 		const order: string[] = [];
 		const spy = jest.fn(() => order.push("callback"));
-		const dbc = new DBC({ throwException: true, logToConsole: false, onInfringement: spy });
+		const dbc = new DBC({
+			throwException: true,
+			logToConsole: false,
+			onInfringement: spy,
+		});
 		try {
 			dbc.reportParameterInfringement("msg", {}, undefined, "m", 0, null);
 		} catch {
@@ -91,20 +126,38 @@ describe("onInfringement — reportFieldInfringement", () => {
 describe("onInfringement — reportReturnvalueInfringement", () => {
 	test("calls callback with a DBC.Infringement instance", () => {
 		const { dbc, spy } = makeDbcWithSpy();
-		dbc.reportReturnvalueInfringement("must not be null", {}, undefined, "getUser", null);
+		dbc.reportReturnvalueInfringement(
+			"must not be null",
+			{},
+			undefined,
+			"getUser",
+			null,
+		);
 		expect(spy).toHaveBeenCalledTimes(1);
 		expect(spy.mock.calls[0][0]).toBeInstanceOf(DBC.Infringement);
 	});
 
 	test("context.type is 'postcondition'", () => {
 		const { dbc, spy } = makeDbcWithSpy();
-		dbc.reportReturnvalueInfringement("must not be null", {}, undefined, "getUser", null);
+		dbc.reportReturnvalueInfringement(
+			"must not be null",
+			{},
+			undefined,
+			"getUser",
+			null,
+		);
 		expect(spy.mock.calls[0][1].type).toBe("postcondition");
 	});
 
 	test("context.value reflects the violating return value", () => {
 		const { dbc, spy } = makeDbcWithSpy();
-		dbc.reportReturnvalueInfringement("must not be null", {}, undefined, "getUser", null);
+		dbc.reportReturnvalueInfringement(
+			"must not be null",
+			{},
+			undefined,
+			"getUser",
+			null,
+		);
 		expect(spy.mock.calls[0][1].value).toBeNull();
 	});
 });
