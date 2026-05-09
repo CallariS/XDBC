@@ -538,7 +538,8 @@ export class DBC {
 	public infringementSettings: {
 		throwException: boolean;
 		logToConsole: boolean;
-	} = { throwException: true, logToConsole: false };
+		onInfringement: ((message: string) => void) | undefined;
+	} = { throwException: true, logToConsole: false, onInfringement: undefined };
 	/** Sanitizes a value for safe inclusion in error messages. */
 	private static sanitize(value: unknown): string {
 		const str = typeof value === "string" ? value : String(value);
@@ -583,11 +584,14 @@ export class DBC {
 					? DBC.sanitize(target.constructor.name)
 					: DBC.sanitize(target);
 		const finalMessage: string = `[ From "${safeViolator}" in "${targetName}"${path ? ` > "${DBC.sanitize(path)}"` : ""}: ${message} ${hint ? `✨ ${hint} ✨` : ""}]`;
-		if (this.infringementSettings.throwException) {
-			throw new DBC.Infringement(finalMessage);
-		}
 		if (this.infringementSettings.logToConsole) {
 			console.log(finalMessage);
+		}
+		if (this.infringementSettings.onInfringement) {
+			this.infringementSettings.onInfringement(finalMessage);
+		}
+		if (this.infringementSettings.throwException) {
+			throw new DBC.Infringement(finalMessage);
 		}
 	}
 	/**
@@ -684,11 +688,14 @@ export class DBC {
 		} catch {
 			throw new DBC.Infringement(message);
 		}
-		if (dbcInstance.infringementSettings.throwException) {
-			throw new DBC.Infringement(message);
-		}
 		if (dbcInstance.infringementSettings.logToConsole) {
 			console.log(message);
+		}
+		if (dbcInstance.infringementSettings.onInfringement) {
+			dbcInstance.infringementSettings.onInfringement(message);
+		}
+		if (dbcInstance.infringementSettings.throwException) {
+			throw new DBC.Infringement(message);
 		}
 	}
 	// #region Classes
@@ -728,6 +735,7 @@ export class DBC {
 		infringementSettings: {
 			throwException: boolean;
 			logToConsole: boolean;
+			onInfringement?: (message: string) => void;
 		} = { throwException: true, logToConsole: false },
 		executionSettings: {
 			checkPreconditions: boolean;
@@ -739,7 +747,10 @@ export class DBC {
 			checkInvariants: true,
 		},
 	) {
-		this.infringementSettings = infringementSettings;
+		this.infringementSettings = {
+			...infringementSettings,
+			onInfringement: infringementSettings.onInfringement ?? undefined,
+		};
 		this.executionSettings = executionSettings;
 	}
 	/**
