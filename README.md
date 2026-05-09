@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/npm/l/xdbc?style=flat-square" alt="license" />
   <img src="https://img.shields.io/npm/dt/xdbc?style=flat-square" alt="downloads" />
   <img src="https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/decorators-stage%203-green?style=flat-square" alt="decorators" />
+  <img src="https://img.shields.io/badge/decorators-experimentalDecorators-blue?style=flat-square" alt="decorators" />
   <img src="https://img.shields.io/badge/optimized%20for-VS%20Code-007acc?style=flat-square&logo=visualstudiocode" alt="VS Code" />
 </p>
 
@@ -36,6 +36,7 @@ index 2. Value has to comply to regular expression "/^(?i:(NOW)|([+-]\d+[dmy]))$
 - [What is Design by Contract?](#what-is-design-by-contract)
 - [Why XDBC?](#why-xdbc)
 - [Installation](#installation)
+- [Decorator API](#decorator-api)
 - [Quick Start](#quick-start)
 - [Contracts Reference](#contracts-reference)
 - [Core Concepts](#core-concepts)
@@ -100,6 +101,20 @@ npm install xdbc
   }
 }
 ```
+
+---
+
+## Decorator API
+
+XDBC is built on TypeScript's **legacy (`experimentalDecorators`) decorator API** — not the TC39 Stage 3 decorator API.
+
+**Why?** Stage 3 decorators deliberately excluded parameter decorators from their scope. Parameter decorators are the foundation of XDBC's contract syntax: `@DEFINED.PRE()`, `@GREATER.PRE(0)`, and every other `PRE` contract applied per-parameter depends on them. There is no equivalent in Stage 3, and no workaround that preserves the same ergonomics.
+
+**Is this unusual?** No. NestJS, TypeORM, class-validator, and class-transformer are all in the same position and have no near-term plans to migrate for exactly the same reason.
+
+**Is it risky?** No. TypeScript explicitly supports both APIs simultaneously and has made no announcement about removing `experimentalDecorators`. Any project already using the frameworks above already has `experimentalDecorators: true` in its tsconfig, meaning XDBC requires zero additional configuration in those environments.
+
+**What about the future?** TC39 has an active Stage 1 proposal — [Class Method Parameter Decorators](https://github.com/tc39/proposals/blob/main/stage-1-proposals.md) (Ron Buckton, 2023) — that would close this gap. When parameter decorators reach a stable stage, XDBC will migrate to Stage 3. Because all decorator wiring is contained in `DBC.ts` and the 17 contract classes are completely insulated from it, that migration will be localized and non-breaking at the API level.
 
 ---
 
