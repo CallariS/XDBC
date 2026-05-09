@@ -538,7 +538,15 @@ export class DBC {
 	public infringementSettings: {
 		throwException: boolean;
 		logToConsole: boolean;
-		onInfringement: ((message: string) => void) | undefined;
+		onInfringement:
+			| ((
+					infringement: InstanceType<typeof DBC.Infringement>,
+					context: {
+						type: "precondition" | "postcondition" | "invariant";
+						value: unknown;
+					},
+			  ) => void)
+			| undefined;
 	} = { throwException: true, logToConsole: false, onInfringement: undefined };
 	/** Sanitizes a value for safe inclusion in error messages. */
 	private static sanitize(value: unknown): string {
@@ -573,6 +581,7 @@ export class DBC {
 		value: unknown,
 		path: string | undefined,
 		hint: string | undefined = undefined,
+		type: "precondition" | "postcondition" | "invariant" = "precondition",
 	): undefined {
 		const safeViolator = DBC.sanitize(violator);
 		const targetName =
@@ -584,14 +593,15 @@ export class DBC {
 					? DBC.sanitize(target.constructor.name)
 					: DBC.sanitize(target);
 		const finalMessage: string = `[ From "${safeViolator}" in "${targetName}"${path ? ` > "${DBC.sanitize(path)}"` : ""}: ${message} ${hint ? `✨ ${hint} ✨` : ""}]`;
+		const infringement = new DBC.Infringement(finalMessage);
 		if (this.infringementSettings.logToConsole) {
 			console.log(finalMessage);
 		}
 		if (this.infringementSettings.onInfringement) {
-			this.infringementSettings.onInfringement(finalMessage);
+			this.infringementSettings.onInfringement(infringement, { type, value });
 		}
 		if (this.infringementSettings.throwException) {
-			throw new DBC.Infringement(finalMessage);
+			throw infringement;
 		}
 	}
 	/**
@@ -619,6 +629,7 @@ export class DBC {
 			value,
 			path,
 			hint,
+			"precondition",
 		);
 	}
 	/**
@@ -644,6 +655,8 @@ export class DBC {
 			target,
 			value,
 			path,
+			hint,
+			"invariant",
 		);
 	}
 	/**
@@ -668,6 +681,7 @@ export class DBC {
 			value,
 			path,
 			hint,
+			"postcondition",
 		);
 	}
 	/**
@@ -681,21 +695,26 @@ export class DBC {
 	public static reportTsCheckInfringement(
 		message: string,
 		dbc: string | undefined = undefined,
+		value: unknown = undefined,
 	): void {
+		const infringement = new DBC.Infringement(message);
 		let dbcInstance: DBC | undefined;
 		try {
 			dbcInstance = DBC.getDBC(dbc);
 		} catch {
-			throw new DBC.Infringement(message);
+			throw infringement;
 		}
 		if (dbcInstance.infringementSettings.logToConsole) {
 			console.log(message);
 		}
 		if (dbcInstance.infringementSettings.onInfringement) {
-			dbcInstance.infringementSettings.onInfringement(message);
+			dbcInstance.infringementSettings.onInfringement(infringement, {
+				type: "precondition",
+				value,
+			});
 		}
 		if (dbcInstance.infringementSettings.throwException) {
-			throw new DBC.Infringement(message);
+			throw infringement;
 		}
 	}
 	// #region Classes
@@ -735,7 +754,13 @@ export class DBC {
 		infringementSettings: {
 			throwException: boolean;
 			logToConsole: boolean;
-			onInfringement?: (message: string) => void;
+			onInfringement?: (
+				infringement: InstanceType<typeof DBC.Infringement>,
+				context: {
+					type: "precondition" | "postcondition" | "invariant";
+					value: unknown;
+				},
+			) => void;
 		} = { throwException: true, logToConsole: false },
 		executionSettings: {
 			checkPreconditions: boolean;
