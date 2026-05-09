@@ -40,6 +40,7 @@ index 2. Value has to comply to regular expression "/^(?i:(NOW)|([+-]\d+[dmy]))$
 - [Contracts Reference](#contracts-reference)
 - [Core Concepts](#core-concepts)
 - [Advanced Features](#advanced-features)
+- [DOM / HTML Input Binding](#dom--html-input-binding)
 - [Configuration](#configuration)
 - [API Documentation](#api-documentation)
 - [Built With XDBC](#built-with-xdbc)
@@ -319,6 +320,95 @@ const result = OR.tsCheck<string>(input, [new EQ("a"), new EQ("b")]);
 
 ---
 
+## DOM / HTML Input Binding
+
+XDBC can enforce contracts directly on `<input>` and `<textarea>` elements using HTML data attributes — no JavaScript wiring required per element.
+
+### Setup
+
+```ts
+import { scanDOM } from "xdbc/DBC/DOM";
+
+// Call once after the DOM is ready. Returns a cleanup function.
+const cleanup = scanDOM();
+
+// Optionally scope to a subtree:
+const cleanup = scanDOM(document.getElementById("my-form"));
+
+// Remove all listeners (e.g. on component unmount):
+cleanup();
+```
+
+### Marking an element
+
+Add `data-xdbc` to opt an element in. The optional value sets the DBC instance path (default: `"WaXCode.DBC"`):
+
+```html
+<input data-xdbc />
+<input data-xdbc="MyApp.DBC" />
+```
+
+### Built-in contract attributes
+
+| Attribute | Example value | Contract |
+|---|---|---|
+| `data-xdbc-regex` | `^\d*$` | `REGEX` |
+| `data-xdbc-type` | `string\|number` | `TYPE` |
+| `data-xdbc-eq` | `hello` | `EQ` |
+| `data-xdbc-different` | `forbidden` | `EQ` (inverted) |
+| `data-xdbc-defined` | *(no value needed)* | `DEFINED` |
+| `data-xdbc-undefined` | *(no value needed)* | `UNDEFINED` |
+| `data-xdbc-greater` | `5` | `COMPARISON` |
+| `data-xdbc-greater-or-equal` | `5` | `COMPARISON` |
+| `data-xdbc-less` | `100` | `COMPARISON` |
+| `data-xdbc-less-or-equal` | `100` | `COMPARISON` |
+| `data-xdbc-or` | `regex:^\d+$;;eq:N/A` | OR combinator (see below) |
+
+Multiple attributes on one element are all enforced — the first failure blocks and reports.
+
+### OR fragment syntax
+
+Use `data-xdbc-or` to express that the value must satisfy **at least one** of several contracts. Fragments are separated by `;;`; each fragment is `<contract-key>:<value>`, where the split is on the **first** `:` only (so colons inside regex patterns are safe):
+
+```html
+<!-- digits, OR exactly the string "N/A" -->
+<input data-xdbc data-xdbc-or="regex:^\d+$;;eq:N/A" />
+
+<!-- http or https URL, OR the literal "N/A" -->
+<input data-xdbc data-xdbc-or="regex:^https?://;;eq:N/A" />
+```
+
+### Behaviour on infringement
+
+1. The element's value is **reverted** to the last accepted state, blocking the invalid input.
+2. The DBC instance's `onInfringement`, `logToConsole`, and `throwException` settings are all honoured. Any throw is swallowed inside the event handler so it cannot propagate unhandled.
+
+### IME / composition awareness
+
+Validation is suspended during IME composition (e.g. CJK on-screen keyboards) and runs once on `compositionend`, so partially composed characters are never incorrectly rejected.
+
+### Registering custom contracts
+
+Use `registerDOMContract` to add any contract — including future ones — without modifying the library:
+
+```ts
+import { registerDOMContract } from "xdbc/DBC/DOM";
+import { MY_CONTRACT } from "./MY_CONTRACT";
+
+// Register once, before scanDOM():
+registerDOMContract("my-contract", (value, attrValue) =>
+    MY_CONTRACT.checkAlgorithm(value, attrValue),
+);
+```
+
+```html
+<input data-xdbc data-xdbc-my-contract="someConfig" />
+```
+
+The `attrValue` string is whatever appears in the attribute — parse it however your contract needs.
+
+---
+
 ## Configuration
 
 ### DBC Instance Settings
@@ -339,7 +429,17 @@ dbc.executionSettings.checkInvariants = true;
 // Configure infringement handling
 dbc.infringementSettings.throwException = true;   // throw DBC.Infringement on violation
 dbc.infringementSettings.logToConsole = false;     // log to console instead
+
+# React to infringements programmatically
+dbc.infringementSettings.onInfringement = (infringement, context) => {
+    // infringement — DBC.Infringement instance (extends Error, has .message and .stack)
+    // context.type — "precondition" | "postcondition" | "invariant"
+    // context.value — the raw value that violated the contract
+    Sentry.captureException(infringement, { extra: context });
+};
 ```
+
+The callback fires **before** `throwException`, so it always runs even when an exception is thrown. All three settings are independent and can be combined freely.
 
 ### Multiple DBC Instances
 
