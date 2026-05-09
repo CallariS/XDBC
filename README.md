@@ -110,7 +110,7 @@ XDBC is built on TypeScript's **legacy (`experimentalDecorators`) decorator API*
 
 **Why?** Stage 3 decorators deliberately excluded parameter decorators from their scope. Parameter decorators are the foundation of XDBC's contract syntax: `@DEFINED.PRE()`, `@GREATER.PRE(0)`, and every other `PRE` contract applied per-parameter depends on them. There is no equivalent in Stage 3, and no workaround that preserves the same ergonomics.
 
-**Is this unusual?** No. NestJS, TypeORM, class-validator, and class-transformer are all in the same position and have no near-term plans to migrate for exactly the same reason.
+**Is this unusual?** No. Some of the most widely adopted TypeScript frameworks in the industry — NestJS (used at thousands of companies, tens of millions of weekly downloads), TypeORM, class-validator, and class-transformer — all require `experimentalDecorators` for exactly the same reason and have no near-term plans to migrate. Any project already using these frameworks has `experimentalDecorators: true` in its tsconfig and can adopt XDBC with zero additional configuration.
 
 **Is it risky?** No. TypeScript explicitly supports both APIs simultaneously and has made no announcement about removing `experimentalDecorators`. Any project already using the frameworks above already has `experimentalDecorators: true` in its tsconfig, meaning XDBC requires zero additional configuration in those environments.
 
