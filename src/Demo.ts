@@ -1,14 +1,25 @@
-﻿import { DBC } from "./DBC";
+﻿import { z } from "zod";
+import { DBC } from "./DBC";
 import { AE } from "./DBC/AE";
+import { PLAIN_OBJECT } from "./DBC/ARR/PLAIN_OBJECT";
+import { ARRAY } from "./DBC/ARRAY";
 import { GREATER } from "./DBC/COMPARISON/GREATER";
 import { GREATER_OR_EQUAL } from "./DBC/COMPARISON/GREATER_OR_EQUAL";
 import { LESS } from "./DBC/COMPARISON/LESS";
 import { LESS_OR_EQUAL } from "./DBC/COMPARISON/LESS_OR_EQUAL";
+import { DEFINED } from "./DBC/DEFINED";
 import { EQ } from "./DBC/EQ";
 import { DIFFERENT } from "./DBC/EQ/DIFFERENT";
+import { HasAttribute } from "./DBC/HasAttribute";
+import { IF } from "./DBC/IF";
 import { INSTANCE } from "./DBC/INSTANCE";
+import { JSON_OP } from "./DBC/JSON.OP";
+import { JSON_Parse } from "./DBC/JSON.Parse";
+import { OR } from "./DBC/OR";
 import { REGEX } from "./DBC/REGEX";
 import { TYPE } from "./DBC/TYPE";
+import { UNDEFINED } from "./DBC/UNDEFINED";
+import { ZOD } from "./DBC/ZOD";
 /** Demonstrative use of **D**esign **B**y **C**ontract Decorators */
 export class Demo {
 	// #region Check Property Decorator
@@ -82,6 +93,48 @@ export class Demo {
 	@DBC.ParamvalueProvider
 	public testDIFFERENT(@DIFFERENT.PRE(20) input: number) {}
 	// #endregion Check Comparison
+	// #region Check ARRAY
+	@DBC.ParamvalueProvider
+	public testARRAY(@ARRAY.PRE() x: unknown) {}
+	// #endregion Check ARRAY
+	// #region Check PLAIN_OBJECT
+	@DBC.ParamvalueProvider
+	public testPLAIN_OBJECT(@PLAIN_OBJECT.PRE() x: unknown) {}
+	// #endregion Check PLAIN_OBJECT
+	// #region Check DEFINED
+	@DBC.ParamvalueProvider
+	public testDEFINED(@DEFINED.PRE() x: unknown) {}
+	// #endregion Check DEFINED
+	// #region Check UNDEFINED
+	@DBC.ParamvalueProvider
+	public testUNDEFINED(@UNDEFINED.PRE() x: unknown) {}
+	// #endregion Check UNDEFINED
+	// #region Check HasAttribute
+	@DBC.ParamvalueProvider
+	public testHasAttribute(@HasAttribute.PRE("data-test") el: HTMLElement) {}
+	// #endregion Check HasAttribute
+	// #region Check IF
+	@DBC.ParamvalueProvider
+	public testIF(@IF.PRE(new TYPE("string"), new REGEX(/^hello/)) x: unknown) {}
+	// #endregion Check IF
+	// #region Check OR
+	@DBC.ParamvalueProvider
+	public testOR(@OR.PRE([new TYPE("string"), new TYPE("number")]) x: unknown) {}
+	// #endregion Check OR
+	// #region Check JSON_OP
+	@DBC.ParamvalueProvider
+	public testJSON_OP(
+		@JSON_OP.PRE([{ name: "id", type: "number" }]) x: unknown,
+	) {}
+	// #endregion Check JSON_OP
+	// #region Check JSON_Parse
+	@DBC.ParamvalueProvider
+	public testJSON_Parse(@JSON_Parse.PRE((_json) => {}) x: string) {}
+	// #endregion Check JSON_Parse
+	// #region Check ZOD
+	@DBC.ParamvalueProvider
+	public testZOD(@ZOD.PRE(z.string()) x: unknown) {}
+	// #endregion Check ZOD
 	// #region Check Static Method with ParamvalueProvider
 	@DBC.ParamvalueProvider
 	public static testStaticMethod(
@@ -352,3 +405,133 @@ try {
 	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 }
 // #endregion Static Method Test
+demo.testARRAY([1, 2, 3]);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("ARRAY OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+	demo.testARRAY("not an array");
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("ARRAY Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testPLAIN_OBJECT({ key: "value" });
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("PLAIN_OBJECT OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+	demo.testPLAIN_OBJECT([1, 2, 3]);
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("PLAIN_OBJECT Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testDEFINED("something");
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("DEFINED OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+	demo.testDEFINED(null);
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("DEFINED Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testUNDEFINED(undefined);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("UNDEFINED OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+	demo.testUNDEFINED("not undefined");
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("UNDEFINED Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+const elWithAttr = document.createElement("div");
+elWithAttr.setAttribute("data-test", "");
+demo.testHasAttribute(elWithAttr);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("HasAttribute OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+	demo.testHasAttribute(document.createElement("div"));
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("HasAttribute Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testIF(42);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("IF OK (non-string, condition not triggered)");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+demo.testIF("helloWorld");
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("IF OK (string matching regex)");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+	demo.testIF("world");
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("IF Infringement OK (string not matching regex)");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testOR("hello");
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("OR OK (string)");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+demo.testOR(42);
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("OR OK (number)");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+	demo.testOR(true);
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("OR Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testJSON_OP({ id: 1 });
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("JSON_OP OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+	demo.testJSON_OP({ name: "missing id" });
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("JSON_OP Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testJSON_Parse('{"key":"value"}');
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("JSON_Parse OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+	demo.testJSON_Parse("not valid json{");
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("JSON_Parse Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+demo.testZOD("hello");
+console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+console.log("ZOD OK");
+console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+try {
+	demo.testZOD(42);
+} catch (X) {
+	console.log("⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄");
+	console.log("ZOD Infringement OK");
+	console.log(X);
+	console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
