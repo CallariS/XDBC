@@ -42,6 +42,7 @@ index 2. Value has to comply to regular expression "/^(?i:(NOW)|([+-]\d+[dmy]))$
 - [Advanced Features](#advanced-features)
 - [Configuration](#configuration)
 - [API Documentation](#api-documentation)
+- [Built With XDBC](#built-with-xdbc)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -388,6 +389,20 @@ dbc.executionSettings.checkInvariants = false;
 Full generated API documentation is available at **[callaris.github.io/XDBC](https://callaris.github.io/XDBC/)**.
 
 See [`Demo.ts`](src/Demo.ts) for annotated usage examples.
+
+---
+
+## Built With XDBC
+
+XDBC is actively used in production across the following projects:
+
+| Project | Context |
+|---|---|
+| [CodBi](https://github.com/XIMA-formcycle-Entwicklerkreis/CodBi) | Low-code engine plugin for [XIMA Formcycle](https://www.xima.de/formcycle) |
+| [tinymce-multicloud-plugin](https://github.com/CallariS/tinymce-multicloud-plugin) | multiCloud plugin for [TinyMCE](https://www.tiny.cloud) |
+| *(internal)* | Comprehensive Active Directory management suite for schools, deployed at a German public administration |
+
+*XDBC is used in the Angular frontends of the above projects.*
 
 ---
 
