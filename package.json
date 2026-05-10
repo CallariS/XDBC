@@ -1,5 +1,5 @@
 {
-	"version": "1.0.217",
+	"version": "1.0.218",
 	"name": "xdbc",
 	"main": "dist/index.js",
 	"module": "dist/index.js",
@@ -52,7 +52,11 @@
 		"type": "git",
 		"url": "git+https://github.com/CallariS/XDBC.git"
 	},
-	"keywords": ["DbC", "DesignByContract", "Typescript"],
+	"keywords": [
+		"DbC",
+		"DesignByContract",
+		"Typescript"
+	],
 	"author": "Callari, Salvatore",
 	"license": "MIT",
 	"bugs": {
