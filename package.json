@@ -1,8 +1,19 @@
 {
 	"version": "1.0.217",
 	"name": "xdbc",
-	"main": "dist/bundle.js",
-	"types": "dist/DBC.d.ts",
+	"main": "dist/index.js",
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./DBC/DOM": {
+			"types": "./dist/DBC/DOM.d.ts",
+			"default": "./dist/DBC/DOM.js"
+		}
+	},
 	"scripts": {
 		"docs": "typedoc",
 		"format": "biome format ./src --write",
@@ -10,7 +21,7 @@
 		"ci": "biome ci ./",
 		"test": "jest",
 		"test:coverage": "jest --coverage",
-		"build": "tsc --emitDeclarationOnly && webpack",
+		"build": "tsc && webpack",
 		"start": "webpack serve --open"
 	},
 	"devDependencies": {
