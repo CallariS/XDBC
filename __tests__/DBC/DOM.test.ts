@@ -129,7 +129,7 @@ describe("data-xdbc-regex", () => {
 	});
 
 	test("warns and skips element with invalid RegExp pattern", () => {
-		const warn = jest.spyOn(console, "warn").mockImplementation(() => { });
+		const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
 		const el = makeInput({ "data-xdbc": "", "data-xdbc-regex": "[invalid" });
 		const cleanup = scanDOM();
 		// Element still bound; invalid check returns error string, so value is reverted on blur
@@ -370,7 +370,7 @@ describe("data-xdbc-or", () => {
 	});
 
 	test("warns and skips an unknown contract key in or fragment", () => {
-		const warn = jest.spyOn(console, "warn").mockImplementation(() => { });
+		const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
 		const el = makeInput({
 			"data-xdbc": "",
 			"data-xdbc-or": "unknown:foo;;eq:ok",
@@ -696,7 +696,10 @@ describe("-input variants fire on every keystroke regardless of validate-on", ()
 	});
 
 	test("different-input: blocks forbidden value on every keystroke", () => {
-		const el = makeInput({ "data-xdbc": "", "data-xdbc-different-input": "no" });
+		const el = makeInput({
+			"data-xdbc": "",
+			"data-xdbc-different-input": "no",
+		});
 		const cleanup = scanDOM();
 		fireInput(el, "yes");
 		expect(el.value).toBe("yes");

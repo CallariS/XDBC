@@ -81,7 +81,9 @@ registerDOMContract("regex-input", (value, attr) => {
 
 // data-xdbc-type="string|number"
 registerDOMContract("type", (value, attr) => TYPE.checkAlgorithm(value, attr));
-registerDOMContract("type-input", (value, attr) => TYPE.checkAlgorithm(value, attr));
+registerDOMContract("type-input", (value, attr) =>
+	TYPE.checkAlgorithm(value, attr),
+);
 
 // data-xdbc-eq="hello"
 registerDOMContract("eq", (value, attr) =>
@@ -105,7 +107,9 @@ registerDOMContract("defined-input", (value) => DEFINED.checkAlgorithm(value));
 
 // data-xdbc-undefined
 registerDOMContract("undefined", (value) => UNDEFINED.checkAlgorithm(value));
-registerDOMContract("undefined-input", (value) => UNDEFINED.checkAlgorithm(value));
+registerDOMContract("undefined-input", (value) =>
+	UNDEFINED.checkAlgorithm(value),
+);
 
 // data-xdbc-greater="5"
 registerDOMContract("greater", (value, attr) =>
@@ -305,8 +309,10 @@ export function scanDOM(root: Element | Document = document): () => void {
 
 		// Collect contracts: keys ending in "-input" always fire on the input event;
 		// all others respect data-xdbc-validate-on (default: blur).
-		const checksDefault: Array<{ checkFn: DOMContractCheck; attrValue: string }> =
-			[];
+		const checksDefault: Array<{
+			checkFn: DOMContractCheck;
+			attrValue: string;
+		}> = [];
 		const checksInput: Array<{ checkFn: DOMContractCheck; attrValue: string }> =
 			[];
 
@@ -409,8 +415,8 @@ export function scanDOM(root: Element | Document = document): () => void {
 		const blurListener =
 			checksDefault.length > 0 && validateOn === "blur"
 				? () => {
-					doValidate(true);
-				}
+						doValidate(true);
+					}
 				: null;
 
 		const compositionStartListener = () => {
