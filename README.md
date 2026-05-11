@@ -42,6 +42,8 @@ index 2. Value has to comply to regular expression "/^(?i:(NOW)|([+-]\d+[dmy]))$
 - [Core Concepts](#core-concepts)
 - [Advanced Features](#advanced-features)
 - [DOM / HTML Input Binding](#dom--html-input-binding)
+  - [Keystroke vs. blur validation](#keystroke-vs-blur-validation)
+  - [Real-world example — Angular with toast notifications](#real-world-example--angular-with-toast-notifications)
 - [Configuration](#configuration)
 - [API Documentation](#api-documentation)
 - [Built With XDBC](#built-with-xdbc)
@@ -354,13 +356,18 @@ const cleanup = scanDOM(document.getElementById("my-form"));
 cleanup();
 ```
 
-### Marking an element
+### Opting an element in
 
-Add `data-xdbc` to opt an element in. The optional value sets the DBC instance path (default: `"WaXCode.DBC"`):
+Any `data-xdbc-*` attribute is sufficient to enroll an element — no `data-xdbc` marker is required:
 
 ```html
-<input data-xdbc />
-<input data-xdbc="MyApp.DBC" />
+<input data-xdbc-regex="^\d*$" />
+```
+
+The optional `data-xdbc` attribute specifies a **custom DBC instance path** (default: `"WaXCode.DBC"`):
+
+```html
+<input data-xdbc="MyApp.DBC" data-xdbc-regex="^\d*$" />
 ```
 
 ### Built-in contract attributes
@@ -387,11 +394,95 @@ Use `data-xdbc-or` to express that the value must satisfy **at least one** of se
 
 ```html
 <!-- digits, OR exactly the string "N/A" -->
-<input data-xdbc data-xdbc-or="regex:^\d+$;;eq:N/A" />
+<input data-xdbc-or="regex:^\d+$;;eq:N/A" />
 
 <!-- http or https URL, OR the literal "N/A" -->
-<input data-xdbc data-xdbc-or="regex:^https?://;;eq:N/A" />
+<input data-xdbc-or="regex:^https?://;;eq:N/A" />
 ```
+
+### Keystroke vs. blur validation
+
+By default, contracts fire on **blur** (when the element loses focus), so partially typed values are never rejected mid-entry.
+
+To switch an element to keystroke-time validation, set `data-xdbc-validate-on="input"`:
+
+```html
+<!-- validates after every keystroke -->
+<input data-xdbc-validate-on="input" data-xdbc-regex="^\d*$" />
+```
+
+Every built-in contract also has an **`-input` twin** that always fires on keystroke, regardless of `data-xdbc-validate-on`. Use it alongside the base contract to apply a **permissive pattern while the user is typing** and a **strict pattern on blur**:
+
+| Base attribute | `-input` twin | When it fires |
+|---|---|---|
+| `data-xdbc-regex` | `data-xdbc-regex-input` | every keystroke |
+| `data-xdbc-type` | `data-xdbc-type-input` | every keystroke |
+| `data-xdbc-eq` | `data-xdbc-eq-input` | every keystroke |
+| `data-xdbc-different` | `data-xdbc-different-input` | every keystroke |
+| `data-xdbc-defined` | `data-xdbc-defined-input` | every keystroke |
+| `data-xdbc-undefined` | `data-xdbc-undefined-input` | every keystroke |
+| `data-xdbc-greater` | `data-xdbc-greater-input` | every keystroke |
+| `data-xdbc-greater-or-equal` | `data-xdbc-greater-or-equal-input` | every keystroke |
+| `data-xdbc-less` | `data-xdbc-less-input` | every keystroke |
+| `data-xdbc-less-or-equal` | `data-xdbc-less-or-equal-input` | every keystroke |
+| `data-xdbc-or` | `data-xdbc-or-input` | every keystroke |
+
+This is the recommended pattern for fields where the fully valid value can only be determined once typing is complete — such as email addresses, domain names, or structured codes:
+
+```html
+<!-- strict LDAP DN on blur; only legal characters allowed on every keystroke -->
+<input
+  data-xdbc-regex="^[A-Za-z]+=.+(,[A-Za-z]+=.+)*$"
+  data-xdbc-regex-input="^[a-zA-Z0-9=,. _\-]*$"
+/>
+```
+
+### Real-world example — Angular with toast notifications
+
+In production, two or three attributes on an ordinary `<input>` — combined with a single global `onInfringement` callback — are enough to guarantee correctness and surface precise, human-readable error messages through your application's own notification system.
+
+The following field is from a school Active Directory management suite. It binds a full LDAP Distinguished Name contract to a PrimeNG input with zero custom validator code:
+
+```html
+<!-- ldap-settings.component.html -->
+<input
+  pInputText
+  [(ngModel)]="form.base_dn"
+  placeholder="DC=school,DC=local"
+  data-xdbc-regex="^[A-Za-z]+=.+(,[A-Za-z]+=.+)*$"
+  data-xdbc-regex-input="^[a-zA-Z0-9=,. _\-]*$"
+/>
+```
+
+Two attributes do all the work:
+
+- **`data-xdbc-regex-input`** — permits only the characters that can legally appear in an LDAP DN while the user is still typing, so the field never blocks a partial entry.
+- **`data-xdbc-regex`** — enforces the full `key=value(,key=value)*` DN structure on blur, giving the user a complete value to correct.
+
+Route violations to PrimeNG's `MessageService` (or any toast library) once at startup:
+
+```typescript
+// app.component.ts
+import { scanDOM } from "xdbc/DBC/DOM";
+
+export class AppComponent implements OnInit {
+  constructor(private messages: MessageService) {}
+
+  ngOnInit() {
+    const dbc = (globalThis as any).WaXCode.DBC;
+    dbc.infringementSettings.onInfringement = (infringement: Error) => {
+      this.messages.add({
+        severity: "error",
+        summary:  "Invalid input",
+        detail:   infringement.message,
+      });
+    };
+    scanDOM();
+  }
+}
+```
+
+No per-element wiring. No Angular validators. Three attributes on an HTML element and one global callback are enough to enforce correctness and deliver structured diagnostics directly to your users.
 
 ### Behaviour on infringement
 
@@ -417,7 +508,7 @@ registerDOMContract("my-contract", (value, attrValue) =>
 ```
 
 ```html
-<input data-xdbc data-xdbc-my-contract="someConfig" />
+<input data-xdbc-my-contract="someConfig" />
 ```
 
 The `attrValue` string is whatever appears in the attribute — parse it however your contract needs.

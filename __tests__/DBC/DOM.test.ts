@@ -50,16 +50,17 @@ describe("scanDOM — basic binding", () => {
 		cleanup();
 	});
 
-	test("ignores elements without data-xdbc", () => {
+	test("binds to elements that have only data-xdbc-* attributes (no data-xdbc marker needed)", () => {
 		const el = makeInput({ "data-xdbc-regex": "^\\d*$" }); // no data-xdbc marker
 		const cleanup = scanDOM();
 		fireInput(el, "abc");
-		expect(el.value).toBe("abc"); // not blocked
+		fireBlur(el);
+		expect(el.value).toBe(""); // blocked — marker no longer required
 		cleanup();
 	});
 
-	test("ignores data-xdbc elements that have no recognised contract attribute", () => {
-		const el = makeInput({ "data-xdbc": "" }); // marker only
+	test("ignores elements that have no recognised data-xdbc-* contract attribute", () => {
+		const el = makeInput({}); // plain input, no xdbc attributes
 		const cleanup = scanDOM();
 		fireInput(el, "anything");
 		expect(el.value).toBe("anything");

@@ -191,15 +191,15 @@ registerDOMContract("or-input", (value, attr) => {
 // ─── scanDOM ──────────────────────────────────────────────────────────────────
 
 /**
- * Scans the given **root** for `<input>` and `<textarea>` elements marked with the
- * `data-xdbc` attribute, and binds XDBC contracts to their DOM events (blur by
+ * Scans the given **root** for `<input>` and `<textarea>` elements that carry at least one
+ * `data-xdbc-*` attribute, and binds XDBC contracts to their DOM events (blur by
  * default; configurable per element via `data-xdbc-validate-on`).
  *
  * ### Supported attributes
  *
  * | Attribute                  | Example value              | Contract        |
  * |----------------------------|----------------------------|-----------------|
- * | `data-xdbc`                | *(path or empty)*          | marker / DBC path |
+ * | `data-xdbc`                | *(DBC path, optional)*      | custom DBC instance path (default: `WaXCode.DBC`) |
  * | `data-xdbc-validate-on`         | `input` \| `blur`           | when to validate default contracts (default: `blur`) |
  * | `data-xdbc-regex`               | `^[a-z]+\.[a-z]{2,}$`      | {@link REGEX} — validated per `data-xdbc-validate-on` |
  * | `data-xdbc-regex-input`         | `^[a-zA-Z0-9.\-]*$`        | {@link REGEX} — always on every keystroke |
@@ -296,7 +296,7 @@ export function scanDOM(root: Element | Document = document): () => void {
 
 	const elements = Array.from(
 		root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
-			"[data-xdbc]",
+			"input, textarea",
 		),
 	);
 

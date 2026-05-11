@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.0.220] — 2026-05-11
+
+### Changed
+- Removed the mandatory `data-xdbc` marker attribute — any `data-xdbc-*` attribute is now sufficient to enroll a DOM element in contract enforcement. `data-xdbc` is retained as an optional attribute to specify a custom DBC instance path.
+
+---
+
+## [1.0.219] — 2026-05-11
+
+### Added
+- DOM integration: **blur-first validation model** — all base contracts fire on blur by default, so partial values are never blocked during typing
+- `data-xdbc-validate-on="input"` attribute to opt individual elements into keystroke-time validation
+- **Keystroke (`-input`) twin** for every built-in DOM contract: `data-xdbc-regex-input`, `data-xdbc-type-input`, `data-xdbc-eq-input`, `data-xdbc-different-input`, `data-xdbc-defined-input`, `data-xdbc-undefined-input`, `data-xdbc-greater-input`, `data-xdbc-greater-or-equal-input`, `data-xdbc-less-input`, `data-xdbc-less-or-equal-input`, `data-xdbc-or-input` — each fires on every keystroke regardless of `data-xdbc-validate-on`
+- Two-variable revert tracking (`lastInputValid` / `lastBlurValid`) prevents partial-value corruption when `-input` and base contracts coexist on the same element
+
+---
+
 ## [1.0.208] — 2026-04-13
 
 ### Changed
