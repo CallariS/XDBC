@@ -53,11 +53,7 @@
 		"type": "git",
 		"url": "git+https://github.com/CallariS/XDBC.git"
 	},
-	"keywords": [
-		"DbC",
-		"DesignByContract",
-		"Typescript"
-	],
+	"keywords": ["DbC", "DesignByContract", "Typescript"],
 	"author": "Callari, Salvatore",
 	"license": "MIT",
 	"bugs": {
